@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 기본 테마 설정 */
+body {
+  @apply bg-background text-foreground transition-colors duration-300;
+}
+
+/* 다크 모드 적용 */
+.dark body {
+  @apply bg-background-dark text-foreground-dark;
+}
+
+/* 이미지 반전 (다크 모드에서 밝은 이미지 보이도록 설정) */
+/* .dark img {
+  filter: invert(1);
+} */
+
+.navbar {
+  height: 64px; /* 16 rem in tailwind */
+}
+
+.socialbutton {
+  @apply flex items-center justify-center w-full px-2 py-2 mb-4 text-gray-700 text-sm border border-gray-300 rounded-full transition;
+}
