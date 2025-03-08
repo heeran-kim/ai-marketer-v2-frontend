@@ -12,10 +12,10 @@ export interface HeaderProps {
     description: string;
     createAction?: (router: AppRouterInstance) => { onClick: () => void } | null;
     moreActions?: (router: AppRouterInstance) => Action[] | null;
-    backTo?: string;
 }
 
 export interface SubPage {
+    name?: string;
     href: string;
     header: HeaderProps;
 }
