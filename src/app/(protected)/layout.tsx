@@ -15,15 +15,15 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     useEffect(() => {
         if (!user) router.push("/login");
     }, [user, router]);
-
+    
     const currentNav = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
 
-    if (currentNav?.subPages?.length) {
+    if (!currentNav) {
+        console.error("Cannot find matched navigation item");
+    }
+    else if (currentNav.subPages?.length) {
         const subPage = currentNav.subPages.find((sub) => pathname === sub.href);
-        if (subPage) {
-            currentNav.header.backTo = currentNav.href;
-            currentNav.header = subPage.header;
-        }
+        if (subPage) currentNav.header = subPage.header;
     }
 
     return (
