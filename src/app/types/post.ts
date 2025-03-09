@@ -20,12 +20,21 @@ export interface Post {
     shares: number;                 // Number of shares
 }
 
+// Represents a social media post review
+export interface PostReview {
+    platform: string;               // ex: "facebook", "twitter"
+    categories: string[];           // ex: ["Brand Story", "Product Highlight"]
+    caption: string;                // Text content of the post
+    image: string;                  // URL of the attached image
+}
+
+
 // Represents a category assigned to a post
 export interface PostCategory {
     id: number;                     // Unique category ID
     key: string;                    // Internal key for category (e.g., "brandStory", "productHighlight")
     label: string;                  // Display name (e.g., "Brand Story", "Product Highlight")
-    selected: boolean;              // Whether this category is selected
+    isSelected: boolean;            // Whether this category is selected
 }
 
 // Configuration data required for post creation
@@ -63,7 +72,6 @@ export interface PostCreationContextType {
     setDetectedItems: (items: string[]) => void;
 
     // Business-related details that influence post generation
-    hasSalesData: boolean;
     customisedBusinessInfo: CustomisedBusinessInfo;
     setCustomisedBusinessInfo: (info: CustomisedBusinessInfo) => void;
 
@@ -83,6 +91,7 @@ export interface PostCreationContextType {
     // AI-generated caption suggestions
     captionSuggestions: string[];
     setCaptionSuggestions: (captions: string[]) => void;
+    updateCaptionSuggestion: (index: number, editedCaption: string) => void;
 
     // Function to reset all post creation data
     resetPostCreation: () => void;

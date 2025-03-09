@@ -1,29 +1,62 @@
+// src/app/(protected)/posts/create/components/DraggableCaption.tsx
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
+import { useRef, useEffect, useState } from "react";
+import { useDrag } from "react-dnd";
 
-export default function DraggableCaption({ id, text }: { id: string; text: string }) {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id,
-        data: { text },
-    });
+export default function DraggableCaption({
+    id,
+    text,
+    className = "",
+}: {
+    id: string;
+    text: string;
+    className?: string;
+}) {
+    const [isDragging, setIsDragging] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    let pressTimer: NodeJS.Timeout;
 
-    const style = {
-        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined
+    const handleMouseDown = () => {
+        pressTimer = setTimeout(() => {
+            setIsDragging(true);
+        }, 300);
     };
 
+    const handleMouseUp = () => {
+        clearTimeout(pressTimer);
+        setIsDragging(false);
+    };
+
+    const handleMouseLeave = () => {
+        clearTimeout(pressTimer);
+    };
+
+    const [{ isDragging: dndDragging }, drag] = useDrag(() => ({
+        type: "CAPTION",
+        item: { id },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    }));
+
+    useEffect(() => {
+        if (ref.current) {
+            drag(ref.current);
+        }
+    }, [drag]);
+
     return (
-        <p
-            ref={setNodeRef}
-            style={{
-                ...style,
-                whiteSpace: "pre-line",
-            }}
-            {...attributes}
-            {...listeners}
-            className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md text-sm cursor-grab"
+        <div
+            ref={ref}
+            className={`p-3 border rounded-lg cursor-move transition ${className} ${
+                isDragging ? "opacity-50" : "opacity-100"
+            }`}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
         >
             {text}
-        </p>
+        </div>
     );
 }
