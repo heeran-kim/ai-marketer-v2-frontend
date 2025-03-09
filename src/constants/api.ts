@@ -26,8 +26,8 @@ export const BUSINESSES_API = {
 export const POSTS_API = {
     GET_ALL: `${BASE_URL}/posts/`,
     CREATE: `${BASE_URL}/posts/create/`,
-    UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`,
-    DELETE: (id: string) => `${BASE_URL}/posts/${id}/`,
+    UPDATE: (id: string) => `${BASE_URL}/posts/${id}/edit/`,
+    DELETE: (id: string) => `${BASE_URL}/posts/${id}/delete/`,
 };
 
 // Promotions API Endpoints
