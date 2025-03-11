@@ -1,8 +1,7 @@
 "use client";
 
 import Card from "@/components/common/CompactCard";
-import { getPlatformIcon } from "@/utils/icon";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { getPlatformIcon, PLATFORM_OPTIONS } from "@/utils/icon";
 import { usePostCreation } from "@/context/PostCreationContext";
 
 export default function PostSettings() {
