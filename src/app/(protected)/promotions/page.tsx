@@ -1,3 +1,4 @@
+// src/app/(protected)/promotions/page.tsx
 "use client";
 
 // import "@/mocks/mockPromotions";
@@ -8,7 +9,7 @@
 import DateRangePicker from "@/components/common/DateRangePicker";
 import ListCard from "@/components/common/ListCard";
 // import Select from "@/components/common/Select";
-import { useFetchData } from "@/hooks/useApi";
+import { useFetchData } from "@/hooks/dataHooks";
 import { Promotion } from "@/app/types/promotion";
 import { PROMOTIONS_API } from "@/constants/api";
 

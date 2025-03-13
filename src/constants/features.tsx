@@ -1,16 +1,6 @@
 "use client";
-import { ReactNode } from "react";
 import { FaServer, FaRobot, FaLightbulb, FaPen, FaChartLine } from "react-icons/fa";
-
-interface FeatureItem {
-    id: string;
-    href: string;
-    icon: ReactNode;
-    name: string;
-    shortDescription: string;
-    longTitle: string;
-    longDescription: string;
-}
+import { FeatureItem } from "@/app/types/nav"
 
 export const features: FeatureItem[] = [
     {

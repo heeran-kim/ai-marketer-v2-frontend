@@ -1,8 +1,9 @@
+// src/app/(protected)/posts/PostsDashboardContent.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useFetchData, mutateData } from "@/hooks/useApi";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { SearchBar, DateRangePicker, ListCard, Select, DeleteConfirmModal, SuccessModal, TopLoadingBar } from "@/components/common";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/app/types/post";
@@ -31,7 +32,7 @@ export default function PostsDashboardContent() {
     const handleDelete = async () => {
         if (!selectedItemId) return;
         setIsLoading(true);
-        await mutateData(POSTS_API.DELETE(selectedItemId), "DELETE");
+        await apiClient.delete(POSTS_API.DELETE(selectedItemId));
         await mutate();
         setIsLoading(false);
         setSuccessMessage("Post deleted successfully!");

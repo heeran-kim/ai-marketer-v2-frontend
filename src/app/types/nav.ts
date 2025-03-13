@@ -1,5 +1,6 @@
 // src/types/nav.ts
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { ReactNode } from "react";
 
 export interface Action {
     label: string;
@@ -25,4 +26,15 @@ export interface NavItem {
     href: string;
     header: HeaderProps;
     subPages?: SubPage[];
+}
+
+
+export interface FeatureItem {
+    id: string;
+    href: string;
+    icon: ReactNode;
+    name: string;
+    shortDescription: string;
+    longTitle: string;
+    longDescription: string;
 }

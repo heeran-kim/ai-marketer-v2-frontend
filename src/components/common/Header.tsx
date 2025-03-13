@@ -3,15 +3,15 @@
 
 import { useRouter } from "next/navigation";
 import ActionDropdown from "./ActionDropdown";
-import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { HeaderProps } from "@/app/types/nav";
 
 
-export default function Header({ title, description, createAction, moreActions, backTo }: HeaderProps) {
+export default function Header({ title, description, createAction, moreActions }: HeaderProps) {
     const router = useRouter();
     return (
         <div className="border-b border-gray-300 dark:border-gray-700 px-6 py-8">
-            {backTo && (
+            {/* {backTo && (
                 <div className="relative text-xs">
                     <button
                         onClick={() => router.push(backTo)}
@@ -20,7 +20,7 @@ export default function Header({ title, description, createAction, moreActions, 
                         <FaArrowLeft className="text-gray-600" size={14} />
                     </button>
                 </div>
-            )}
+            )} */}
 
             {createAction && (
                 <div className="relative text-xs">

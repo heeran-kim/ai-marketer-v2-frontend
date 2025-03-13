@@ -1,3 +1,4 @@
+// src/app/(protected)/posts/create/components/PostDetails.tsx
 "use client";
 
 import { usePostCreation } from "@/context/PostCreationContext";
@@ -5,7 +6,7 @@ import Card from "@/components/common/CompactCard";
 import { useEffect } from "react";
 import { POSTS_API } from "@/constants/api";
 import { PostCreationConfig } from "@/app/types/post";
-import { useFetchData } from "@/hooks/useApi";
+import { useFetchData } from "@/hooks/dataHooks";
 import { PlatformState } from "@/app/types/post";
 import BusinessInfo from "./BusinessInfo";
 import PostSettings from "./PostSettings";

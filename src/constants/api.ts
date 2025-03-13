@@ -3,6 +3,9 @@
 // Base API URL
 export const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api` || "http://localhost:8000/api";
 
+// Health Check API Endpoint (for backend status verification)
+export const HEALTH_CHECK_API = `${BASE_URL}/health/`;
+
 // Users API Endpoints
 export const USERS_API = {
     LOGIN: `${BASE_URL}/users/login/`,

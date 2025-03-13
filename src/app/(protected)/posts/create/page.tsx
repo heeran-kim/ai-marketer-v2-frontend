@@ -1,3 +1,4 @@
+// src/app/(protected)/posts/create/page.tsx
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -6,7 +7,7 @@ import { PostCreationProvider } from "@/context/PostCreationContext";
 import Modal from "@/components/common/Modal";
 import PostCreationFlow from "./components/PostCreationFlow";
 
-export default function CreatePostPage() {
+function CreatePostContent() {
     const searchParams = useSearchParams();
     const isCreateModalOpen = searchParams.get("create") === "true";
     const router = useRouter();
@@ -24,4 +25,14 @@ export default function CreatePostPage() {
             </Modal>
         </PostCreationProvider>
     );
+}
+
+import { Suspense } from "react";
+
+export default function CreatePostPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreatePostContent />
+    </Suspense>
+  );
 }

@@ -1,30 +1,30 @@
 "use client";
 
-import { usePostCreation } from "@/context/PostCreationContext";
-import Card from "@/components/common/CompactCard";
+// import { usePostCreation } from "@/context/PostCreationContext";
+// import Card from "@/components/common/CompactCard";
 import { useState } from "react";
 
-export default function CaptionSelection({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-    const { captionSuggestions, setCaption } = usePostCreation();
-    const [selectedCaption, setSelectedCaption] = useState<string | null>(null);
+export default function CaptionSelection() {
+    // const { captionSuggestions, setCaption } = usePostCreation();
+    // const [selectedCaption, setSelectedCaption] = useState<string | null>(null);
     const [editedCaption, setEditedCaption] = useState("");
 
-    const handleSelectCaption = (caption: string) => {
-        setSelectedCaption(caption);
-        setEditedCaption(caption);
-    };
+    // const handleSelectCaption = (caption: string) => {
+    //     setSelectedCaption(caption);
+    //     setEditedCaption(caption);
+    // };
 
     const handleEditCaption = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEditedCaption(e.target.value);
     };
 
     const handleConfirmCaption = () => {
-        if (!selectedCaption) {
-            alert("⚠️ Please select a caption before proceeding.");
-            return;
-        }
-        setCaption("selected", editedCaption);
-        onNext();
+        // if (!selectedCaption) {
+        //     alert("⚠️ Please select a caption before proceeding.");
+        //     return;
+        // }
+        // setCaption("selected", editedCaption);
+        // onNext();
     };
 
     return (
@@ -34,7 +34,7 @@ export default function CaptionSelection({ onNext, onBack }: { onNext: () => voi
             </div>
 
             <div className="overflow-x-auto flex space-x-4 py-3 px-4">
-                {captionSuggestions.length > 0 ? (
+                {/* {captionSuggestions.length > 0 ? (
                     captionSuggestions.map((caption, index) => (
                         <Card
                             key={index}
@@ -46,7 +46,7 @@ export default function CaptionSelection({ onNext, onBack }: { onNext: () => voi
                     ))
                 ) : (
                     <p className="text-gray-500 text-sm">No AI-generated captions available. Try generating again.</p>
-                )}
+                )} */}
             </div>
 
             <div className="p-3 border-t bg-white">
@@ -59,9 +59,9 @@ export default function CaptionSelection({ onNext, onBack }: { onNext: () => voi
                 />
 
                 <div className="flex justify-between mt-4">
-                    <button onClick={onBack} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
+                    {/* <button onClick={onBack} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
                         Back
-                    </button>
+                    </button> */}
 
                     <button onClick={handleConfirmCaption} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition">
                         Next

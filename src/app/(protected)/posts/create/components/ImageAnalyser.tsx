@@ -4,7 +4,7 @@ import { useState } from "react";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import Card from "@/components/common/CompactCard";
 import { usePostCreation } from "@/context/PostCreationContext";
-import { mutateData } from "@/hooks/useApi";
+import { apiClient } from "@/hooks/dataHooks";
 import { ImageAnalysisResponse } from "@/app/types/post";
 import { AI_API } from "@/constants/api";
 
@@ -27,20 +27,26 @@ export default function ImageAnalyser() {
         formData.append("image", image);
         
         setIsLoading(true);
-
-        const res: ImageAnalysisResponse | null = await mutateData<ImageAnalysisResponse>(AI_API.IMG_ANALYSIS, "POST", formData, true);
-        if (!res || !res.detectedItems) {
-            console.error("❌ Failed to fetch image analysis result or empty data.");
+        
+        const res = await apiClient.post<ImageAnalysisResponse>(
+            AI_API.IMG_ANALYSIS, 
+            formData, 
+            {}, 
+            true // isFormData flag
+        );
+        
+        if (!res?.detectedItems) {
+            console.error("❌ No detected items returned from analysis.");
             setDetectedItems([]);
-            setIsLoading(false);
-            return;
+        } else {
+            setDetectedItems(res.detectedItems);
         }
-        setDetectedItems(res.detectedItems);
+        
         setIsLoading(false);
     };
 
     const removeDetectedItem = (index: number) => {
-        setDetectedItems((prev: string[]) => prev.filter((_, i) => i !== index));
+        setDetectedItems(detectedItems.filter((_, i) => i !== index));
     };
 
     return (
@@ -77,16 +83,6 @@ export default function ImageAnalyser() {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                            <div className="text-xs mt-2 text-gray-500">
-                                🚀 <strong>[AI Model Usage Plan]</strong> <br />
-                                - This feature is currently a sample and the AI analysis function has not been implemented yet. <br />
-                                - Image analysis AI will be used to detect objects within images. <br />
-                                - Planned <strong>pre-trained open-source models</strong> from Hugging Face:  <br />
-                                * <strong>CLIP</strong> (Image-to-text matching) <br /> 
-                                * <strong>ResNet</strong> (Deep learning-based image classification)  <br />
-                                * <strong>EfficientNet</strong> (Lightweight image recognition model) <br />
-                                - One of these models will be selected, or a combination may be used for optimal performance.
                             </div>
                         </>
                     )}

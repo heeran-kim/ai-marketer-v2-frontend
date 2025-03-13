@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Card from "@/components/common/Card";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
-import { useFetchData, mutateData } from "@/hooks/useApi";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/app/types/business";
 import { INDUSTRY_OPTIONS, DEFAULT_LOGO_PATH } from "@/constants/settings";
 import { BUSINESSES_API } from "@/constants/api";
@@ -57,10 +57,10 @@ export default function GeneralSettings() {
     const handleSave = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!editedBusiness) return;
         const fieldName = e.currentTarget.id as keyof Business;
-        await mutateData(BUSINESSES_API.UPDATE("todolater"), "PUT", {
+        await apiClient.put(BUSINESSES_API.UPDATE("todolater"), {
             [fieldName]: editedBusiness[fieldName],
         });
-        mutate(businessData, true);
+        mutate();
     };
 
     if (isLoading) {

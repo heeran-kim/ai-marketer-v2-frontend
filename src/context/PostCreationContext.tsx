@@ -1,3 +1,4 @@
+// src/context/PostCreationContext.tsx
 import { createContext, useContext, useState } from "react";
 import { PostCreationContextType, CustomisedBusinessInfo, PlatformState, PostCategory } from "@/app/types/post";
 
@@ -6,6 +7,7 @@ const PostCreationContext = createContext<PostCreationContextType | undefined>(u
 export const PostCreationProvider = ({ children }: { children: React.ReactNode }) => {
     const [image, setImage] = useState<File | null>(null);
     const [detectedItems, setDetectedItems] = useState<string[]>([]);
+    const [hasSalesData, setHasSalesData] = useState<boolean>(false); 
     const [customisedBusinessInfo, setCustomisedBusinessInfo] = useState<CustomisedBusinessInfo>({
         targetCustomers: "",
         vibe: "",
@@ -27,6 +29,7 @@ export const PostCreationProvider = ({ children }: { children: React.ReactNode }
     const resetPostCreation = () => {
         setImage(null);
         setDetectedItems([]);
+        setHasSalesData(false);
         setCustomisedBusinessInfo({ targetCustomers: "", vibe: "", isUsingSalesData: false });
         setPostCategories([]);
         setAdditionalPrompt("");
@@ -41,6 +44,7 @@ export const PostCreationProvider = ({ children }: { children: React.ReactNode }
                 setImage,
                 detectedItems,
                 setDetectedItems,
+                hasSalesData,
                 customisedBusinessInfo,
                 setCustomisedBusinessInfo,
                 postCategories,

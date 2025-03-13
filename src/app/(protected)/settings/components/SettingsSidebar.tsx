@@ -17,9 +17,13 @@ export default function SettingsSidebar() {
     }, []);
 
     const filteredItems = useMemo(() => {
-        return menuItems.filter((item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        return menuItems.filter((item) => {
+            if (!item.name) {
+                console.error('Navigation item is missing required name property:', item);
+                return false; // Filter out items without names
+            }
+            return item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        });
     }, [searchTerm, menuItems]);
 
     return (

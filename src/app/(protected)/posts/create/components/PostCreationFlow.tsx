@@ -1,3 +1,4 @@
+// src/app/(protected)/posts/create/components/PostCreationFlow.tsx
 "use client";
 
 import ImageAnalyser from "./ImageAnalyser";
@@ -7,7 +8,7 @@ import CaptionSelection from "./CaptionSelection";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { usePostCreation } from "@/context/PostCreationContext";
-import { mutateData } from "@/hooks/useApi";
+import { apiClient } from "@/hooks/dataHooks";
 import { AI_API } from "@/constants/api";
 
 
@@ -32,24 +33,24 @@ export default function PostCreationFlow() {
         setStep((prev) => prev + 1);
     };
 
-const handleGenerateCaptions = async () => {
-        const res: {captions: string[]} | null = await mutateData<{captions: string[]}>(
+    const handleGenerateCaptions = async () => {
+        const res = await apiClient.post<{captions: string[]}>(
             AI_API.CAPTION_GENERATE,
-            "POST",
             {
                 "imgItems": detectedItems,
                 "businessInfo": customisedBusinessInfo,
                 "postCategories": postCategories,
                 "platformStates": platformStates,
                 "customText": additionalPrompt,
-            },
-            false
+            }
         );
-        if (!res) {
+        
+        if (!res?.captions) {
             alert("❌ Failed to fetch caption generation result or empty data.");
             setCaptionSuggestions([]);
             return;
         }
+        
         setCaptionSuggestions(res.captions);
         setStep((prev) => prev + 1);
     };

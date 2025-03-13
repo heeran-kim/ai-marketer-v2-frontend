@@ -6,7 +6,7 @@ import Modal from "@/components/common/Modal";
 import CreatePostPage from "./create/page";
 import PostsDashboardContent from "./PostsDashboardContent";
 
-export default function PostsDashboard() {
+function PostsContent() {
     const searchParams = useSearchParams();
     const isCreating = searchParams.get("create") === "true";
     const router = useRouter();
@@ -19,9 +19,15 @@ export default function PostsDashboard() {
                 </Modal>
             )}
 
-            <Suspense fallback={<p>Loading...</p>}>
-                <PostsDashboardContent />
-            </Suspense>
+            <PostsDashboardContent />
         </>
+    );
+}
+
+export default function PostsDashboard() {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <PostsContent />
+        </Suspense>
     );
 }
