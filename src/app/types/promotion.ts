@@ -12,4 +12,5 @@ export type Promotion = {
     endDate: string;                // ex: "2024-04-10T23:59:59Z" (ISO timestamp)
     status: string;                 // ex: "upcoming", "ongoing"
     soldCount: number;              // Number of units sold
+    type: string;
 };

@@ -3,11 +3,14 @@
 import Card from "@/components/common/CompactCard";
 import ListCard from "@/components/common/ListCard";
 import { usePostCreation } from "@/context/PostCreationContext";
-// import { PostReview } from "@/app/types/post";
 
 export default function PostReviewStep() {
     const { image, postCategories, platformStates } = usePostCreation();
-    
+
+    if (!image) {
+        throw new Error("Unexpected: No image found in Step 4. Image upload is required in Step 1.");
+    }
+
     const categories = postCategories
         .filter(category => category.isSelected)
         .map(category => category.label);
@@ -22,12 +25,12 @@ export default function PostReviewStep() {
                     <ListCard 
                         key={platformState.key} 
                         item={{
+                            image: image,
                             platform: platformState.key,
                             categories: categories,
                             caption: platformState.caption,
-                            image: image ? URL.createObjectURL(image) : "",
-                        }} 
-                        type="postReview" 
+                            type: "postReview"
+                        }}
                     />
                 ))}
             </div>

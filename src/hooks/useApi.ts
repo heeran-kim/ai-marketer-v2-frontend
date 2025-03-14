@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { SWRConfiguration } from "swr";
 
 // Converts snake_case to camelCase (for API responses)
 const toCamelCase = <T>(obj: T): T => {
@@ -51,11 +52,16 @@ const fetcher = async <T>(url: string): Promise<T | null> => {
 };
 
 // SWR Hook for Fetching Data
-export function useFetchData<T>(url: string) {
-    const { data, error, isValidating, mutate } = useSWR<T | null>(url, fetcher<T>, {
-        revalidateOnFocus: true,
-        shouldRetryOnError: true,
-    });
+export function useFetchData<T>(url: string, options?: SWRConfiguration) {
+    const { data, error, isValidating, mutate } = useSWR<T | null>(
+        url,
+        fetcher<T>,
+        {
+            revalidateOnFocus: true, // Automatically re-fetch data when the window regains focus
+            shouldRetryOnError: true, // Retry fetching data if an error occurs
+            ...options,
+        }
+    );
 
     return { data: data ?? null, error, isLoading: isValidating, mutate };
 }

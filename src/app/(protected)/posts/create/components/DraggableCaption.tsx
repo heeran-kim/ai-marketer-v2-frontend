@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useDrag, DragPreviewImage } from "react-dnd";
 
 interface DraggableCaptionProps {
@@ -10,7 +10,6 @@ interface DraggableCaptionProps {
     editingIndex: number | null;
     setEditingIndex: (index: number | null) => void;
     onEdit: (index: number, e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-    setSwiperGrabCursor: (enabled: boolean) => void;
 }
 
 export default function DraggableCaption({
@@ -20,62 +19,28 @@ export default function DraggableCaption({
     editingIndex,
     setEditingIndex,
     onEdit,
-    setSwiperGrabCursor,
 }: DraggableCaptionProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const [dragItem, setDragItem] = useState({ id, text });
-    const [isDragging, setIsDragging] = useState(false);
-    let pressTimer: NodeJS.Timeout;
 
-    const handleMouseDown = () => {
-        console.log("handleMouseDown");
-        pressTimer = setTimeout(() => {
-            setIsDragging(true);
-            setSwiperGrabCursor(false);
-        }, 200);
-    };
-
-    const handleMouseUp = () => {
-        clearTimeout(pressTimer);
-        setIsDragging(false);
-        setSwiperGrabCursor(true);
-    };
-
-    const handleMouseLeave = () => {
-        clearTimeout(pressTimer);
-    };
-
-    useEffect(() => {
-        setDragItem({ id, text });
-    }, [text]);
-
-    const [{ isDragging: dndDragging }, drag, preview] = useDrag(() => ({
-        type: "CAPTION",
-        item: () => {
-            setIsDragging(true);
-            setSwiperGrabCursor(false);
-            return dragItem;
-        },
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
+    const [{ isDragging }, drag, preview] = useDrag(
+        () => ({
+            type: "CAPTION",
+            item: () => ({ id, text }),
+            collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+            }),
+            options: {
+                dropEffect: "move",
+            }
         }),
-        options: {
-            dropEffect: "move",
-        }
-    }));
-
-    useEffect(() => {
-        if (!dndDragging) {
-            setIsDragging(false);
-            setSwiperGrabCursor(true);
-        }
-    }, [dndDragging]);
+        [text]
+    );
 
     useEffect(() => {
         if (ref.current) {
-            drag(ref.current);
+            preview(ref.current);
         }
-    }, [drag]);
+    }, [preview, ref]);
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -99,11 +64,6 @@ export default function DraggableCaption({
         };
     }, [setEditingIndex]);
 
-    const handleTouchStart = (e: React.TouchEvent) => {
-        console.log("handleTouchStart");
-        e.stopPropagation();
-    };
-
     return (
         <>
         <DragPreviewImage
@@ -112,15 +72,17 @@ export default function DraggableCaption({
         />
 
         <div
-            ref={ref}
+            ref={(node) => {
+                if (node) {
+                    drag(node);
+                    ref.current = node;
+                }
+            }}
             className={`p-3 bg-white border rounded-lg cursor-grab transition text-sm h-full flex-grow ${
                 isDragging ? "opacity-50" : "opacity-100"
             }`}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            onTouchStart={handleTouchStart}
-            onClick={() => setEditingIndex(index)}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => setEditingIndex(index)} 
         >
             {editingIndex === index ? (
                 <textarea

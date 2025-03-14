@@ -42,6 +42,23 @@ export default function PostCreationFlow() {
         setStep((prev) => prev + 1);
     };
 
+    const handlePost = async () => {
+        setIsLoading(true);
+    
+        const postData = {
+            image,
+            detectedItems,
+            businessInfo: customisedBusinessInfo,
+            postCategories,
+            platformStates,
+            customText: additionalPrompt,
+        };
+    
+        // const res = await mutateData(AI_API.POST_CREATE, "POST", postData, false);
+    
+        setIsLoading(false);
+    };
+
 const handleGenerateCaptions = async () => {
         const res: {captions: string[]} | null = await mutateData<{captions: string[]}>(
             AI_API.CAPTION_GENERATE,
@@ -97,7 +114,7 @@ const handleGenerateCaptions = async () => {
                             Next
                         </button>
                     ) : (
-                        <button onClick={() => {/* TODO */}} className="text-blue-600 text-sm font-medium">
+                        <button onClick={() => handlePost()} className="text-blue-600 text-sm font-medium">
                             Post
                         </button>
                     )}

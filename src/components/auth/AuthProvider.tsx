@@ -46,7 +46,12 @@ const fetchWithAuth = async (
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const { data: user, mutate } = useFetchData<User>(USERS_API.ME);
+    
+    // Fetch user data
+    const { data: user, mutate } = useFetchData<User>(USERS_API.ME, {
+        revalidateIfStale: false, // If cached data exists, don't re-fetch when mounting
+        revalidateOnFocus: false, // Don't re-fetch when the window/tab gains focus
+    });
     
     const login = async (email: string, password: string) => {
         await fetchWithAuth(USERS_API.LOGIN, "POST", mutate, { email, password });

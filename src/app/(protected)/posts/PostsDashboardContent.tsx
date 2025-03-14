@@ -112,9 +112,8 @@ export default function PostsDashboardContent() {
                         <ListCard
                             key={post.id}
                             ref={(el) => { postRefs.current[post.id] = el; }}
-                            item={post}
+                            item={{...post, type: "post"}}
                             actions={actions}
-                            type="post"
                         />
                     );
                 })}

@@ -16,10 +16,6 @@ export default function Home() {
         if (user) router.push("/dashboard");
     }, [user, router]);
 
-    if (user) {
-    return <p>Loading...</p>;
-    }
-
     return (
         <div className="bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark transition-colors duration-300">
             <Hero />

@@ -20,7 +20,7 @@ export default function PlatformDropZone({ platformKey, onDropCaption, isLinked,
         drop: (item: { id: string, text: string }) => {
             if (isLinked && onDropCaption) {
                 console.log(item.id);
-                onDropCaption(platformKey!, item.text);
+                onDropCaption(platformKey ?? "", item.text);
             }
         },
         collect: (monitor) => ({

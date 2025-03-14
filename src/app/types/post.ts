@@ -18,14 +18,16 @@ export interface Post {
     comments: number;               // Number of comments
     reposts: number;                // Number of times reposted
     shares: number;                 // Number of shares
+    type: string;
 }
 
-// Represents a social media post review
+// Represents a post review before publishing on social media platforms.
 export interface PostReview {
-    platform: string;               // ex: "facebook", "twitter"
-    categories: string[];           // ex: ["Brand Story", "Product Highlight"]
-    caption: string;                // Text content of the post
-    image: string;                  // URL of the attached image
+    image: File;                    // User-uploaded image file (converted to preview URL in ListCard)
+    platform: string;               // Target platform for the post (e.g., "facebook", "twitter")
+    categories: string[];           // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
+    caption: string;                // User-selected caption for the post
+    type: string;
 }
 
 

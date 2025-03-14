@@ -76,8 +76,7 @@ export default function PromotionsDashboard() {
                 // {[...upcomingPromotions, ...ongoingPromotions, ...endedPromotions].map((promo) => (
                     <ListCard 
                         key={promo.id} 
-                        item={promo} 
-                        type="promotion" 
+                        item={{...promo, type: "promotion"}}
                         actions={[
                             { label: "Create Post", onClick: () => handleCreatePost(promo.id) },
                             { label: "Duplicate", onClick: () => handleDuplicate(promo.id) },

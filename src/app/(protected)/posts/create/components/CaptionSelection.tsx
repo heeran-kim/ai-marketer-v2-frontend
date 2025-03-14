@@ -1,3 +1,4 @@
+// src/app/(protected)/posts/create/components/CaptionSelection.tsx
 "use client";
 
 import { usePostCreation } from "@/context/PostCreationContext";
@@ -6,34 +7,24 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/mousewheel";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableCaption from "./DraggableCaption";
 import PlatformDropZone from "./PlatformDropZone";
 import { getPlatformIcon, PLATFORM_OPTIONS } from "@/utils/icon";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 export default function CaptionSelection() {
-    const { captionSuggestions, platformStates, updateCaptionSuggestion, setPlatformStates, setCaption } = usePostCreation();
+    const { captionSuggestions, platformStates, updateCaptionSuggestion, setCaption } = usePostCreation();
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [selectedView, setSelectedView] = useState<"suggestedCaptions" | string>("suggestedCaptions");
-    const [isSwiperDraggable, setIsSwiperDraggable] = useState(true);
 
     const handleSelectView = (view: "suggestedCaptions" | string) => {
         setSelectedView((prev) => (prev === view ? "suggestedCaptions" : view));
-        console.log(selectedView);
     };
 
     const handleEditCaption = (index: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (!updateCaptionSuggestion) return;
         updateCaptionSuggestion(index, e.target.value);
-    };
-    
-    const handleDropCaption = (platformKey: string, captionText: string) => {
-        setPlatformStates((prev) =>
-            prev.map((platform) =>
-                platform.key === platformKey ? { ...platform, caption: captionText } : platform
-            )
-        );
     };
 
     return (
@@ -55,7 +46,8 @@ export default function CaptionSelection() {
                                 slidesPerView={1.4}
                                 centeredSlides={true}
                                 freeMode={true}
-                                grabCursor={isSwiperDraggable}
+                                grabCursor={false}
+                                simulateTouch={false}
                                 mousewheel={{ forceToAxis: true }}
                                 modules={[Mousewheel]}
                                 className="p-3 h-full"
@@ -70,7 +62,6 @@ export default function CaptionSelection() {
                                                 editingIndex={editingIndex}
                                                 setEditingIndex={setEditingIndex}
                                                 onEdit={handleEditCaption}
-                                                setSwiperGrabCursor={setIsSwiperDraggable}
                                             />
                                         </SwiperSlide>
                                     ))
@@ -87,15 +78,15 @@ export default function CaptionSelection() {
                     <div className="p-3 w-full h-[70px]">
                         <div className="flex justify-between items-center gap-3">
                             {PLATFORM_OPTIONS.map((platform) => {
-                                const platformState = platformStates.find((p) => p.key === platform);
+                                const platformState = platformStates?.find((p) => p.key === platform);
                                 const isLinked = !!platformState;
 
                                 return(
                                     <PlatformDropZone
                                         key={platform}
-                                        platformKey={platform ?? ""}
+                                        platformKey={platform}
                                         isLinked={isLinked}
-                                        onDropCaption={isLinked ? handleDropCaption : undefined}
+                                        onDropCaption={isLinked ? setCaption : undefined}
                                         onClick={() => handleSelectView(platform)}
                                         isSelected={selectedView === platform}
                                     >
@@ -117,7 +108,7 @@ export default function CaptionSelection() {
                                             value={platform.caption || ""}
                                             className="border p-1 rounded-md w-full flex-grow text-sm h-[90%] min-h-[90%] resize-none whitespace-pre-line"
                                             style={{ overflowY: "auto" }} 
-                                            onChange={(e) => setCaption(platform.key, e.target.value)}
+                                            onChange={(e) => setCaption?.(platform.key, e.target.value)}
                                         />
                                     </div>
                             ))}
