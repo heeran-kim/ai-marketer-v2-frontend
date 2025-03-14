@@ -18,14 +18,25 @@ export interface Post {
     comments: number;               // Number of comments
     reposts: number;                // Number of times reposted
     shares: number;                 // Number of shares
+    type: string;
 }
+
+// Represents a post review before publishing on social media platforms.
+export interface PostReview {
+    image: File;                    // User-uploaded image file (converted to preview URL in ListCard)
+    platform: string;               // Target platform for the post (e.g., "facebook", "twitter")
+    categories: string[];           // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
+    caption: string;                // User-selected caption for the post
+    type: string;
+}
+
 
 // Represents a category assigned to a post
 export interface PostCategory {
     id: number;                     // Unique category ID
     key: string;                    // Internal key for category (e.g., "brandStory", "productHighlight")
     label: string;                  // Display name (e.g., "Brand Story", "Product Highlight")
-    selected: boolean;              // Whether this category is selected
+    isSelected: boolean;            // Whether this category is selected
 }
 
 // Configuration data required for post creation
@@ -83,6 +94,7 @@ export interface PostCreationContextType {
     // AI-generated caption suggestions
     captionSuggestions: string[];
     setCaptionSuggestions: (captions: string[]) => void;
+    updateCaptionSuggestion: (index: number, editedCaption: string) => void;
 
     // Function to reset all post creation data
     resetPostCreation: () => void;

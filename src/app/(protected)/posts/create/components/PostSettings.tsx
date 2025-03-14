@@ -1,8 +1,7 @@
 "use client";
 
 import Card from "@/components/common/CompactCard";
-import { getPlatformIcon } from "@/utils/icon";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { getPlatformIcon, PLATFORM_OPTIONS } from "@/utils/icon";
 import { usePostCreation } from "@/context/PostCreationContext";
 
 export default function PostSettings() {
@@ -10,15 +9,15 @@ export default function PostSettings() {
     
     const handleCategoryToggle = (categoryLabel: string) => {
         setPostCategories(postCategories.map((category) =>
-                category.label === categoryLabel ? { ...category, selected: !category.selected } : category
+                category.label === categoryLabel ? { ...category, isSelected: !category.isSelected } : category
             )
         );
         console.log(postCategories);
     };
 
-    const handlePlatformToggle = (platformLabel: string) => {
+    const handlePlatformToggle = (platformKey: string) => {
         setPlatformStates(platformStates.map((platform) =>
-            platform.label === platformLabel ? { ...platform, selected: !platform.isSelected } : platform
+            platform.key === platformKey ? { ...platform, isSelected: !platform.isSelected } : platform
         ));
         console.log(platformStates);
     };
@@ -34,7 +33,7 @@ export default function PostSettings() {
                                 key={category.id}
                                 onClick={() => handleCategoryToggle(category.label)}
                                 className={`px-3 py-1.5 rounded-md border text-sm transition ${
-                                    category.selected ? "bg-gray-300" : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                                    category.isSelected ? "bg-gray-300" : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                                 }`}
                             >
                                 {category.label}
@@ -47,7 +46,7 @@ export default function PostSettings() {
                     <p className="text-sm font-medium mb-1">🌍 Choose Platforms:</p>
                     <div className="flex flex-wrap gap-2">
                         {PLATFORM_OPTIONS.map((platform: string) => {
-                            const platformState = platformStates.find((p) => p.label === platform);
+                            const platformState = platformStates.find((p) => p.key === platform);
                             return (
                                 <button
                                     key={platform}
