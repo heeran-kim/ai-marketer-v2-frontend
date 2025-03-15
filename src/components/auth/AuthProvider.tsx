@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     
     const login = async (email: string, password: string) => {
-        await fetchWithAuth(USERS_API.LOGIN, "POST", mutate, { email, password });
+        await fetchWithAuth(USERS_API.LOGIN, "POST", mutate, { credentials: {email, password} });
         router.push("/dashboard");
     };
 

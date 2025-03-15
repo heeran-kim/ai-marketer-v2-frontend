@@ -19,10 +19,17 @@ export const DASHBOARD_API = {
     GET_ALL: `${BASE_URL}/dashboard/`,
 };
 
-// Business API Endpoints
-export const BUSINESSES_API = {
-    GET_ALL: `${BASE_URL}/businesses/me/`,
-    UPDATE: (id: string) => `${BASE_URL}/businesses/${id}/`,
+// Settings API Endpoints
+export const SETTINGS_API = {
+    // General Settings
+    GET_GENERAL: `${BASE_URL}/businesses/me/`,
+    UPDATE_GENERAL: (id: string) => `${BASE_URL}/businesses/${id}/`,
+    // Retrieve linked social accounts
+    GET_SOCIAL: `${BASE_URL}/social/accounts/`,
+    // Connect a new social account
+    CONNECT_SOCIAL: (provider: string) => `${BASE_URL}/social/connect/${provider}/`,
+    // Disconnect a social account
+    DISCONNECT_SOCIAL: (provider: string) => `${BASE_URL}/social/disconnect/${provider}/`,
 };
 
 // Posts API Endpoints
