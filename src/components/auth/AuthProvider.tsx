@@ -1,7 +1,7 @@
 // src/components/AuthProvider.tsx
 "use client";
 import { createContext, useContext } from "react";
-import { useFetchData } from "@/hooks/useApi";
+import { useFetchData } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { User } from "@/app/types/index";
 import { USERS_API } from "@/constants/api";
@@ -46,10 +46,15 @@ const fetchWithAuth = async (
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const { data: user, mutate } = useFetchData<User>(USERS_API.ME);
+    
+    // Fetch user data
+    const { data: user, mutate } = useFetchData<User>(USERS_API.ME, {
+        revalidateIfStale: false, // If cached data exists, don't re-fetch when mounting
+        revalidateOnFocus: false, // Don't re-fetch when the window/tab gains focus
+    });
     
     const login = async (email: string, password: string) => {
-        await fetchWithAuth(USERS_API.LOGIN, "POST", mutate, { email, password });
+        await fetchWithAuth(USERS_API.LOGIN, "POST", mutate, { credentials: {email, password} });
         router.push("/dashboard");
     };
 
@@ -65,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, register }}>
+        <AuthContext.Provider value={{ user: user || null, login, logout, register }}>
             {children}
         </AuthContext.Provider>
     );

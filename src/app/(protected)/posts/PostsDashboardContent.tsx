@@ -1,9 +1,10 @@
+// src/app/(protected)/posts/PostsDashboardContent.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useFetchData, mutateData } from "@/hooks/useApi";
-import { SearchBar, DateRangePicker, ListCard, Select } from "@/components/common";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
+import { SearchBar, DateRangePicker, ListCard, Select, DeleteConfirmModal, SuccessModal, TopLoadingBar } from "@/components/common";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/app/types/post";
 import { DropboxItem } from "@/app/types/index";
@@ -14,18 +15,28 @@ const ITEMS_PER_PAGE = 5;
 
 export default function PostsDashboardContent() {
     const [postId, setPostId] = useState<string | null>(null);
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedPlatform, setSelectedPlatform] = useState<(typeof PLATFORM_OPTIONS)[number] | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+    
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
-    const { data, error, isLoading, mutate } = useFetchData<{ posts: Post[]}>(POSTS_API.GET_ALL);
+    const { data, error, mutate } = useFetchData<{ posts: Post[]}>(POSTS_API.GET_ALL);
 
     const posts = data?.posts || [];
     
-    const handleDelete = async (postId: string) => {
-        await mutateData(POSTS_API.DELETE(postId), "DELETE");
-        mutate();
+    const handleDelete = async () => {
+        if (!selectedItemId) return;
+        setIsLoading(true);
+        await apiClient.delete(POSTS_API.DELETE(selectedItemId));
+        await mutate();
+        setIsLoading(false);
+        setSuccessMessage("Post deleted successfully!");
+        setSelectedItemId(null);
     };
         const handleEdit = (postId: string) => {
         console.log(`Editing post: ${postId}`);
@@ -56,10 +67,6 @@ export default function PostsDashboardContent() {
         }
     }, [searchParams, postId]);
 
-    if (isLoading) {
-        return <div className="flex justify-center items-center h-64"><p className="text-gray-500">Loading...</p></div>;
-    }
-
     if (error) {
         return (
             <div className="flex flex-col justify-center items-center h-64 text-red-500">
@@ -73,6 +80,20 @@ export default function PostsDashboardContent() {
 
     return (
         <div>
+            <TopLoadingBar isLoading={isLoading} />
+            <DeleteConfirmModal
+                isOpen={!!selectedItemId}
+                itemId={selectedItemId}
+                onClose={() => setSelectedItemId(null)}
+                onConfirm={handleDelete}
+            />
+
+            <SuccessModal
+                isOpen={!!successMessage}
+                message={successMessage || ""}
+                onClose={() => setSuccessMessage(null)}
+            />
+
             <div className="flex items-center space-x-4 py-4 border-b">
                 <SearchBar setSearchTerm={setSearchTerm} placeholder="Search posts..." />
                 <DateRangePicker onChange={(range) => console.log("Selected Range:", range)} />
@@ -85,16 +106,15 @@ export default function PostsDashboardContent() {
                     const actions: DropboxItem[] = [
                         post.status === "Failed" ? { label: "Retry", onClick: () => handleRetry(post.id) } : false,
                         post.status !== "Posted" ? { label: "Edit", onClick: () => handleEdit(post.id) } : false,
-                        { label: "Delete", onClick: () => handleDelete(post.id) }
+                        { label: "Delete", onClick: () => setSelectedItemId(post.id) }
                     ].filter(Boolean) as { label: string; onClick: () => void }[];
 
                     return (
                         <ListCard
                             key={post.id}
                             ref={(el) => { postRefs.current[post.id] = el; }}
-                            item={post}
+                            item={{...post, type: "post"}}
                             actions={actions}
-                            type="post"
                         />
                     );
                 })}

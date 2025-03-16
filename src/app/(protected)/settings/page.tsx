@@ -1,16 +1,16 @@
-// src/app/(protected)/settings/general/page.tsx
+// src/app/(protected)/settings/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import Card from "@/components/common/Card";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
-import { useFetchData, mutateData } from "@/hooks/useApi";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/app/types/business";
 import { INDUSTRY_OPTIONS, DEFAULT_LOGO_PATH } from "@/constants/settings";
-import { BUSINESSES_API } from "@/constants/api";
+import { SETTINGS_API } from "@/constants/api";
 
 export default function GeneralSettings() {
-    const { data: businessData, error, isLoading, mutate } = useFetchData<Business>(BUSINESSES_API.GET_ALL);
+    const { data: businessData, error, isLoading, mutate } = useFetchData<Business>(SETTINGS_API.GET_GENERAL);
     const [editedBusiness, setEditedBusiness] = useState<Business>(EMPTY_BUSINESS);
     const [googleMapsUrl, setGoogleMapsUrl] = useState("");
     const isPredefinedCategory = INDUSTRY_OPTIONS.includes(editedBusiness?.category ?? "");
@@ -57,10 +57,10 @@ export default function GeneralSettings() {
     const handleSave = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!editedBusiness) return;
         const fieldName = e.currentTarget.id as keyof Business;
-        await mutateData(BUSINESSES_API.UPDATE("todolater"), "PUT", {
+        await apiClient.put(SETTINGS_API.UPDATE_GENERAL("todolater"), {
             [fieldName]: editedBusiness[fieldName],
         });
-        mutate(businessData, true);
+        mutate();
     };
 
     if (isLoading) {
@@ -84,7 +84,7 @@ export default function GeneralSettings() {
                 title="Google Maps Business Link"
                 description="If you want to use Google Maps data for Promoease, enter your Place ID below."
                 restriction="Copy and paste the full Google Maps business URL."
-                onSave={handleSaveGoogleMapsLink}
+                onClick={handleSaveGoogleMapsLink}
             >
                 <div className="flex items-center gap-2">
                     <input
@@ -103,7 +103,7 @@ export default function GeneralSettings() {
                 title="Business Name"
                 description="This is your business's visible name. Customers will see this name."
                 restriction="Please use 32 characters at maximum."
-                onSave={() => handleSave}
+                onClick={() => handleSave}
             >
                 <input
                     id="name"
@@ -121,7 +121,7 @@ export default function GeneralSettings() {
                 title="Business Logo"
                 description="Upload your business's logo. This will be displayed on your profile."
                 restriction="Recommended size: 500x500px. PNG or JPG format."
-                showSaveButton={false}
+                showButton={false}
             >
                 <DragAndDropUploader value={editedBusiness?.logo ?? ""} onChange={handleLogoChange} fileType="logo" />
             </Card>
@@ -132,7 +132,7 @@ export default function GeneralSettings() {
                 title="Business Category"
                 description="Select your business category. If your category is not listed or you want a more specific name, enter it manually."
                 restriction="Choose one of the options or enter manually."
-                onSave={() => handleSave}
+                onClick={() => handleSave}
             >
                 <div className="flex flex-wrap gap-2">
                     {INDUSTRY_OPTIONS.map((industry) => {
@@ -170,7 +170,7 @@ export default function GeneralSettings() {
                 title="Target Customer"
                 description="Provide information about your typical customers (Age, Gender)."
                 restriction="Please use 32 characters at maximum."
-                onSave={() => handleSave}
+                onClick={() => handleSave}
             >
                 <input
                     id="target"
@@ -187,7 +187,7 @@ export default function GeneralSettings() {
                 title="Vibe"
                 description="Describe the atmosphere of your business."
                 restriction="Please use 32 characters at maximum."
-                onSave={() => handleSave}
+                onClick={() => handleSave}
             >
                 <input
                     id="vibe"

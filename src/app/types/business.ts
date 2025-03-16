@@ -25,7 +25,7 @@ export interface Platform {
     key: string;                    // Internal key for platform (e.g., "facebook", "twitter")
     label: string;                  // Display name (ex: "Facebook", "Twitter / X")
     link: string;                   // ex: "https://facebook.com/mybusiness"
-    accountName: string;            // ex: "mybusiness" (Social media account name)
+    username: string;               // ex: "mybusiness" (Social media account name)
 }
 
 // Summary of posts for the dashboard (Key Metric for Business)

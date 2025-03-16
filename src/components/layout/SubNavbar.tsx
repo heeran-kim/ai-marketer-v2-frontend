@@ -6,21 +6,20 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { NAV_ITEMS } from "@/constants/navItems";
 import { features } from "@/constants/features";
+import { NavItem, FeatureItem, SubPage } from "@/app/types/nav";
 
-interface NavItem {
-    name: string;
-    href: string;
-    subPages?: NavItem[];
-}
+const isNavItem = (item: NavItem | FeatureItem): item is NavItem => {
+    return 'subPages' in item;
+};
 
 export default function SubNavbar() {
     const pathname = usePathname();
     const { user } = useAuth();
 
-    const isActive = (item: NavItem) => {
+    const isActive = (item: NavItem | FeatureItem) => {
         if (pathname.startsWith(item.href)) return true;
-        if (item.subPages) {
-            return item.subPages.some((sub: NavItem) => pathname.startsWith(sub.href));
+        if (isNavItem(item) && item.subPages) {
+            return item.subPages.some((sub: SubPage) => pathname.startsWith(sub.href));
         }
         return false;
     };

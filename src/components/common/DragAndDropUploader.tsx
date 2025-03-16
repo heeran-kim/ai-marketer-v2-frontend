@@ -53,7 +53,7 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
     return (
         <div
             {...getRootProps()}
-            className={`relative flex items-center justify-center cursor-pointer transition group
+            className={`relative flex items-center justify-center cursor-pointer transition group mx-auto
                 ${fileType === "logo" 
                     ? "w-24 h-24 rounded-full aspect-square border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900"
                     : fileType === "image" 
@@ -66,7 +66,7 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
             {uploadedFile || preview ? (
                 fileType === "image" || fileType === "logo" ? (
                     <div
-                        className={`relative flex items-center justify-center cursor-pointer transition group 
+                        className={`relative flex items-center justify-center cursor-pointer transition group mx-auto
                                     ${fileType === "logo" ? "w-24 h-24 rounded-full aspect-square border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900" 
                                     : "max-w-xs max-w-md bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >

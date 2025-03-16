@@ -3,6 +3,9 @@
 // Base API URL
 export const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api` || "http://localhost:8000/api";
 
+// Health Check API Endpoint (for backend status verification)
+export const HEALTH_CHECK_API = `${BASE_URL}/health/`;
+
 // Users API Endpoints
 export const USERS_API = {
     LOGIN: `${BASE_URL}/users/login/`,
@@ -16,18 +19,25 @@ export const DASHBOARD_API = {
     GET_ALL: `${BASE_URL}/dashboard/`,
 };
 
-// Business API Endpoints
-export const BUSINESSES_API = {
-    GET_ALL: `${BASE_URL}/businesses/me/`,
-    UPDATE: (id: string) => `${BASE_URL}/businesses/${id}/`,
+// Settings API Endpoints
+export const SETTINGS_API = {
+    // General Settings
+    GET_GENERAL: `${BASE_URL}/businesses/me/`,
+    UPDATE_GENERAL: (id: string) => `${BASE_URL}/businesses/${id}/`,
+    // Retrieve linked social accounts
+    GET_SOCIAL: `${BASE_URL}/social/accounts/`,
+    // Connect a new social account
+    CONNECT_SOCIAL: (provider: string) => `${BASE_URL}/social/connect/${provider}/`,
+    // Disconnect a social account
+    DISCONNECT_SOCIAL: (provider: string) => `${BASE_URL}/social/disconnect/${provider}/`,
 };
 
 // Posts API Endpoints
 export const POSTS_API = {
     GET_ALL: `${BASE_URL}/posts/`,
     CREATE: `${BASE_URL}/posts/create/`,
-    UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`,
-    DELETE: (id: string) => `${BASE_URL}/posts/${id}/`,
+    UPDATE: (id: string) => `${BASE_URL}/posts/${id}/edit/`,
+    DELETE: (id: string) => `${BASE_URL}/posts/${id}/delete/`,
 };
 
 // Promotions API Endpoints

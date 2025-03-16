@@ -13,14 +13,8 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
-        if (user) {
-            router.push("/dashboard");
-        }
+        if (user) router.push("/dashboard");
     }, [user, router]);
-
-    if (user) {
-    return <p>Loading...</p>;
-    }
 
     return (
         <div className="bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark transition-colors duration-300">
