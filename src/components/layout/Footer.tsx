@@ -5,7 +5,7 @@ import { FaTwitter, FaFacebookF, FaLinkedinIn, FaArrowUp, FaSun, FaMoon } from "
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Footer() {
-    const { user } = useAuth();
+    const { authState } = useAuth();
     const [isDark, setIsDark] = useState(false);
     const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -22,13 +22,11 @@ export default function Footer() {
         };
     }, []);
 
-    // 다크모드 토글 함수
     const toggleDarkMode = () => {
         document.documentElement.classList.toggle("dark");
         setIsDark(!isDark);
     };
 
-    // 맨 위로 가기 함수
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -36,7 +34,7 @@ export default function Footer() {
     return (
         <footer
             className={`py-12 relative transition-colors duration-300 dark:bg-neutral-900 text-black dark:text-gray-300
-                ${user ? "bg-white" : "bg-gray-50"}`}
+                ${authState.status === "authenticated" ? "bg-white" : "bg-gray-50"}`}
         >
             <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-6">
                 <div>

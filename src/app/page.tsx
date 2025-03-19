@@ -8,20 +8,34 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 
+/**
+ * Home page component
+ * 
+ * This component serves as the landing page for unauthenticated users.
+ * It automatically redirects authenticated users to their dashboard,
+ * providing a personalized experience based on authentication state.
+ */
 export default function Home() {
-    const { user } = useAuth();
+    const { authState } = useAuth();
     const router = useRouter();
 
+    // Redirect authenticated users to dashboard
     useEffect(() => {
-        if (user) router.push("/dashboard");
-    }, [user, router]);
+        if (authState.status === "authenticated") router.push("/dashboard");
+    }, [authState, router]);
 
-    return (
-        <div className="bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark transition-colors duration-300">
-            <Hero />
-            <Features />
-            <HowItWorks />
-            <CTA />
-        </div>
-    );
+    // Display landing page content for unauthenticated and initializing users
+    if (authState.status === "unauthenticated") {
+        return (
+            <div className="bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark transition-colors duration-300">
+                <Hero />
+                <Features />
+                <HowItWorks />
+                <CTA />
+            </div>
+        );
+    }
+
+    // Return empty content while redirecting authenticated users
+    return null;
 }
