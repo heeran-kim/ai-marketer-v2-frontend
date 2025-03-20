@@ -101,8 +101,6 @@ class ApiClient {
             credentials: 'include',
         };
 
-        console.log(fetchOptions);
-
         // Use circuit breaker to wrap the fetch call
         return backendCircuitBreaker.execute<T>(async () => {
         try {

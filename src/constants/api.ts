@@ -23,7 +23,7 @@ export const DASHBOARD_API = {
 export const SETTINGS_API = {
     // General Settings
     GET_GENERAL: `${BASE_URL}/businesses/me/`,
-    UPDATE_GENERAL: (id: string) => `${BASE_URL}/businesses/${id}/`,
+    UPDATE_GENERAL: (id: string) => `${BASE_URL}/businesses/${id}/update/`,
     // Retrieve linked social accounts
     GET_SOCIAL: `${BASE_URL}/social/accounts/`,
     // Connect a new social account
