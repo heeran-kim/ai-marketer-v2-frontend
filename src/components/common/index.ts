@@ -10,7 +10,9 @@ export { default as SearchBar } from "./SearchBar";
 export { default as Select } from "./Select";
 
 export { default as LoadingModal } from "./LoadingModal";
-export { default as SuccessModal } from "./SuccessModal";
+export { default as NotificationModal } from "./NotificationModal";
 export { default as ConfirmModal } from "./ConfirmModal";
 export { default as DeleteConfirmModal } from "./DeleteConfirmModal";
 export { default as TopLoadingBar } from "./TopLoadingBar";
+
+export { default as DragAndDropUploader } from "./DragAndDropUploader";

@@ -2,13 +2,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Card from "@/components/common/Card";
-import DragAndDropUploader from "@/components/common/DragAndDropUploader";
+import { Card, NotificationModal, DragAndDropUploader } from "@/components/common";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/app/types/business";
 import { INDUSTRY_OPTIONS, DEFAULT_LOGO_PATH } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
-import { SuccessModal } from "@/components/common";
 
 export default function GeneralSettings() {
     const { data: businessData, error, mutate } = useFetchData<Business>(SETTINGS_API.GET_GENERAL);
@@ -91,9 +89,10 @@ export default function GeneralSettings() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
-            <SuccessModal
+            <NotificationModal
                 isOpen={!!successMessage}
                 message={successMessage || ""}
+                type="success"
                 onClose={() => setSuccessMessage(null)}
             />
             

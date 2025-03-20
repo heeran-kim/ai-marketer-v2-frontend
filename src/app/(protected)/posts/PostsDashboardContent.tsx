@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { SearchBar, DateRangePicker, ListCard, Select, DeleteConfirmModal, SuccessModal, TopLoadingBar } from "@/components/common";
+import { SearchBar, DateRangePicker, ListCard, Select, DeleteConfirmModal, NotificationModal, TopLoadingBar } from "@/components/common";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/app/types/post";
 import { DropboxItem } from "@/app/types/index";
@@ -88,9 +88,10 @@ export default function PostsDashboardContent() {
                 onConfirm={handleDelete}
             />
 
-            <SuccessModal
+            <NotificationModal
                 isOpen={!!successMessage}
                 message={successMessage || ""}
+                type="success"
                 onClose={() => setSuccessMessage(null)}
             />
 
