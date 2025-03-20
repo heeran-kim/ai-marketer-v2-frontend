@@ -81,43 +81,46 @@ export default function GeneralSettings() {
 
     // Handle logo changes
     const handleLogoChange = async (file: File | null) => {
+        if (!editedBusiness) return;
+
         // Clear any existing logo errors
         const newFieldErrors = { ...fieldErrors };
         delete newFieldErrors.logo;
         setFieldErrors(newFieldErrors);
+
+        // If no file or file removed, update the UI with default logo
+        if (!file) setEditedBusiness((prev) => ({ ...prev!, logo: DEFAULT_LOGO_PATH }));
         
         // If a file is selected, validate and save it immediately
         if (file) {
-            // Validate file
+            // Validate the file before saving
             const errorMsg = validateLogoFile(file);
             if (errorMsg) {
                 setFieldErrors(prev => ({ ...prev, logo: errorMsg }));
                 return;
             }
             
+            // 
+            const tempLogoUrl = URL.createObjectURL(file);
+            setEditedBusiness((prev) => ({ ...prev!, logo: tempLogoUrl }));
+
             // Set logo as saving
             setSavingFields(prev => ({ ...prev, logo: true }));
             
             try {
                 const formData = new FormData();
                 formData.append('logo', file);
-                await apiClient.put(SETTINGS_API.GENERAL, formData, {}, true);
-                
-                // Update the UI with the new logo URL
-                const logoUrl = URL.createObjectURL(file);
-                setEditedBusiness((prev) => ({ ...prev!, logo: logoUrl }));
-                
+                await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
                 await mutate(); // Refresh data
                 showNotification("success", "Logo updated successfully!");
             } catch (error) {
                 console.error("Error updating logo:", error);
+                setEditedBusiness((prev) => ({ ...prev!, logo: businessData?.logo || DEFAULT_LOGO_PATH }));
                 showNotification("error", "Failed to update logo. Please try again.");
             } finally {
                 setSavingFields(prev => ({ ...prev, logo: false }));
+                if (tempLogoUrl.startsWith('blob:')) URL.revokeObjectURL(tempLogoUrl);
             }
-        } else {
-            // If no file or file removed, update the UI with default logo
-            setEditedBusiness((prev) => ({ ...prev!, logo: DEFAULT_LOGO_PATH }));
         }
     };
 
@@ -170,10 +173,7 @@ export default function GeneralSettings() {
         setSavingFields(prev => ({ ...prev, [fieldName]: true }));
         
         try {
-            await apiClient.put(SETTINGS_API.GENERAL, {
-                [fieldName]: value,
-            });
-            await mutate(); // Refresh data
+            await apiClient.patch(SETTINGS_API.GENERAL, {[fieldName]: value});
             showNotification("success", `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated successfully!`);
         } catch (error) {
             console.error(`Error updating ${fieldName}:`, error);
@@ -245,7 +245,7 @@ export default function GeneralSettings() {
                 id="logo"
                 title="Business Logo"
                 description="Upload your business's logo. This will be displayed on your profile."
-                restriction="Recommended size: 500x500px. PNG or JPG format. Upload to save automatically."
+                restriction="Maximum size: 2MB. Allowed formats: JPG, PNG, or GIF. Upload to save automatically."
                 showButton={false}
             >
                 <div className="space-y-1">

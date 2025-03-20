@@ -89,6 +89,22 @@ class ApiClient {
         });
     }
 
+    async patch<T>(
+        url: string, 
+        data: Record<string, unknown> | FormData, 
+        options: FetchOptions = {},
+        isFormData = false
+    ): Promise<T> {
+        return this.request<T>(url, {
+            method: 'PATCH',
+            headers: isFormData ? {} : { "Content-Type": "application/json" },
+            body: isFormData 
+                ? data as FormData 
+                : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
+            ...options
+        });
+    }
+
     async delete<T>(url: string, options: FetchOptions = {}): Promise<T> {
         return this.request<T>(url, {
         method: 'DELETE',
