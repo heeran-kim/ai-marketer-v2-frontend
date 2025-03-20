@@ -2,18 +2,44 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, NotificationModal, DragAndDropUploader } from "@/components/common";
+import { Card, NotificationModal, NotificationType, DragAndDropUploader } from "@/components/common";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/app/types/business";
 import { INDUSTRY_OPTIONS, DEFAULT_LOGO_PATH } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
 
 export default function GeneralSettings() {
-    const { data: businessData, error, mutate } = useFetchData<Business>(SETTINGS_API.GET_GENERAL);
+    const { data: businessData, error, isLoading, mutate } = useFetchData<Business>(SETTINGS_API.GENERAL);
     const [editedBusiness, setEditedBusiness] = useState<Business>(EMPTY_BUSINESS);
     const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [notification, setNotification] = useState<{
+        type: NotificationType;
+        message: string;
+        isOpen: boolean;
+    }>({
+        type: "info",
+        message: "",
+        isOpen: false
+    });
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const isPredefinedCategory = INDUSTRY_OPTIONS.includes(editedBusiness?.category ?? "");
+
+    // Show notification helper function
+    const showNotification = (type: NotificationType, message: string) => {
+        setNotification({
+            type,
+            message,
+            isOpen: true
+        });
+    };
+    
+    // Close notification helper function
+    const closeNotification = () => {
+        setNotification(prev => ({
+            ...prev,
+            isOpen: false
+        }));
+    };
 
     // Initialize `editedBusiness` with `businessData` when it loads
     useEffect(() => {
@@ -25,26 +51,69 @@ export default function GeneralSettings() {
     // Handle input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const fieldName = e.currentTarget.id as keyof Business;
-        setEditedBusiness((prev) => ({ ...prev!, [fieldName]: e.target.value }));
+        const value = e.target.value;
+        
+        setEditedBusiness((prev) => ({ ...prev!, [fieldName]: value }));
+        
+        // Clear error when user starts typing
+        if (fieldErrors[fieldName]) {
+            const newFieldErrors = { ...fieldErrors };
+            delete newFieldErrors[fieldName];
+            setFieldErrors(newFieldErrors);
+        }
+    };
+
+    // Validate logo file
+    const validateLogoFile = (file: File): string | null => {
+        // Check file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            return "Logo file size should be less than 2MB";
+        }
+        
+        // Check file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            return "Logo must be a JPG, PNG, or GIF file";
+        }
+        
+        return null;
     };
 
     // Handle logo changes
     const handleLogoChange = async (file: File | null) => {
-        // If a file is selected, save it immediately
+        // Clear any existing logo errors
+        const newFieldErrors = { ...fieldErrors };
+        delete newFieldErrors.logo;
+        setFieldErrors(newFieldErrors);
+        
+        // If a file is selected, validate and save it immediately
         if (file) {
+            // Validate file
+            const errorMsg = validateLogoFile(file);
+            if (errorMsg) {
+                setFieldErrors(prev => ({ ...prev, logo: errorMsg }));
+                return;
+            }
+            
+            // Set logo as saving
+            setSavingFields(prev => ({ ...prev, logo: true }));
+            
             try {
                 const formData = new FormData();
                 formData.append('logo', file);
-                await apiClient.put(SETTINGS_API.UPDATE_GENERAL("me"), formData, {}, true);
-
+                await apiClient.put(SETTINGS_API.GENERAL, formData, {}, true);
+                
                 // Update the UI with the new logo URL
                 const logoUrl = URL.createObjectURL(file);
                 setEditedBusiness((prev) => ({ ...prev!, logo: logoUrl }));
-
+                
                 await mutate(); // Refresh data
-                setSuccessMessage("Logo updated successfully!");
+                showNotification("success", "Logo updated successfully!");
             } catch (error) {
                 console.error("Error updating logo:", error);
+                showNotification("error", "Failed to update logo. Please try again.");
+            } finally {
+                setSavingFields(prev => ({ ...prev, logo: false }));
             }
         } else {
             // If no file or file removed, update the UI with default logo
@@ -57,24 +126,71 @@ export default function GeneralSettings() {
         setEditedBusiness((prev) => ({ ...prev!, category }));
     };
 
+    // Validate a specific field
+    const validateField = (fieldName: keyof Business, value: string): string | null => {
+        // Clear previous error for this field
+        const newFieldErrors = { ...fieldErrors };
+        delete newFieldErrors[fieldName];
+        
+        switch (fieldName) {
+            case 'name':
+                if (!value.trim()) {
+                    return "Business name is required";
+                }
+                if (value.trim().length < 3) {
+                    return "Business name must be at least 3 characters";
+                }
+                break;
+            case 'category':
+                if (!value.trim() && !isPredefinedCategory) {
+                    return "Please select or enter a category";
+                }
+                break;
+        }
+        
+        setFieldErrors(newFieldErrors);
+        return null;
+    };
+
     // Save data to the backend
     const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
         if (!editedBusiness) return;
 
         const fieldName = e.currentTarget.id as keyof Business;
+        const value = editedBusiness[fieldName] as string;
+        
+        // Validate the field before saving
+        const errorMessage = validateField(fieldName, value);
+        if (errorMessage) {
+            setFieldErrors(prev => ({ ...prev, [fieldName]: errorMessage }));
+            return;
+        }
+        
+        // Set this specific field as saving
         setSavingFields(prev => ({ ...prev, [fieldName]: true }));
+        
         try {
-            await apiClient.put(SETTINGS_API.UPDATE_GENERAL("me"), {
-                [fieldName]: editedBusiness[fieldName],
+            await apiClient.put(SETTINGS_API.GENERAL, {
+                [fieldName]: value,
             });
             await mutate(); // Refresh data
-            setSuccessMessage(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated successfully!`);
+            showNotification("success", `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated successfully!`);
         } catch (error) {
             console.error(`Error updating ${fieldName}:`, error);
+            showNotification("error", `Failed to update ${fieldName}. Please try again.`);
         } finally {
+            // Clear saving state for this field
             setSavingFields(prev => ({ ...prev, [fieldName]: false }));
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
+    }
 
     if (error) {
         return (
@@ -90,10 +206,10 @@ export default function GeneralSettings() {
     return (
         <div className="max-w-3xl mx-auto space-y-6">
             <NotificationModal
-                isOpen={!!successMessage}
-                message={successMessage || ""}
-                type="success"
-                onClose={() => setSuccessMessage(null)}
+                isOpen={notification.isOpen}
+                type={notification.type}
+                message={notification.message}
+                onClose={closeNotification}
             />
             
             {/* Business Name */}
@@ -106,15 +222,22 @@ export default function GeneralSettings() {
                 buttonDisabled={savingFields["name"]}
                 buttonLoading={savingFields["name"]}
             >
-                <input
-                    id="name"
-                    type="text"
-                    className="w-1/2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
-                    placeholder="Enter your business name"
-                    value={editedBusiness?.name ?? ""}
-                    onChange={handleInputChange}
-                    maxLength={32}
-                />
+                <div className="space-y-1">
+                    <input
+                        id="name"
+                        type="text"
+                        className={`w-1/2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+                            fieldErrors.name ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        placeholder="Enter your business name"
+                        value={editedBusiness?.name ?? ""}
+                        onChange={handleInputChange}
+                        maxLength={32}
+                    />
+                    {fieldErrors.name && (
+                        <p className="text-red-500 text-xs">{fieldErrors.name}</p>
+                    )}
+                </div>
             </Card>
 
             {/* Business Logo */}
@@ -125,11 +248,16 @@ export default function GeneralSettings() {
                 restriction="Recommended size: 500x500px. PNG or JPG format. Upload to save automatically."
                 showButton={false}
             >
-                <DragAndDropUploader
-                    value={editedBusiness?.logo ?? ""}
-                    onChange={handleLogoChange}
-                    fileType="logo"
-                />
+                <div className="space-y-1">
+                    <DragAndDropUploader
+                        value={editedBusiness?.logo ?? ""}
+                        onChange={handleLogoChange}
+                        fileType="logo"
+                    />
+                    {fieldErrors.logo && (
+                        <p className="text-red-500 text-xs mt-1">{fieldErrors.logo}</p>
+                    )}
+                </div>
             </Card>
 
             {/* Business Category Selection */}
@@ -163,14 +291,21 @@ export default function GeneralSettings() {
                     })}
                 </div>
 
-                <input
-                    id="category"
-                    type="text"
-                    className="w-1/2 mt-2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
-                    placeholder="Enter a more specific type"
-                    value={isPredefinedCategory ? "" : editedBusiness?.category}
-                    onChange={handleInputChange}
-                />
+                <div className="space-y-1 mt-2">
+                    <input
+                        id="category"
+                        type="text"
+                        className={`w-1/2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+                            fieldErrors.category ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        placeholder="Enter a more specific type"
+                        value={isPredefinedCategory ? "" : editedBusiness?.category}
+                        onChange={handleInputChange}
+                    />
+                    {fieldErrors.category && (
+                        <p className="text-red-500 text-xs">{fieldErrors.category}</p>
+                    )}
+                </div>
             </Card>
 
             <Card
@@ -182,15 +317,22 @@ export default function GeneralSettings() {
                 buttonDisabled={savingFields["targetCustomers"]}
                 buttonLoading={savingFields["targetCustomers"]}
             >
-                <input
-                    id="targetCustomers"
-                    type="text"
-                    className="w-1/2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
-                    placeholder="e.g. 18-35 years old, mostly female"
-                    value={editedBusiness?.targetCustomers ?? ""}
-                    onChange={handleInputChange}
-                    maxLength={32}
-                />
+                <div className="space-y-1">
+                    <input
+                        id="targetCustomers"
+                        type="text"
+                        className={`w-1/2 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+                            fieldErrors.targetCustomers ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        placeholder="e.g. 18-35 years old, mostly female"
+                        value={editedBusiness?.targetCustomers ?? ""}
+                        onChange={handleInputChange}
+                        maxLength={32}
+                    />
+                    {fieldErrors.targetCustomers && (
+                        <p className="text-red-500 text-xs">{fieldErrors.targetCustomers}</p>
+                    )}
+                </div>
             </Card>
 
             <Card
@@ -202,15 +344,22 @@ export default function GeneralSettings() {
                 buttonDisabled={savingFields["vibe"]}
                 buttonLoading={savingFields["vibe"]}
             >
-                <input
-                    id="vibe"
-                    type="text"
-                    className="w-3/4 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
-                    placeholder="e.g. Cozy and family-friendly"
-                    value={editedBusiness?.vibe ?? ""}
-                    onChange={handleInputChange}
-                    maxLength={32}
-                />
+                <div className="space-y-1">
+                    <input
+                        id="vibe"
+                        type="text"
+                        className={`w-3/4 text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+                            fieldErrors.vibe ? 'border-red-500 bg-red-50' : ''
+                        }`}
+                        placeholder="e.g. Cozy and family-friendly"
+                        value={editedBusiness?.vibe ?? ""}
+                        onChange={handleInputChange}
+                        maxLength={32}
+                    />
+                    {fieldErrors.vibe && (
+                        <p className="text-red-500 text-xs">{fieldErrors.vibe}</p>
+                    )}
+                </div>
             </Card>
         </div>
     );

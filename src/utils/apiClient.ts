@@ -66,7 +66,6 @@ class ApiClient {
         return this.request<T>(url, {
             method: 'POST',
             headers: isFormData ? {} : { "Content-Type": "application/json" },
-            credentials: "include",
             body: isFormData 
                 ? data as FormData 
                 : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
@@ -74,10 +73,18 @@ class ApiClient {
         });
     }
     
-    async put<T>(url: string, data: Record<string, unknown>, options: FetchOptions = {}): Promise<T> {
+    async put<T>(
+        url: string, 
+        data: Record<string, unknown> | FormData, 
+        options: FetchOptions = {},
+        isFormData = false
+    ): Promise<T> {
         return this.request<T>(url, {
             method: 'PUT',
-            body: JSON.stringify(toSnakeCase(data)),
+            headers: isFormData ? {} : { "Content-Type": "application/json" },
+            body: isFormData 
+                ? data as FormData 
+                : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
             ...options
         });
     }
