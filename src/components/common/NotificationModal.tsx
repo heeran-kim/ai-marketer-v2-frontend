@@ -67,7 +67,7 @@ export default function NotificationModal({
             leaveTo="opacity-0"
         >
             <Dialog open={isOpen} onClose={onClose} className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
-                <div className={`${bg} text-white px-6 py-3 w-[300px] text-center text-sm font-medium tracking-wide shadow-md rounded-md flex items-center justify-center space-x-2`}>
+                <div className={`${bg} text-white px-6 py-3 w-[400px] text-center text-sm font-medium tracking-wide shadow-md rounded-md flex items-center justify-center space-x-2`}>
                     {icon}
                     <span>{message}</span>
                 </div>

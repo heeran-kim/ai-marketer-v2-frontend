@@ -18,7 +18,7 @@ export interface HeaderProps {
 export interface SubPage {
     name?: string;
     href: string;
-    header: HeaderProps;
+    header?: HeaderProps;
 }
 
 export interface NavItem {

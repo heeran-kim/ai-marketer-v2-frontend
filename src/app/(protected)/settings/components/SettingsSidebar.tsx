@@ -27,7 +27,7 @@ export default function SettingsSidebar() {
     }, [searchTerm, menuItems]);
 
     return (
-        <div className="sticky top-32 w-64 self-start p-4 overflow-y-auto h-full text-sm">
+        <div className="px-4 text-sm">
             {/* Search Bar */}
             <SearchBar setSearchTerm={setSearchTerm} placeholder="Search settings..." />
 

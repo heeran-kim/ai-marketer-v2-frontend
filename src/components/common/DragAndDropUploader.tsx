@@ -1,3 +1,4 @@
+// src/components/common/DragAndDropUploader.tsx
 "use client";
 
 import { useCallback, useState, useEffect } from "react";
@@ -7,7 +8,7 @@ import Image from "next/image";
 
 interface DragAndDropUploaderProps {
     value?: string;
-    onChange?: (file: File | null) => void;
+    onChange?: (file: File | null, previewUrl: string | null) => void;
     fileType?: "logo" | "image" | "data";
 }
 
@@ -22,12 +23,13 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
         if (file) {
+            let fileURL = null;
             if (fileType === "image" || fileType === "logo") {
-                const fileURL = URL.createObjectURL(file);
+                fileURL = URL.createObjectURL(file);
                 setPreview(fileURL);
             }
             setUploadedFile(file);
-            if (onChange) onChange(file);
+            if (onChange) onChange(file, fileURL);
         }
     }, [onChange, fileType]);
 
@@ -35,7 +37,7 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
         event.stopPropagation();
         setPreview("");
         setUploadedFile(null);
-        if (onChange) onChange(null);
+        if (onChange) onChange(null, null);
     };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

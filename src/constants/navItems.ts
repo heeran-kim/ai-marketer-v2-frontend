@@ -78,55 +78,28 @@ export const NAV_ITEMS: NavItem[] = [
         ],
     },
     {
-        name: "Analytics",
-        href: "/analytics",
-        header: {
-            title: "Analytics",
-            description: "Analyze your performance with detailed insights and reports.",
-        }
-    },
-    {
         name: "Settings",
         href: "/settings",
         header: {
-            title: "General Information",
-            description: "Manage your general business information.",
+            title: "Settings",
+            description: "",
         },
         subPages: [
             {
                 name: "General",
-                href: "/settings",
-                header: {
-                    title: "General Information", description: "Manage your general business information."
-                },
+                href: "/settings/general",
             },
             {
                 name: "Upload Sales Data",
                 href: "/settings/sales",
-                header: {
-                    title: "Upload Sales Data", description: "Upload and track your sales performance."
-                },
-            },
-            { 
-                name: "Billing",
-                href: "/settings/billing",
-                header: {
-                    title: "Billing & Payments", description: "Manage your billing details and payment methods."
-                },
             },
             { 
                 name: "Link Social Accounts",
                 href: "/settings/social",
-                header: {
-                    title: "Social Media", description: "Connect and manage your social media accounts."
-                },
             },
             { 
                 name: "Account Settings",
                 href: "/settings/account",
-                header: {
-                    title: "Account Settings", description: "Update your login credentials and personal details."
-                },
             }
         ],
     },

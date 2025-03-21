@@ -39,7 +39,7 @@ export default function Card({
             </div>
 
             {(restriction || showButton)  && (
-                <div className="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex items-center justify-between rounded-b-lg min-h-[48px]">
+                <div className="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex items-center justify-between rounded-b-lg min-h-[48px] gap-3">
                     <p className="text-xs text-gray-500 dark:text-gray-400">{restriction}</p>
                     {showButton ? (
                         <button

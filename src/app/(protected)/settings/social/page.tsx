@@ -78,15 +78,16 @@ export default function SocialMediaSettings() {
                         onClick={() => linkedPlatform ? handleDisconnect(key) : handleConnect(key)}
                         buttonDisabled={isProcessing}
                     >
-                        <div className="w-1/2 flex items-center border rounded-md overflow-hidden">
+                        <div className="max-w-xs w-full flex items-center border rounded-md overflow-hidden">
                             <span className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-200">
                                 {getPlatformIcon(key, "w-5 h-5")}
                                 {`${key}.com/`}
                             </span>
                             <div
-                                className={`flex-1 text-sm p-2 border-l ${
+                                className={`flex-1 text-sm p-2 border-l truncate ${
                                     linkedPlatform ? "" : "bg-gray-50 text-gray-400 italic"
                                 }`}
+                                title={accountName}
                             >
                                 {accountName}
                             </div>

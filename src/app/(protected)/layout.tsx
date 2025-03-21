@@ -41,12 +41,12 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     else if (currentNav.subPages?.length) {
         // Check if current path matches a subpage and update header accordingly
         const subPage = currentNav.subPages.find((sub) => pathname === sub.href);
-        if (subPage) currentNav.header = subPage.header;
+        if (subPage?.header) currentNav.header = subPage.header;
     }
 
     // Render the protected content with appropriate header
     return (
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-6xl mx-auto md:p-6">
             {currentNav?.header && <Header {...currentNav.header} />}
             {children}
         </div>
