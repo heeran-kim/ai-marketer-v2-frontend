@@ -40,17 +40,17 @@ const EmailPage: React.FC = () => {
             return;
         }
 
-        try {
+        // try {
             await login(formData.email, formData.password);
-        } catch (error:any){
-            if(typeof(error.message)==="string"){
-                setErrors({"message": error.message});
-            }
-            else
-            {
-                setErrors({"message": "Invalid Credentials!"})
-            }
-        }
+        // } catch (error:any){
+        //     if(typeof(error.message)==="string"){
+        //         setErrors({"message": error.message});
+        //     }
+        //     else
+        //     {
+        //         setErrors({"message": "Invalid Credentials!"})
+        //     }
+        // }
 
     };
 

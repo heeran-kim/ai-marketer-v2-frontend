@@ -31,7 +31,7 @@ export default function DashboardCard({ dashboardData }: DashboardCardProps) {
 
             <div className="flex items-center space-x-4">
                 <Image 
-                    src={dashboardData.business.logo} 
+                    src={dashboardData.business.logo || ""} 
                     alt={`${dashboardData.business.name} Logo`} 
                     width={60} 
                     height={60} 

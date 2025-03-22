@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import ProductsDropdown from "@/components/navigation/ProductsDropdown";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { flexRowClass, dropdownNavItemClass, defaultNavItemClass } from "@/components/styles";
+import { flexRowClass, dropdownNavItemClass } from "@/components/styles";
 
 export default function NavLinks() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -36,11 +35,6 @@ export default function NavLinks() {
                     </div>
                 )}
             </div>
-
-            {/* ✅ Other Navigation Links */}
-            <Link href="/docs" className={defaultNavItemClass}>Docs</Link>
-            <Link href="/pricing" className={defaultNavItemClass}>Pricing</Link>
-            <Link href="/contact" className={defaultNavItemClass}>Contact</Link>
         </div>
     );
 }
