@@ -32,11 +32,10 @@ export default function AuthButtons() {
         );
     }
     
-    // For unauthenticated users, show Login link and Register button
+    // For unauthenticated users, show Get Started button
     return (
         <div className={flexRowClass}>
-            <Link href="/login" className={authNavItemClass}>Login</Link>
-            <Link href="/register" className={primaryNavItemClass}>Get Started</Link>
+            <Link href="/login" className={primaryNavItemClass}>Get Started</Link>
         </div>
     );
 }
