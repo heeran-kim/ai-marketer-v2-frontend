@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function CTA() {
     return (
         <section className="py-24 bg-gradient-to-r from-purple-400 to-indigo-500 dark:from-purple-700 dark:to-indigo-900 text-white text-center">
-            <h2 className="text-5xl font-extrabold">Get Started with Promoease</h2>
+            <h2 className="text-5xl font-extrabold">Get Started with AKA AI Marketer</h2>
             <p className="mt-6 text-xl text-gray-200">Automate your social media with AI-powered promotions.</p>
             <div className="mt-10">
                 <Link href="/register"

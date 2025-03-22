@@ -1,10 +1,17 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Logo() {
     return (
-        <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-            Promoease
+        <Link href="/" className="flex items-center">
+            <Image 
+                src="/aka.png" 
+                alt="AI Marketer Logo"
+                width={80}
+                height={80}
+                className="mr-2"
+            />
         </Link>
     );
 }

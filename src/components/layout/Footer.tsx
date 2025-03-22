@@ -38,7 +38,7 @@ export default function Footer() {
         >
             <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-6">
                 <div>
-                    <h3 className="text-lg font-semibold">Promoease</h3>
+                    <h3 className="text-lg font-semibold">AKA Studio</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                         AI-powered marketing automation platform.
                     </p>
@@ -86,7 +86,7 @@ export default function Footer() {
             )}
 
             <div className="text-center text-sm mt-10">
-                © 2025 Promoease. All rights reserved.
+                © 2025 AKA Studio. All rights reserved.
             </div>
         </footer>
     );
