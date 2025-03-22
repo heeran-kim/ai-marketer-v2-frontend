@@ -42,8 +42,14 @@ const EmailPage: React.FC = () => {
 
         try {
             await login(formData.email, formData.password);
-        } catch {
-            setErrors({"message": "Invalid credentials"});
+        } catch (error:any){
+            if(typeof(error.message)==="string"){
+                setErrors({"message": error.message});
+            }
+            else
+            {
+                setErrors({"message": "Invalid Credentials!"})
+            }
         }
 
     };
