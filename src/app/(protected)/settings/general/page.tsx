@@ -97,7 +97,7 @@ export default function GeneralSettings() {
                 const formData = new FormData();
                 formData.append('logo_removed', 'true'); 
                 await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
-                await mutate(); // Refresh data
+                if (businessData) mutate({ ...businessData, logo: null }, false);
                 showNotification("success", "Logo deleted successfully!");
             } catch (error) {
                 console.error("Error deleting logo:", error);
@@ -124,7 +124,7 @@ export default function GeneralSettings() {
                 const formData = new FormData();
                 formData.append('logo', file);
                 await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
-                await mutate(); // Refresh data
+                if (businessData) mutate({ ...businessData, logo: previewUrl }, false);
                 showNotification("success", "Logo updated successfully!");
             } catch (error) {
                 console.error("Error updating logo:", error);

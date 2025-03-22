@@ -20,6 +20,14 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
         setPreview(value || "");
     }, [value]);
 
+    useEffect(() => {
+        return () => {
+            if (preview && preview.startsWith('blob:')) {
+                URL.revokeObjectURL(preview);
+            }
+        };
+    }, [preview]);
+
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
         if (file) {
@@ -49,7 +57,10 @@ export default function DragAndDropUploader({ value, onChange, fileType = "image
                 "application/json": [".json"],
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
             },
-        maxFiles: 1,
+        maxFiles: 1,                    // Limits selection to a single file
+        multiple: false,                // Sets the HTML input's multiple attribute to false
+        preventDropOnDocument: true,    // Prevents browser from opening files when dropped outside dropzone
+        noDragEventsBubbling: true      // Prevents drag events from bubbling up to parent elements
     });
 
     return (

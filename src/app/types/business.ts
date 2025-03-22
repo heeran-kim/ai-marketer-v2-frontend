@@ -3,7 +3,7 @@
 // Represents a business or brand
 export interface Business {
     name: string;                   // Business name
-    logo: string;                   // URL of the business logo (backend assigns a default if empty)
+    logo: string | null;            // URL of the business logo
     category?: string;              // Business category (ex: "restaurant", "cafe")
     targetCustomers?: string;       // Target customer (ex: "young professionals", "students")
     vibe?: string;                  // Business branding or mood (ex: "luxury", "casual")
