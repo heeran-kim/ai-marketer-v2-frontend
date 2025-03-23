@@ -5,6 +5,7 @@ import { useFetchData } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { User } from "@/app/types/index";
 import { USERS_API } from "@/constants/api";
+import { mutate as globalMutate } from "swr";
 
 // Define specific auth states with type safety using a discriminated union
 // This ensures proper type checking based on the 'status' property
@@ -108,7 +109,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
      */
     const logout = async () => {
         await fetchWithAuth(USERS_API.LOGOUT, "POST");
-        await mutate(null, false); // Update cache to null without revalidation
+        setAuthState({ status: "unauthenticated" });
+        // Clear all SWR caches on logout
+        globalMutate(
+            () => true,
+            undefined,
+            { revalidate: false }
+        );
         router.push("/login");
     };
 
