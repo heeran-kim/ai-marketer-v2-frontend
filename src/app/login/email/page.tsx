@@ -6,14 +6,16 @@
  */
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from '@/components/auth/AuthProvider';
 import { primaryNavItemClass } from "@/components/styles";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function EmailLoginPage() {
-    const { login } = useAuth();
+    const { login, authState } = useAuth();
+    const router = useRouter();
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -21,6 +23,19 @@ export default function EmailLoginPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        if (authState.status === "authenticated") router.push("/dashboard");
+    }, [authState, router]);
+
+    // Show loading UI
+    if (authState.status !== "unauthenticated") {
+        return (
+            <div className="flex flex-col justify-center items-center h-64">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
+    }
+    
     // Handle form input changes
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

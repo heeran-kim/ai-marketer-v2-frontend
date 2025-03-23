@@ -99,8 +99,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             method: "traditional",
             credentials: {email, password}
         });
-        await mutate(); // Refetch user data after login
-        router.push("/dashboard");
+        const userData = await mutate(); // Refetch user data after login
+        if (userData) router.push("/dashboard");
     };
 
     /**
