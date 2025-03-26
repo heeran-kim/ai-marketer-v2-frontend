@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import { useFetchData } from "@/hooks/dataHooks";
 import {
   SearchBar,
-  DateRangePicker,
   ListCard,
   Select,
   NotificationModal,
@@ -139,9 +138,6 @@ export default function PostsDashboardContent() {
         <SearchBar
           setSearchTerm={setSearchTerm}
           placeholder="Search posts..."
-        />
-        <DateRangePicker
-          onChange={(range) => console.log("Selected Range:", range)}
         />
         <Select
           value={selectedPlatform}
