@@ -12,8 +12,8 @@ export { default as Select } from "./Select";
 export { default as LoadingModal } from "./LoadingModal";
 export { default as NotificationModal } from "./NotificationModal";
 export type { NotificationType } from "./NotificationModal";
-export { default as ConfirmModal } from "./ConfirmModal";
-export { default as DeleteConfirmModal } from "./DeleteConfirmModal";
+export { ConfirmModal } from "./ConfirmModal";
+export type { ConfirmType } from "./ConfirmModal";
 export { default as TopLoadingBar } from "./TopLoadingBar";
 
 export { default as DragAndDropUploader } from "./DragAndDropUploader";

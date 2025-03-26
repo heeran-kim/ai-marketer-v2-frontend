@@ -3,16 +3,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useFetchData, apiClient } from "@/hooks/dataHooks";
+import { useFetchData } from "@/hooks/dataHooks";
 import {
   SearchBar,
   DateRangePicker,
   ListCard,
   Select,
-  DeleteConfirmModal,
   NotificationModal,
-  TopLoadingBar,
+  NotificationType,
 } from "@/components/common";
+import { DeletePostHandler } from "@/components/post/DeletePostHandler";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/app/types/post";
 import { DropboxItem } from "@/app/types/index";
@@ -23,9 +23,9 @@ const ITEMS_PER_PAGE = 5;
 
 export default function PostsDashboardContent() {
   const [postId, setPostId] = useState<string | null>(null);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<string | undefined>(
+    undefined
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState<
@@ -35,30 +35,20 @@ export default function PostsDashboardContent() {
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
+  const [notification, setNotification] = useState<{
+    type: NotificationType;
+    message: string;
+    isOpen: boolean;
+  }>({
+    type: "info",
+    message: "",
+    isOpen: false,
+  });
+
   const { data, error, mutate } = useFetchData<{ posts: Post[] }>(
     POSTS_API.GET_ALL
   );
-
   const posts = data?.posts || [];
-
-  const handleDelete = async () => {
-    if (!selectedItemId) return;
-    setIsLoading(true);
-    await apiClient.delete(POSTS_API.DELETE(selectedItemId));
-    await mutate();
-    setIsLoading(false);
-    setSuccessMessage("Post deleted successfully!");
-    setSelectedItemId(null);
-  };
-  const handleEdit = (postId: string) => {
-    console.log(`Editing post: ${postId}`);
-    // TODO: Implement edit logic
-  };
-
-  const handleRetry = (postId: string) => {
-    console.log(`Retrying post: ${postId}`);
-    // TODO: Implement retry logic
-  };
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
 
@@ -95,21 +85,54 @@ export default function PostsDashboardContent() {
     );
   }
 
+  // Show notification helper function
+  const showNotification = (type: NotificationType, message: string) => {
+    setNotification({
+      type,
+      message,
+      isOpen: true,
+    });
+  };
+
+  // Close notification helper function
+  const closeNotification = () => {
+    setNotification((prev) => ({
+      ...prev,
+      isOpen: false,
+    }));
+  };
+
+  // Replace your old delete functionality with:
+  const handleOpenDeleteModal = (postId: string) => {
+    setSelectedPostId(postId);
+  };
+
+  const handleEdit = (postId: string) => {
+    console.log(`Editing post: ${postId}`);
+    // TODO: Implement edit logic
+  };
+
+  const handleRetry = (postId: string) => {
+    console.log(`Retrying post: ${postId}`);
+    // TODO: Implement retry logic
+  };
+
   return (
     <div>
-      <TopLoadingBar isLoading={isLoading} />
-      <DeleteConfirmModal
-        isOpen={!!selectedItemId}
-        itemId={selectedItemId}
-        onClose={() => setSelectedItemId(null)}
-        onConfirm={handleDelete}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        message={notification.message}
+        onClose={closeNotification}
       />
 
-      <NotificationModal
-        isOpen={!!successMessage}
-        message={successMessage || ""}
-        type="success"
-        onClose={() => setSuccessMessage(null)}
+      <DeletePostHandler
+        selectedPostId={selectedPostId}
+        onClose={() => setSelectedPostId(undefined)}
+        onSuccess={(message) => showNotification("success", message)}
+        onError={(message) => showNotification("error", message)}
+        onDeleteComplete={() => mutate()} // This will refresh the posts data
+        posts={posts}
       />
 
       <div className="flex items-center space-x-4 py-4 border-b">
@@ -143,7 +166,7 @@ export default function PostsDashboardContent() {
             post.status !== "Posted"
               ? { label: "Edit", onClick: () => handleEdit(post.id) }
               : false,
-            { label: "Delete", onClick: () => setSelectedItemId(post.id) },
+            { label: "Delete", onClick: () => handleOpenDeleteModal(post.id) },
           ].filter(Boolean) as { label: string; onClick: () => void }[];
 
           return (
