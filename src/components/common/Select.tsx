@@ -3,10 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { FaChevronDown, FaCheck } from "react-icons/fa";
 
+type OptionType = string | { key: string; label: string };
 interface SelectProps {
   value: string | null;
   onChange: (value: string | null) => void;
-  options: readonly string[];
+  options: readonly OptionType[];
   placeholder?: string;
   includeAllOption?: boolean;
 }
@@ -82,20 +83,24 @@ export default function Select({
             </li>
           )}
 
-          {options.map((option) => (
-            <li
-              key={option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-              className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer
-                                       dark:hover:bg-gray-800 hover:bg-gray-100 transition"
-            >
-              {option}
-              {value === option && <FaCheck />}
-            </li>
-          ))}
+          {options.map((opt) => {
+            const key = typeof opt === "string" ? opt : opt.key;
+            const label = typeof opt === "string" ? opt : opt.label;
+            return (
+              <li
+                key={key}
+                onClick={() => {
+                  onChange(key);
+                  setIsOpen(false);
+                }}
+                className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer
+                                        dark:hover:bg-gray-800 hover:bg-gray-100 transition"
+              >
+                {label}
+                {value === opt && <FaCheck />}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

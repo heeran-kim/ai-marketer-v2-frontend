@@ -1,19 +1,45 @@
 "use client";
 
-import { FaFacebook, FaInstagram, FaTwitter, FaThreads, FaCircleQuestion } from "react-icons/fa6";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaThreads,
+  FaCircleQuestion,
+} from "react-icons/fa6";
 
-export const platformConfig: Record<string, { icon: React.ElementType; color: string }> = {
-    instagram: { icon: FaInstagram, color: "text-pink-500" },
-    facebook: { icon: FaFacebook, color: "text-blue-600" },
-    twitter: { icon: FaTwitter, color: "text-blue-400" },
-    threads: { icon: FaThreads, color: "text-black" },
+export const platformConfig: Record<
+  string,
+  { label: string; icon: React.ElementType; color: string }
+> = {
+  instagram: { label: "Instagram", icon: FaInstagram, color: "text-pink-500" },
+  facebook: { label: "Facebook", icon: FaFacebook, color: "text-blue-600" },
+  twitter: { label: "Twitter / X", icon: FaTwitter, color: "text-blue-400" },
+  threads: { label: "Threads", icon: FaThreads, color: "text-black" },
 };
 
-export const PLATFORM_OPTIONS = Object.keys(platformConfig) as (keyof typeof platformConfig)[];
+export const PLATFORM_OPTIONS = Object.keys(
+  platformConfig
+) as (keyof typeof platformConfig)[];
+
+export const PLATFORM_OPTIONS_WITH_LABEL = Object.entries(platformConfig).map(
+  ([key, config]) => ({
+    key,
+    label: config.label,
+  })
+);
 
 export const getPlatformIcon = (platform: string, additionalClasses = "") => {
-    const formattedPlatform = platform.trim().toLowerCase();
-    const config = platformConfig[formattedPlatform] || { icon: FaCircleQuestion, color: "text-gray-500" };
+  const formattedPlatform = platform.trim().toLowerCase();
+  const config = platformConfig[formattedPlatform] || {
+    icon: FaCircleQuestion,
+    color: "text-gray-500",
+  };
 
-    return <config.icon className={`${config.color} ${additionalClasses} hover:opacity-80 transition`} size={20} />;
+  return (
+    <config.icon
+      className={`${config.color} ${additionalClasses} hover:opacity-80 transition`}
+      size={20}
+    />
+  );
 };

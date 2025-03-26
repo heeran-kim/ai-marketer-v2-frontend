@@ -12,7 +12,7 @@ import {
   NotificationType,
 } from "@/components/common";
 import { DeletePostHandler } from "@/components/post/DeletePostHandler";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { PLATFORM_OPTIONS, PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
 import { Post } from "@/app/types/post";
 import { DropboxItem } from "@/app/types/index";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
@@ -140,9 +140,13 @@ export default function PostsDashboardContent() {
           placeholder="Search posts..."
         />
         <Select
-          value={selectedPlatform}
+          value={
+            PLATFORM_OPTIONS_WITH_LABEL.find(
+              (opt) => opt.key === selectedPlatform
+            )?.label || null
+          }
           onChange={setSelectedPlatform}
-          options={PLATFORM_OPTIONS}
+          options={PLATFORM_OPTIONS_WITH_LABEL}
           placeholder="All Platforms"
         />
         <Select
