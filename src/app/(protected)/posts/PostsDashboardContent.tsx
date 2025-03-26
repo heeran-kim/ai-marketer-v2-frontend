@@ -134,7 +134,7 @@ export default function PostsDashboardContent() {
         posts={posts}
       />
 
-      <div className="flex items-center space-x-4 py-4 border-b">
+      <div className="flex flex-col sm:flex-row gap-2 p-4 sm:px-0">
         <SearchBar
           setSearchTerm={setSearchTerm}
           placeholder="Search posts..."
