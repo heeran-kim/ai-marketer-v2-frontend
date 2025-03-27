@@ -14,7 +14,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { PostEditorMode } from "@/types/post";
 
-export default function CaptionSelection() {
+export default function CaptionEditor() {
   const {
     mode,
     captionSuggestions,
@@ -87,11 +87,11 @@ export default function CaptionSelection() {
                   {captionSuggestions.length > 0 ? (
                     captionSuggestions.map((caption, index) => (
                       <SwiperSlide
-                        key={index}
+                        key={`caption-${index}`}
                         className="w-auto flex item-stretch h-full"
                       >
                         <DraggableCaption
-                          id={caption}
+                          id={`caption-${index}`}
                           text={caption}
                           index={index}
                           editingIndex={editingIndex}
@@ -130,7 +130,7 @@ export default function CaptionSelection() {
 
                   return (
                     <PlatformDropZone
-                      key={platform}
+                      key={`platform-${platform}`}
                       platformKey={platform}
                       isLinked={isLinked}
                       onDropCaption={isLinked ? setCaption : undefined}
@@ -151,7 +151,7 @@ export default function CaptionSelection() {
                 .filter((platform) => platform.key === selectedView)
                 .map((platform) => (
                   <div
-                    key={platform.key}
+                    key={`platform-editor-${platform.key}`}
                     className="p-3 border rounded-md h-full"
                   >
                     <h3 className="text-xs mb-1 font-medium">

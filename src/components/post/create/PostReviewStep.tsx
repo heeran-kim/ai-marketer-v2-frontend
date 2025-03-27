@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Card from "@/components/common/CompactCard";
 import ListCard from "@/components/common/ListCard";
+import { LoadingModal } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import { PostEditorMode } from "@/types/post";
+import { PostEditorMode, PostReview } from "@/types/post";
 
 export default function PostReviewStep() {
   const {
@@ -15,49 +16,82 @@ export default function PostReviewStep() {
     platformStates,
   } = usePostEditorContext();
   const isCreating = mode === PostEditorMode.CREATE;
-  const [imageUrl, setImageUrl] = useState<string>("");
+
+  const [preparedReviewItems, setPreparedReviewItems] = useState<PostReview[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (image) {
-      const url = URL.createObjectURL(image);
-      setImageUrl(url);
+    setIsLoading(true);
+    let objectUrl: string | null = null;
 
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    } else if (uploadedImageUrl) {
-      setImageUrl(uploadedImageUrl);
-    }
-  }, [image, uploadedImageUrl]);
+    const timer = setTimeout(() => {
+      let currentImageUrl: string = "";
 
-  if (isCreating && !image) {
-    throw new Error(
-      "Unexpected: No image found in Step 4. Image upload is required in Step 1."
-    );
-  }
+      if (image) {
+        objectUrl = URL.createObjectURL(image);
+        currentImageUrl = objectUrl;
+      } else if (uploadedImageUrl) {
+        currentImageUrl = uploadedImageUrl;
+      }
 
-  const categories = selectableCategories
-    .filter((category) => category.isSelected)
-    .map((category) => category.label);
+      if (!currentImageUrl) {
+        console.error(
+          "Unexpected: No image found in Step 4. Image upload is required in Step 1."
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      const categories = selectableCategories
+        .filter((category) => category.isSelected)
+        .map((category) => category.label);
+
+      const reviewItems = platformStates
+        .filter((platform) => platform.isSelected)
+        .map((platformState) => ({
+          image: currentImageUrl,
+          platform: platformState.key,
+          selectedCategoryLabels: categories,
+          caption: platformState.caption,
+          type: "postReview" as const,
+        }));
+
+      setPreparedReviewItems(reviewItems as PostReview[]);
+      setIsLoading(false);
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [
+    image,
+    uploadedImageUrl,
+    selectableCategories,
+    platformStates,
+    isCreating,
+  ]);
 
   return (
-    <Card>
-      <div className="space-y-4 mt-2">
-        {platformStates
-          .filter((platform) => platform.isSelected)
-          .map((platformState) => (
-            <ListCard
-              key={platformState.key}
-              item={{
-                image: imageUrl,
-                platform: platformState.key,
-                selectedCategoryLabels: categories,
-                caption: platformState.caption,
-                type: "postReview",
-              }}
-            />
-          ))}
-      </div>
-    </Card>
+    <>
+      <LoadingModal isOpen={isLoading} />
+
+      <Card>
+        {!isLoading && preparedReviewItems.length > 0 && (
+          <div className="space-y-4 mt-2">
+            {preparedReviewItems.map((reviewItem, index) => (
+              <ListCard
+                key={`review-${reviewItem.platform}-${index}`}
+                item={reviewItem}
+              />
+            ))}
+          </div>
+        )}
+      </Card>
+    </>
   );
 }

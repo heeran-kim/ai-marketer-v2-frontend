@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { LoadingModal, ConfirmModal } from "@/components/common";
 import { PostImageSelector } from "./create/PostImageSelector";
 import PostDetails from "./create/PostDetails";
-import CaptionSelection from "./create/CaptionSelection";
+import CaptionEditor from "./create/CaptionEditor";
 import PostReviewStep from "./create/PostReviewStep";
 
 import { usePostEditorContext } from "@/context/PostEditorContext";
@@ -71,7 +71,7 @@ export const PostEditorFlow = () => {
 
     setIsLoading(true);
 
-    if (step === 2) {
+    if (step === 2 && isCreating) {
       await handleGenerateCaptions();
     }
     setIsLoading(false);
@@ -218,7 +218,7 @@ export const PostEditorFlow = () => {
 
           {step === 2 && <PostDetails />}
 
-          {step === 3 && <CaptionSelection />}
+          {step === 3 && <CaptionEditor />}
 
           {step === 4 && <PostReviewStep />}
         </div>

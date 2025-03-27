@@ -71,7 +71,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks(
           (item as Promotion).posts?.map((post) => ({
             link: `/posts?id=${post.id}`,
-            platform: post.platform.key ?? "unknown",
+            platform: post.platform ?? "unknown",
           })) ?? []
         );
         setDescription((item as Promotion).description);
