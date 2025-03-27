@@ -4,9 +4,10 @@
 import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Modal from "@/components/common/Modal";
-import PostEditorFlow from "@/components/post/PostEditorFlow";
+import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import PostsDashboardContent from "./PostsDashboardContent";
 import { PostCreationProvider } from "@/context/PostCreationContext";
+import { PostMode } from "@/app/types/post";
 
 function PostsContent() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ function PostsContent() {
       {isCreating && window.innerWidth >= 640 && (
         <PostCreationProvider>
           <Modal isOpen={true} onClose={() => router.push("/posts")}>
-            <PostEditorFlow />
+            <PostEditorFlow mode={PostMode.CREATE} />
           </Modal>
         </PostCreationProvider>
       )}

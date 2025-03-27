@@ -11,8 +11,16 @@ import { useState, useRef, useEffect } from "react";
 import { usePostCreation } from "@/context/PostCreationContext";
 import { AI_API } from "@/constants/api";
 import apiClient from "@/utils/apiClient";
+import { Post, PostMode } from "@/app/types/post";
 
-export default function PostEditorFlow() {
+type PostEditorFlowProps = {
+  mode: PostMode;
+  postData?: Post;
+};
+
+export const PostEditorFlow = ({ mode, postData }: PostEditorFlowProps) => {
+  const isEdit = mode === PostMode.EDIT;
+
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -150,4 +158,4 @@ export default function PostEditorFlow() {
       </div>
     </>
   );
-}
+};
