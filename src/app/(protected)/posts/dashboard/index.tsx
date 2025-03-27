@@ -24,7 +24,7 @@ const ITEMS_PER_PAGE = 5;
 
 export const PostsDashboardView = () => {
   const router = useRouter();
-  const { setSelectedPost, initializeEditorFromPost } = usePostEditorContext();
+  const { setSelectedPost } = usePostEditorContext();
 
   const [postId, setPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | undefined>(
@@ -113,7 +113,6 @@ export const PostsDashboardView = () => {
 
   const handleEdit = (post: Post) => {
     setSelectedPost(post);
-    initializeEditorFromPost(post);
     router.push(`/posts?mode=edit&id=${post.id}`);
   };
 

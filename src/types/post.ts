@@ -72,9 +72,6 @@ export interface PostEditorContextType {
   selectedPost: Post | null;
   setSelectedPost: (post: Post | null) => void;
 
-  // Initializes the editor context with existing post data (edit mode)
-  initializeEditorFromPost: (post: Post) => void;
-
   // URL of the image uploaded in a previous session (used in edit mode)
   uploadedImageUrl: string | null;
   setUploadedImageUrl: (imageUrl: string | null) => void;

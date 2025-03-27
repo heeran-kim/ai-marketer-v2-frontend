@@ -71,33 +71,36 @@ export const PostEditorProvider = ({
 
       setPlatformStates(platformStates);
     }
-  }, [data, mode]);
+
+    if (
+      mode === PostEditorMode.EDIT &&
+      selectedPost &&
+      selectableCategories.length > 0
+    ) {
+      setUploadedImageUrl(selectedPost.image);
+      setPlatformStates([
+        {
+          key: selectedPost.platform.key,
+          label: selectedPost.platform.label,
+          isSelected: true,
+          caption: selectedPost.caption,
+        },
+      ]);
+      const mappedCategories = selectableCategories.map((category) => ({
+        ...category,
+        isSelected: selectedPost.selectedCategoryLabels.includes(
+          category.label
+        ),
+      }));
+      setSelectableCategories(mappedCategories);
+    }
+  }, [mode, selectedPost, data]);
 
   useEffect(() => {
     if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
     else if (modeParam == PostEditorMode.EDIT) setMode(PostEditorMode.EDIT);
     else setMode(null);
   }, [modeParam]);
-
-  const initializeEditorFromPost = (post: Post) => {
-    setUploadedImageUrl(post.image);
-    setPlatformStates([
-      {
-        key: post.platform.key,
-        label: post.platform.label,
-        isSelected: true,
-        caption: post.caption,
-      },
-    ]);
-    if (post.selectedCategoryLabels) {
-      const mappedCategories = selectableCategories.map((category) => ({
-        ...category,
-        isSelected: post.selectedCategoryLabels.includes(category.label),
-      }));
-      setSelectableCategories(mappedCategories);
-      console.log(mappedCategories);
-    }
-  };
 
   const setCaption = (platformKey: string, newCaption: string) => {
     setPlatformStates((prevStates) =>
@@ -139,7 +142,6 @@ export const PostEditorProvider = ({
         mode,
         selectedPost,
         setSelectedPost,
-        initializeEditorFromPost,
         uploadedImageUrl,
         setUploadedImageUrl,
         image,
