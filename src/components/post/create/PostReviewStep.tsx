@@ -22,7 +22,7 @@ export default function PostReviewStep() {
     .map((category) => category.label);
 
   return (
-    <Card title="Step 4: Review & Post" description="Review and Post.">
+    <Card>
       <div className="space-y-4 mt-2">
         {platformStates
           .filter((platform) => platform.isSelected)

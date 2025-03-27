@@ -59,10 +59,7 @@ export const PostImageSelector = () => {
 
   return (
     <>
-      <Card
-        title="Step 1: Upload & Analyse Image"
-        description="Upload an image and let AI detect key elements to generate captions."
-      >
+      <Card>
         <DragAndDropUploader
           value={image ? URL.createObjectURL(image) : uploadedImageUrl ?? ""}
           onChange={handleImageChange}

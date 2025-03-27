@@ -13,10 +13,7 @@ export default function PostDetails() {
   const isEditing = mode === PostEditorMode.EDIT;
 
   return (
-    <Card
-      title="Step 2: Tell AI About Your Post"
-      description="Help AI understand your post by providing some details. Your selections will shape the generated captions!"
-    >
+    <Card>
       <div className="space-y-1">
         {!isEditing && <BusinessInfo />}
         <PostSettings />
