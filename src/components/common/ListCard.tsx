@@ -35,7 +35,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
     );
     const [date, setDate] = useState<string>("");
     const [socialLinks, setSocialLinks] = useState<
-      { link: string; platform: string }[]
+      { link: string; platformKey: string }[]
     >([]);
     const [description, setDescription] = useState<string>("");
     const [status, setStatus] = useState<string>("");
@@ -49,7 +49,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks([
           {
             link: (item as Post).link ?? "Link not available yet",
-            platform: (item as Post).platform,
+            platformKey: (item as Post).platform.key,
           },
         ]);
         setDescription((item as Post).caption);
@@ -71,7 +71,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks(
           (item as Promotion).posts?.map((post) => ({
             link: `/posts?id=${post.id}`,
-            platform: post.platform ?? "unknown",
+            platformKey: post.platform.key ?? "unknown",
           })) ?? []
         );
         setDescription((item as Promotion).description);
@@ -81,7 +81,9 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       if ((item as PostReview).type === "postReview") {
         setImagePreviewUrl((item as PostReview).image);
         setDate(new Date().toISOString().slice(0, 16));
-        setSocialLinks([{ link: "", platform: (item as PostReview).platform }]);
+        setSocialLinks([
+          { link: "", platformKey: (item as PostReview).platform },
+        ]);
         setDescription((item as PostReview).caption);
       }
     }, [item, imagePreviewUrl]);
@@ -200,7 +202,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           )}
 
           <div className="flex flex-wrap">
-            {socialLinks?.map(({ link, platform }, index) => (
+            {socialLinks?.map(({ link, platformKey: platform }, index) => (
               <div key={index} className="w-full sm:w-auto">
                 <a
                   href={link}
