@@ -80,7 +80,12 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
       if ((item as PostReview).type === "postReview") {
         setImagePreviewUrl((item as PostReview).image);
-        setDate(new Date().toISOString().slice(0, 16));
+        if ((item as PostReview).scheduleDate) {
+          setScheduleType("scheduled");
+          setDate((item as PostReview).scheduleDate);
+        } else {
+          setDate(new Date().toISOString().slice(0, 16));
+        }
         setSocialLinks([
           { link: "", platformKey: (item as PostReview).platform },
         ]);

@@ -28,6 +28,7 @@ export type PostReview = {
   selectedCategoryLabels: string[]; // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
   caption: string; // User-selected caption for the post
   type: string;
+  scheduleDate: string;
 };
 
 // Represents a category assigned to a post

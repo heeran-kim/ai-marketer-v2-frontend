@@ -10,12 +10,13 @@ import { PostEditorMode, PostReview } from "@/types/post";
 export default function PostReviewStep() {
   const {
     mode,
+    selectedPost,
     uploadedImageUrl,
     image,
     selectableCategories,
     platformStates,
   } = usePostEditorContext();
-  const isCreating = mode === PostEditorMode.CREATE;
+  const isEditing = mode === PostEditorMode.EDIT;
 
   const [preparedReviewItems, setPreparedReviewItems] = useState<PostReview[]>(
     []
@@ -50,13 +51,30 @@ export default function PostReviewStep() {
 
       const reviewItems = platformStates
         .filter((platform) => platform.isSelected)
-        .map((platformState) => ({
-          image: currentImageUrl,
-          platform: platformState.key,
-          selectedCategoryLabels: categories,
-          caption: platformState.caption,
-          type: "postReview" as const,
-        }));
+        .map((platformState) => {
+          // If editing, check scheduling status
+          let scheduleDate = "";
+
+          if (isEditing && selectedPost?.scheduledAt) {
+            // Convert to Date object
+            const scheduledTime = new Date(selectedPost.scheduledAt);
+            const currentTime = new Date();
+
+            // If scheduled time is not in the past, keep the original scheduled time
+            if (scheduledTime >= currentTime) {
+              scheduleDate = scheduledTime.toISOString().slice(0, 16);
+            }
+          }
+
+          return {
+            image: currentImageUrl,
+            platform: platformState.key,
+            selectedCategoryLabels: categories,
+            caption: platformState.caption,
+            scheduleDate,
+            type: "postReview" as const,
+          };
+        });
 
       setPreparedReviewItems(reviewItems as PostReview[]);
       setIsLoading(false);
@@ -73,7 +91,8 @@ export default function PostReviewStep() {
     uploadedImageUrl,
     selectableCategories,
     platformStates,
-    isCreating,
+    isEditing,
+    selectedPost,
   ]);
 
   return (
