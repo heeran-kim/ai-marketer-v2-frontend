@@ -41,7 +41,6 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
     const [status, setStatus] = useState<string>("");
 
     useEffect(() => {
-      let objectUrl: string | null = null;
       if ((item as Post).type === "post") {
         setImagePreviewUrl((item as Post).image);
         setDate(
@@ -50,7 +49,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks([
           {
             link: (item as Post).link ?? "Link not available yet",
-            platform: (item as Post).platform,
+            platform: (item as Post).platform.key,
           },
         ]);
         setDescription((item as Post).caption);
@@ -80,18 +79,11 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       }
 
       if ((item as PostReview).type === "postReview") {
-        objectUrl = URL.createObjectURL((item as PostReview).image);
-        setImagePreviewUrl(objectUrl);
+        setImagePreviewUrl((item as PostReview).image);
         setDate(new Date().toISOString().slice(0, 16));
         setSocialLinks([{ link: "", platform: (item as PostReview).platform }]);
         setDescription((item as PostReview).caption);
       }
-
-      return () => {
-        if (objectUrl) {
-          URL.revokeObjectURL(objectUrl);
-        }
-      };
     }, [item, imagePreviewUrl]);
 
     useEffect(() => {

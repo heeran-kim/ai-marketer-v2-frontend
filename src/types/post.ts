@@ -23,7 +23,7 @@ export interface Post {
 
 // Represents a post review before publishing on social media platforms.
 export type PostReview = {
-  image: File; // User-uploaded image file (converted to preview URL in ListCard)
+  image: string; // User-uploaded image URL
   platform: string; // Target platform for the post (e.g., "facebook", "twitter")
   selectedCategoryLabels: string[]; // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
   caption: string; // User-selected caption for the post

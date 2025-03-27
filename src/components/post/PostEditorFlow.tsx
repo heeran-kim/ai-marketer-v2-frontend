@@ -13,7 +13,7 @@ import PostReviewStep from "./create/PostReviewStep";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
 
-import { AI_API } from "@/constants/api";
+import { AI_API, POSTS_API } from "@/constants/api";
 import { PostEditorMode } from "@/types/post";
 
 enum ConfirmModalMode {
@@ -33,15 +33,17 @@ export const PostEditorFlow = () => {
   );
   const {
     mode,
+    selectedPost,
     image,
     detectedItems,
     customisedBusinessInfo,
-    selectableCategories: postCategories,
+    selectableCategories,
     platformStates,
     additionalPrompt,
     setCaptionSuggestions,
   } = usePostEditorContext();
 
+  const isCreating = mode === PostEditorMode.CREATE;
   const isEditing = mode === PostEditorMode.EDIT;
 
   useEffect(() => {
@@ -52,12 +54,12 @@ export const PostEditorFlow = () => {
   }, [detectedItems]);
 
   const handleNext = async (skipConfirm = false) => {
-    if (step === 1 && !image && !isEditing) {
+    if (step === 1 && !image && isCreating) {
       setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_IMAGE);
       return;
     }
 
-    if (step === 1 && !detectedItems?.length && !skipConfirm && !isEditing) {
+    if (step === 1 && !detectedItems?.length && !skipConfirm && isCreating) {
       setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS);
       return;
     }
@@ -82,13 +84,38 @@ export const PostEditorFlow = () => {
     setIsLoading(false);
   };
 
+  const handleUpdate = async () => {
+    if (!selectedPost) return;
+    setIsLoading(true);
+    try {
+      // Update the post using the API
+      const postData = {
+        // TODO: Image
+        caption: platformStates[0]?.caption,
+        categories: selectableCategories
+          .filter((cat) => cat.isSelected)
+          .map((cat) => cat.label),
+      };
+
+      await apiClient.patch(`${POSTS_API.UPDATE(selectedPost?.id)}`, postData);
+
+      // TODO: Show success notification and redirect
+      router.push("/posts");
+    } catch (error) {
+      console.error("Error updating post:", error);
+      // TODO: Show error notification
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGenerateCaptions = async () => {
     const res = await apiClient.post<{ captions: string[] }>(
       AI_API.CAPTION_GENERATE,
       {
         imgItems: detectedItems,
         businessInfo: customisedBusinessInfo,
-        postCategories: postCategories,
+        postCategories: selectableCategories,
         platformStates: platformStates,
         customText: additionalPrompt,
       },
@@ -161,7 +188,9 @@ export const PostEditorFlow = () => {
             </button>
           )}
 
-          <h2 className="text-lg font-semibold">New Post</h2>
+          <h2 className="text-lg font-semibold">
+            {isCreating ? "New" : "Edit"} Post
+          </h2>
 
           {step < 4 ? (
             <button
@@ -172,10 +201,10 @@ export const PostEditorFlow = () => {
             </button>
           ) : (
             <button
-              onClick={() => handlePost()}
+              onClick={() => (isCreating ? handlePost() : handleUpdate())}
               className="text-blue-600 text-sm font-medium"
             >
-              Post
+              {isCreating ? "Post" : "Update"}
             </button>
           )}
         </div>
