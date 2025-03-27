@@ -39,7 +39,7 @@ export interface PostCategory {
 }
 
 // Configuration data required for post creation
-export interface PostCreationConfig {
+export interface PostEditorConfig {
   business: Pick<Business, "targetCustomers" | "vibe" | "hasSalesData">;
   postCategories: PostCategory[];
   linkedPlatforms: Pick<Platform, "key" | "label">[];
@@ -64,7 +64,7 @@ export interface CustomisedBusinessInfo
 }
 
 // Context type for managing post creation state
-export interface PostCreationContextType {
+export interface PostEditorContextType {
   // Selected image for the post
   image: File | null;
   setImage: (image: File | null) => void;
@@ -97,7 +97,7 @@ export interface PostCreationContextType {
   updateCaptionSuggestion: (index: number, editedCaption: string) => void;
 
   // Function to reset all post creation data
-  resetPostCreation: () => void;
+  resetPostEditor: () => void;
 }
 
 export enum PostMode {

@@ -8,7 +8,7 @@ import CaptionSelection from "./create/CaptionSelection";
 import PostReviewStep from "./create/PostReviewStep";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { usePostCreation } from "@/context/PostCreationContext";
+import { usePostEditor } from "@/context/PostEditorContext";
 import { AI_API } from "@/constants/api";
 import apiClient from "@/utils/apiClient";
 import { Post, PostMode } from "@/app/types/post";
@@ -34,7 +34,7 @@ export const PostEditorFlow = ({ mode, postData }: PostEditorFlowProps) => {
     platformStates,
     additionalPrompt,
     setCaptionSuggestions,
-  } = usePostCreation();
+  } = usePostEditor();
 
   useEffect(() => {
     contentRef.current?.scrollTo({

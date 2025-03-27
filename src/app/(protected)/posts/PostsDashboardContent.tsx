@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useFetchData } from "@/hooks/dataHooks";
 import {
   SearchBar,
@@ -21,6 +21,7 @@ import { POSTS_API } from "@/constants/api";
 const ITEMS_PER_PAGE = 5;
 
 export default function PostsDashboardContent() {
+  const router = useRouter();
   const [postId, setPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | undefined>(
     undefined
@@ -106,9 +107,8 @@ export default function PostsDashboardContent() {
     setSelectedPostId(postId);
   };
 
-  const handleEdit = (postId: string) => {
-    console.log(`Editing post: ${postId}`);
-    // TODO: Implement edit logic
+  const handleEdit = (post: Post) => {
+    router.push(`/posts?mode=edit&id=${post.id}`);
   };
 
   const handleRetry = (postId: string) => {
@@ -164,7 +164,7 @@ export default function PostsDashboardContent() {
               ? { label: "Retry", onClick: () => handleRetry(post.id) }
               : false,
             post.status !== "Posted"
-              ? { label: "Edit", onClick: () => handleEdit(post.id) }
+              ? { label: "Edit", onClick: () => handleEdit(post) }
               : false,
             { label: "Delete", onClick: () => handleOpenDeleteModal(post.id) },
           ].filter(Boolean) as { label: string; onClick: () => void }[];

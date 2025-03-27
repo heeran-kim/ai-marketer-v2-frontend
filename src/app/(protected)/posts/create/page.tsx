@@ -1,16 +1,16 @@
 // src/app/(protected)/posts/create/page.tsx
 "use client";
 
-import { PostCreationProvider } from "@/context/PostCreationContext";
+import { PostEditorProvider } from "@/context/PostEditorContext";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { PostMode } from "@/app/types/post";
 
 export default function CreatePostPage() {
   return (
-    <PostCreationProvider>
+    <PostEditorProvider>
       <div className="max-w-3xl mx-auto p-4">
         <PostEditorFlow mode={PostMode.CREATE} />
       </div>
-    </PostCreationProvider>
+    </PostEditorProvider>
   );
 }

@@ -19,7 +19,7 @@ export const NAV_ITEMS: NavItem[] = [
       description:
         "Manage, schedule, and monitor your social media posts across multiple platforms in one place.",
       createAction: (router) => ({
-        onClick: () => router.push("/posts?create=true", { scroll: false }),
+        onClick: () => router.push("/posts?mode=create", { scroll: false }),
       }),
       moreActions: (router) => [
         {
