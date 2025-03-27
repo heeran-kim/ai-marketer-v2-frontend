@@ -5,23 +5,23 @@ import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import Card from "@/components/common/CompactCard";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
-import { ImageAnalysisResponse } from "@/app/types/post";
+import { ImageAnalysisResponse, PostEditorMode } from "@/app/types/post";
 import { AI_API } from "@/constants/api";
 
-export default function ImageAnalyser() {
+export const PostImageSelector = () => {
   const {
-    imageUrl,
-    setImageUrl,
+    mode,
+    uploadedImageUrl,
     image,
     setImage,
     detectedItems,
     setDetectedItems,
   } = usePostEditorContext();
+  const isEditing = mode === PostEditorMode.EDIT;
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleImageUpload = (file: File | null) => {
+  const handleImageChange = (file: File | null) => {
     setImage(file);
-    setImageUrl(null);
     setDetectedItems([]);
   };
 
@@ -64,12 +64,12 @@ export default function ImageAnalyser() {
         description="Upload an image and let AI detect key elements to generate captions."
       >
         <DragAndDropUploader
-          value={image ? URL.createObjectURL(image) : imageUrl ?? ""}
-          onChange={handleImageUpload}
+          value={image ? URL.createObjectURL(image) : uploadedImageUrl ?? ""}
+          onChange={handleImageChange}
           fileType="image"
         />
 
-        {image && (
+        {image && !isEditing && (
           <div className="mt-2">
             <button
               onClick={handleAnalyseImage}
@@ -105,4 +105,4 @@ export default function ImageAnalyser() {
       )}
     </>
   );
-}
+};

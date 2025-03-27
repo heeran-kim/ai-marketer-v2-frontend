@@ -68,7 +68,6 @@ export const DeletePostHandler = ({
       title="Delete Confirmation"
       message={getDeleteConfirmMessage()}
       confirmButtonText={isLoading ? "Deleting..." : "Delete"}
-      type="warning"
       itemId={selectedPostId}
       onClose={onClose}
       onConfirm={() => handleDelete(selectedPostId)}

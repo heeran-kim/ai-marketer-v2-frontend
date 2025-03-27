@@ -70,8 +70,8 @@ export interface PostEditorContextType {
   selectedPost: Post | null;
   setSelectedPost: (post: Post | null) => void;
 
-  imageUrl: string | null;
-  setImageUrl: (imageUrl: string | null) => void;
+  uploadedImageUrl: string | null;
+  setUploadedImageUrl: (imageUrl: string | null) => void;
 
   // Selected image for the post
   image: File | null;

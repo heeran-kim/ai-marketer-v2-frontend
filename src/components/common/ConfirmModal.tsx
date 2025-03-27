@@ -7,40 +7,40 @@ import {
   FaQuestion,
 } from "react-icons/fa";
 
-export type ConfirmType = "warning" | "info" | "question";
+export type ConfirmType = "alert" | "warning" | "info";
 
 interface ConfirmModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   title?: string;
   message: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
   type?: ConfirmType;
   itemId?: string;
-  onConfirm: (itemId?: string) => void;
+  onConfirm?: (itemId?: string) => void;
   onClose: () => void;
 }
 
 export const ConfirmModal = ({
-  isOpen,
+  isOpen = true,
   title = "Confirmation",
   message,
   confirmButtonText = "Continue",
   cancelButtonText = "Cancel",
-  type = "question",
+  type = "warning",
   itemId = undefined,
   onConfirm,
   onClose,
 }: ConfirmModalProps) => {
   // Store the message in local state to prevent it from changing during animations
-  const [localMessage, setLocalMessage] = useState(message);
   const [localTitle, setLocalTitle] = useState(title);
+  const [localMessage, setLocalMessage] = useState(message);
 
   // Update local state when props change and modal is open or just opened
   useEffect(() => {
     if (isOpen) {
-      setLocalMessage(message);
       setLocalTitle(title);
+      setLocalMessage(message);
     }
   }, [isOpen, message, title]);
 
@@ -49,6 +49,7 @@ export const ConfirmModal = ({
 
   const handleConfirm = () => {
     if (isSubmitting) return;
+    if (!onConfirm) return;
     setIsSubmitting(true);
     onConfirm(itemId);
   };
@@ -70,23 +71,23 @@ export const ConfirmModal = ({
 
   // Type-based styling and icons
   const typeStyles = {
-    warning: {
+    alert: {
       icon: <FaExclamationTriangle className="h-5 w-5 text-red-500" />,
       headerBg: "bg-red-50 dark:bg-red-900/10",
       headerText: "text-red-700 dark:text-red-400",
       confirmBg: "bg-red-600 hover:bg-red-700 active:bg-red-800",
+    },
+    warning: {
+      icon: <FaQuestion className="h-5 w-5 text-orange-500" />,
+      headerBg: "bg-orange-50 dark:bg-orange-900/10",
+      headerText: "text-orange-700 dark:text-orange-400",
+      confirmBg: "bg-orange-600 hover:bg-orange-700 active:bg-orange-800",
     },
     info: {
       icon: <FaInfoCircle className="h-5 w-5 text-blue-500" />,
       headerBg: "bg-blue-50 dark:bg-blue-900/10",
       headerText: "text-blue-700 dark:text-blue-400",
       confirmBg: "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
-    },
-    question: {
-      icon: <FaQuestion className="h-5 w-5 text-indigo-500" />,
-      headerBg: "bg-indigo-50 dark:bg-indigo-900/10",
-      headerText: "text-indigo-700 dark:text-indigo-400",
-      confirmBg: "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800",
     },
   };
 
@@ -128,14 +129,16 @@ export const ConfirmModal = ({
           {/* Buttons with full width on mobile */}
           <div className="px-4 py-3 bg-gray-100 dark:bg-gray-900/20 flex flex-col sm:flex-row-reverse gap-2">
             {/* Confirm button */}
-            <button
-              type="button"
-              className={`w-full sm:w-auto px-4 py-2 text-sm font-medium text-white rounded-lg ${confirmBg}`}
-              onClick={handleConfirm}
-              disabled={isSubmitting}
-            >
-              {confirmButtonText}
-            </button>
+            {type !== "alert" && (
+              <button
+                type="button"
+                className={`w-full sm:w-auto px-4 py-2 text-sm font-medium text-white rounded-lg ${confirmBg}`}
+                onClick={handleConfirm}
+                disabled={isSubmitting}
+              >
+                {confirmButtonText}
+              </button>
+            )}
 
             {/* Cancel button */}
             <button

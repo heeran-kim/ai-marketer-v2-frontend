@@ -28,7 +28,7 @@ export const PostEditorProvider = ({
 
   const [mode, setMode] = useState<PostEditorMode | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [hasSalesData, setHasSalesData] = useState<boolean>(false);
@@ -69,7 +69,7 @@ export const PostEditorProvider = ({
 
       setPlatformStates(platformStates);
     }
-  }, [data]);
+  }, [data, mode]);
 
   useEffect(() => {
     if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
@@ -78,7 +78,7 @@ export const PostEditorProvider = ({
   }, [modeParam]);
 
   const initializeEditorFromPost = (post: Post) => {
-    setImageUrl(post.image);
+    setUploadedImageUrl(post.image);
     setPlatformStates([
       {
         key: post.platform.key,
@@ -108,7 +108,7 @@ export const PostEditorProvider = ({
   const resetPostEditor = () => {
     setMode(null);
     setSelectedPost(null);
-    setImageUrl(null);
+    setUploadedImageUrl(null);
     setImage(null);
     setDetectedItems([]);
     setHasSalesData(false);
@@ -129,8 +129,8 @@ export const PostEditorProvider = ({
         mode,
         selectedPost,
         setSelectedPost,
-        imageUrl,
-        setImageUrl,
+        uploadedImageUrl,
+        setUploadedImageUrl,
         image,
         setImage,
         detectedItems,

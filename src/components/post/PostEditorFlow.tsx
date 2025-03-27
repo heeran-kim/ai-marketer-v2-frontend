@@ -1,24 +1,36 @@
 // src/app/(protected)/posts/create/components/PostCreationFlow.tsx
 "use client";
 
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { LoadingModal, ConfirmModal } from "@/components/common";
-import ImageAnalyser from "./create/ImageAnalyser";
+import { PostImageSelector } from "./create/PostImageSelector";
 import PostDetails from "./create/PostDetails";
 import CaptionSelection from "./create/CaptionSelection";
 import PostReviewStep from "./create/PostReviewStep";
-import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+
 import { usePostEditorContext } from "@/context/PostEditorContext";
+import { apiClient } from "@/hooks/dataHooks";
+
 import { AI_API } from "@/constants/api";
-import apiClient from "@/utils/apiClient";
 import { PostEditorMode } from "@/app/types/post";
+
+enum ConfirmModalMode {
+  CLOSE,
+  STEP1_CREATE_NO_IMAGE,
+  STEP1_CREATE_NO_ANALYSIS,
+  STEP1_EDIT_NO_IMAGE,
+}
 
 export const PostEditorFlow = () => {
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [confirmModalMode, setConfirmModalMode] = useState<ConfirmModalMode>(
+    ConfirmModalMode.CLOSE
+  );
   const {
     mode,
     image,
@@ -41,14 +53,22 @@ export const PostEditorFlow = () => {
 
   const handleNext = async (skipConfirm = false) => {
     if (step === 1 && !image && !isEditing) {
-      alert("⚠️ Please upload an image before proceeding.");
+      setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_IMAGE);
       return;
     }
-    if (step === 1 && !detectedItems?.length && !skipConfirm) {
-      setIsConfirmModalOpen(true);
+
+    if (step === 1 && !detectedItems?.length && !skipConfirm && !isEditing) {
+      setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS);
       return;
     }
+
+    if (step === 1 && isEditing && !image && !skipConfirm) {
+      setConfirmModalMode(ConfirmModalMode.STEP1_EDIT_NO_IMAGE);
+      return;
+    }
+
     setIsLoading(true);
+
     if (step === 2) {
       await handleGenerateCaptions();
     }
@@ -93,15 +113,37 @@ export const PostEditorFlow = () => {
   return (
     <>
       <LoadingModal isOpen={isLoading} />
-      <ConfirmModal
-        isOpen={isConfirmModalOpen}
-        message="No objects detected from the image. Captions may not include image-related descriptions. Do you want to continue?"
-        onConfirm={() => {
-          setIsConfirmModalOpen(false);
-          handleNext(true);
-        }}
-        onClose={() => setIsConfirmModalOpen(false)}
-      />
+      {confirmModalMode === ConfirmModalMode.STEP1_CREATE_NO_IMAGE && (
+        <ConfirmModal
+          isOpen={true}
+          message="An image is required to proceed. Please upload one."
+          cancelButtonText="OK"
+          type="alert"
+          onClose={() => setConfirmModalMode(ConfirmModalMode.CLOSE)}
+        />
+      )}
+      {confirmModalMode === ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS && (
+        <ConfirmModal
+          isOpen={true}
+          message="No objects were detected in the image. The generated captions may not reference image content. Do you want to continue?"
+          onConfirm={() => {
+            setConfirmModalMode(ConfirmModalMode.CLOSE);
+            handleNext(true);
+          }}
+          onClose={() => setConfirmModalMode(ConfirmModalMode.CLOSE)}
+        />
+      )}
+      {confirmModalMode === ConfirmModalMode.STEP1_EDIT_NO_IMAGE && (
+        <ConfirmModal
+          isOpen={true}
+          message="No new image has been added. Do you want to continue with the existing uploaded image? Click ‘Continue’ to proceed, or click ‘Cancel’ to remove the current image and upload a new one."
+          onConfirm={() => {
+            setConfirmModalMode(ConfirmModalMode.CLOSE);
+            handleNext(true);
+          }}
+          onClose={() => setConfirmModalMode(ConfirmModalMode.CLOSE)}
+        />
+      )}
 
       <div className="flex flex-col h-full">
         {/* Modal Header */}
@@ -143,7 +185,7 @@ export const PostEditorFlow = () => {
           ref={contentRef}
           className="mx-auto p-2 w-full overflow-y-auto h-[calc(100%-40px)]"
         >
-          {step === 1 && <ImageAnalyser />}
+          {step === 1 && <PostImageSelector />}
 
           {step === 2 && <PostDetails />}
 
