@@ -4,7 +4,7 @@ import { baseContainerClass } from "@/components/styles";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NAV_ITEMS } from "@/constants/navItems";
-import { DashboardData } from "@/app/types/business";
+import { DashboardData } from "@/types/business";
 import ActionDropdown from "@/components/common/ActionDropdown";
 import BusinessInfo from "./BusinessInfo";
 

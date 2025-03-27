@@ -9,7 +9,7 @@ import {
   DragAndDropUploader,
 } from "@/components/common";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { Business, EMPTY_BUSINESS } from "@/app/types/business";
+import { Business, EMPTY_BUSINESS } from "@/types/business";
 import { INDUSTRY_OPTIONS } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
 

@@ -1,12 +1,12 @@
 // src/types/posts.ts
 import { Business, Platform } from "./business";
 
-// Represents a social media post
+// Refined post model used in frontend
 export interface Post {
   id: string; // Unique post ID
   business: string; // Associated business name (ex: "My Coffee Shop")
   platform: Platform; // ex: "facebook", "twitter"
-  categories: string[]; // ex: ["Brand Story", "Product Highlight"]
+  selectedCategoryLabels: string[];
   caption: string; // Text content of the post
   image: string; // URL of the attached image
   link: string; // ex: "https://facebook.com/mybusiness/posts/12345"
@@ -18,31 +18,31 @@ export interface Post {
   comments: number; // Number of comments
   reposts: number; // Number of times reposted
   shares: number; // Number of shares
-  type: string;
+  type: string; // post
 }
 
 // Represents a post review before publishing on social media platforms.
-export interface PostReview {
+export type PostReview = {
   image: File; // User-uploaded image file (converted to preview URL in ListCard)
   platform: string; // Target platform for the post (e.g., "facebook", "twitter")
-  categories: string[]; // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
+  selectedCategoryLabels: string[]; // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
   caption: string; // User-selected caption for the post
   type: string;
-}
+};
 
 // Represents a category assigned to a post
-export interface PostCategory {
+export interface SelectableCategory {
   id: number; // Unique category ID
   key: string; // Internal key for category (e.g., "brandStory", "productHighlight")
   label: string; // Display name (e.g., "Brand Story", "Product Highlight")
   isSelected: boolean; // Whether this category is selected
 }
 
-// Configuration data required for post creation
+// Configuration data required for post editor
 export interface PostEditorConfig {
-  business: Pick<Business, "targetCustomers" | "vibe" | "hasSalesData">;
-  postCategories: PostCategory[];
-  linkedPlatforms: Pick<Platform, "key" | "label">[];
+  business: Pick<Business, "targetCustomers" | "vibe" | "hasSalesData">; // Business preferences used to generate tailored captions
+  selectableCategories: SelectableCategory[]; // Categories available for the post with selection state (for UI toggle)
+  linkedPlatforms: Pick<Platform, "key" | "label">[]; // Social media platforms linked to the business
 }
 
 // Represents a social media platform selection state
@@ -63,17 +63,23 @@ export interface CustomisedBusinessInfo
   isUsingSalesData: boolean;
 }
 
-// Context type for managing post creation state
+// Context type for managing post creation/editing state in the PostEditor
 export interface PostEditorContextType {
+  // Current editor mode: "create" or "edit"
   mode: PostEditorMode | null;
 
+  // Post being edited (only available in edit mode)
   selectedPost: Post | null;
   setSelectedPost: (post: Post | null) => void;
 
+  // Initializes the editor context with existing post data (edit mode)
+  initializeEditorFromPost: (post: Post) => void;
+
+  // URL of the image uploaded in a previous session (used in edit mode)
   uploadedImageUrl: string | null;
   setUploadedImageUrl: (imageUrl: string | null) => void;
 
-  // Selected image for the post
+  // Selected image file for the post (local File object)
   image: File | null;
   setImage: (image: File | null) => void;
 
@@ -81,35 +87,40 @@ export interface PostEditorContextType {
   detectedItems: string[];
   setDetectedItems: (items: string[]) => void;
 
-  // Business-related details that influence post generation
+  // Whether the business has associated sales data
   hasSalesData: boolean;
+
+  // Business-related details that influence post generation
   customisedBusinessInfo: CustomisedBusinessInfo;
   setCustomisedBusinessInfo: (info: CustomisedBusinessInfo) => void;
 
   // Categories assigned to the post (e.g., "Brand Story", "Product Highlight")
-  postCategories: PostCategory[];
-  setPostCategories: (categories: PostCategory[]) => void;
+  selectableCategories: SelectableCategory[];
+  setSelectableCategories: (categories: SelectableCategory[]) => void;
 
-  // User-provided additional details for AI-generated captions
+  // Additional custom prompt text provided by the user
   additionalPrompt: string;
   setAdditionalPrompt: (prompt: string) => void;
 
-  // Platforms where the post will be uploaded (e.g., Facebook, Twitter)
+  // Platforms where the post will be published (e.g., Facebook, Twitter), with caption state
   platformStates: PlatformState[];
   setPlatformStates: (states: PlatformState[]) => void;
+
+  // Updates the caption for a specific platform
   setCaption: (key: string, caption: string) => void;
 
-  // AI-generated caption suggestions
+  // AI-generated caption suggestions (used in caption selection step)
   captionSuggestions: string[];
   setCaptionSuggestions: (captions: string[]) => void;
+
+  // Updates a specific caption suggestion (after user edits)
   updateCaptionSuggestion: (index: number, editedCaption: string) => void;
 
-  // Function to reset all post creation data
+  // Resets all editor state back to initial
   resetPostEditor: () => void;
-
-  initializeEditorFromPost: (post: Post) => void;
 }
 
+// Editor mode used in PostEditorContext
 export enum PostEditorMode {
   CREATE = "create",
   EDIT = "edit",

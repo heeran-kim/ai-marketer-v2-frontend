@@ -14,7 +14,7 @@ import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
 
 import { AI_API } from "@/constants/api";
-import { PostEditorMode } from "@/app/types/post";
+import { PostEditorMode } from "@/types/post";
 
 enum ConfirmModalMode {
   CLOSE,
@@ -36,7 +36,7 @@ export const PostEditorFlow = () => {
     image,
     detectedItems,
     customisedBusinessInfo,
-    postCategories,
+    selectableCategories: postCategories,
     platformStates,
     additionalPrompt,
     setCaptionSuggestions,

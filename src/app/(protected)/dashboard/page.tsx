@@ -4,7 +4,7 @@
 import DashboardCard from "./components/DashboardCard";
 import EmptyBusinessState from "./components/EmptyBusinessState";
 import { useFetchData } from "@/hooks/dataHooks";
-import { DashboardData } from "@/app/types/business";
+import { DashboardData } from "@/types/business";
 import { DASHBOARD_API } from "@/constants/api";
 
 export default function Dashboard() {

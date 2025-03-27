@@ -1,6 +1,6 @@
 // src/components/post/DeletePostHandler.tsx
 import { useState } from "react";
-import { Post } from "@/app/types/post";
+import { Post } from "@/types/post";
 import { POSTS_API } from "@/constants/api";
 import { apiClient } from "@/hooks/dataHooks";
 import { ConfirmModal } from "@/components/common/ConfirmModal";

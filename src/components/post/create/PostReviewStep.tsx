@@ -5,7 +5,11 @@ import ListCard from "@/components/common/ListCard";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function PostReviewStep() {
-  const { image, postCategories, platformStates } = usePostEditorContext();
+  const {
+    image,
+    selectableCategories: postCategories,
+    platformStates,
+  } = usePostEditorContext();
 
   if (!image) {
     throw new Error(
@@ -28,7 +32,7 @@ export default function PostReviewStep() {
               item={{
                 image: image,
                 platform: platformState.key,
-                categories: categories,
+                selectedCategoryLabels: categories,
                 caption: platformState.caption,
                 type: "postReview",
               }}

@@ -6,21 +6,21 @@ import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function PostSettings() {
   const {
-    postCategories,
-    setPostCategories,
+    selectableCategories,
+    setSelectableCategories,
     platformStates,
     setPlatformStates,
   } = usePostEditorContext();
 
   const handleCategoryToggle = (categoryLabel: string) => {
-    setPostCategories(
-      postCategories.map((category) =>
+    setSelectableCategories(
+      selectableCategories.map((category) =>
         category.label === categoryLabel
           ? { ...category, isSelected: !category.isSelected }
           : category
       )
     );
-    console.log(postCategories);
+    console.log(selectableCategories);
   };
 
   const handlePlatformToggle = (platformKey: string) => {
@@ -40,7 +40,7 @@ export default function PostSettings() {
         <div>
           <p className="text-sm font-medium mb-1">📌 Select Purpose:</p>
           <div className="flex flex-wrap gap-2">
-            {postCategories.map((category) => (
+            {selectableCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryToggle(category.label)}

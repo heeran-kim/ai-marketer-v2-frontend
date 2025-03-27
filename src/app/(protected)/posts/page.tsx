@@ -3,13 +3,13 @@
 
 import { Suspense } from "react";
 import { PostEditorProvider } from "@/context/PostEditorContext";
-import { PostsContent } from "./PostsContent";
+import { PostEditorEntry } from "./editor";
 
 export default function PostsDashboard() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <PostEditorProvider>
-        <PostsContent />
+        <PostEditorEntry />
       </PostEditorProvider>
     </Suspense>
   );

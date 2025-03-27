@@ -7,9 +7,9 @@ import { getStatusClass } from "@/components/styles";
 import ActionDropdown from "@/components/common/ActionDropdown";
 import { FaRegCalendarAlt, FaTag } from "react-icons/fa";
 import Image from "next/image";
-import { DropboxItem } from "@/app/types";
-import { Post, PostReview } from "@/app/types/post";
-import { Promotion } from "@/app/types/promotion";
+import { DropboxItem } from "@/types";
+import { Post, PostReview } from "@/types/post";
+import { Promotion } from "@/types/promotion";
 
 interface ListCardProps {
   item: Post | Promotion | PostReview;
@@ -72,7 +72,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks(
           (item as Promotion).posts?.map((post) => ({
             link: `/posts?id=${post.id}`,
-            platform: post.platform ?? "unknown",
+            platform: post.platform.key ?? "unknown",
           })) ?? []
         );
         setDescription((item as Promotion).description);
@@ -92,7 +92,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           URL.revokeObjectURL(objectUrl);
         }
       };
-    }, [item]);
+    }, [item, imagePreviewUrl]);
 
     useEffect(() => {
       const observer = new ResizeObserver((entries) => {
@@ -191,9 +191,9 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             )}
           </div>
 
-          {item.categories?.length > 0 && (
+          {item.selectedCategoryLabels?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
-              {item.categories.map((category) => (
+              {item.selectedCategoryLabels.map((category) => (
                 <div
                   key={category}
                   className="inline-flex items-center gap-1.5 text-xs font-medium 

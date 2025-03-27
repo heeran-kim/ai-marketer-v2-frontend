@@ -1,5 +1,5 @@
 // src/constants/navItems.ts
-import { NavItem } from "@/app/types/nav";
+import { NavItem } from "@/types/nav";
 
 export const NAV_ITEMS: NavItem[] = [
   {

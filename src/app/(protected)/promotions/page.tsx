@@ -9,7 +9,7 @@
 import ListCard from "@/components/common/ListCard";
 // import Select from "@/components/common/Select";
 import { useFetchData } from "@/hooks/dataHooks";
-import { Promotion } from "@/app/types/promotion";
+import { Promotion } from "@/types/promotion";
 import { PROMOTIONS_API } from "@/constants/api";
 
 export default function PromotionsDashboard() {

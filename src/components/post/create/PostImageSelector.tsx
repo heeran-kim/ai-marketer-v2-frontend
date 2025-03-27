@@ -5,7 +5,7 @@ import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import Card from "@/components/common/CompactCard";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
-import { ImageAnalysisResponse, PostEditorMode } from "@/app/types/post";
+import { ImageAnalysisResponse, PostEditorMode } from "@/types/post";
 import { AI_API } from "@/constants/api";
 
 export const PostImageSelector = () => {

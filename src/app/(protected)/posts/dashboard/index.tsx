@@ -1,27 +1,28 @@
-// src/app/(protected)/posts/PostsDashboardContent.tsx
+// src/app/(protected)/posts/dashboard/index.tsx
+// Posts dashboard main view.
+// - Lists posts with search, filter, and pagination
+// - Allows edit, delete, and retry actions
+// - Controls modal notifications
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFetchData } from "@/hooks/dataHooks";
-import {
-  SearchBar,
-  ListCard,
-  Select,
-  NotificationModal,
-  NotificationType,
-} from "@/components/common";
+import { NotificationModal, NotificationType } from "@/components/common";
 import { DeletePostHandler } from "@/components/post/DeletePostHandler";
-import { PLATFORM_OPTIONS, PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
-import { Post } from "@/app/types/post";
-import { DropboxItem } from "@/app/types/index";
-import { POST_STATUS_OPTIONS } from "@/constants/posts";
+import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { Post } from "@/types/post";
+import { DropboxItem } from "@/types/index";
 import { POSTS_API } from "@/constants/api";
 import { usePostEditorContext } from "@/context/PostEditorContext";
+import { PostsFilterBar } from "./PostsFilterBar";
+import { PostList } from "./PostList";
+import { mapPostDtoToPost } from "@/utils/transformers";
+import { PostDto } from "@/types/dto";
 
 const ITEMS_PER_PAGE = 5;
 
-export default function PostsDashboardContent() {
+export const PostsDashboardView = () => {
   const router = useRouter();
   const { setSelectedPost, initializeEditorFromPost } = usePostEditorContext();
 
@@ -48,10 +49,10 @@ export default function PostsDashboardContent() {
     isOpen: false,
   });
 
-  const { data, error, mutate } = useFetchData<{ posts: Post[] }>(
+  const { data, error, mutate } = useFetchData<{ posts: PostDto[] }>(
     POSTS_API.LIST
   );
-  const posts = data?.posts || [];
+  const posts = (data?.posts || []).map(mapPostDtoToPost);
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
 
@@ -139,32 +140,18 @@ export default function PostsDashboardContent() {
         posts={posts}
       />
 
-      <div className="flex flex-col sm:flex-row gap-2 p-4 sm:px-0">
-        <SearchBar
-          setSearchTerm={setSearchTerm}
-          placeholder="Search posts..."
-        />
-        <Select
-          value={
-            PLATFORM_OPTIONS_WITH_LABEL.find(
-              (opt) => opt.key === selectedPlatform
-            )?.label || null
-          }
-          onChange={setSelectedPlatform}
-          options={PLATFORM_OPTIONS_WITH_LABEL}
-          placeholder="All Platforms"
-        />
-        <Select
-          value={selectedStatus}
-          onChange={setSelectedStatus}
-          options={POST_STATUS_OPTIONS}
-          placeholder="All Status"
-        />
-      </div>
+      <PostsFilterBar
+        setSearchTerm={setSearchTerm}
+        selectedPlatform={selectedPlatform}
+        setSelectedPlatform={setSelectedPlatform}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+      />
 
-      <div className="space-y-4 mt-2">
-        {slicedPosts.map((post) => {
-          const actions: DropboxItem[] = [
+      <PostList
+        posts={slicedPosts}
+        actionsBuilder={(post) => {
+          return [
             post.status === "Failed"
               ? { label: "Retry", onClick: () => handleRetry(post.id) }
               : false,
@@ -172,20 +159,10 @@ export default function PostsDashboardContent() {
               ? { label: "Edit", onClick: () => handleEdit(post) }
               : false,
             { label: "Delete", onClick: () => handleOpenDeleteModal(post.id) },
-          ].filter(Boolean) as { label: string; onClick: () => void }[];
-
-          return (
-            <ListCard
-              key={post.id}
-              ref={(el) => {
-                postRefs.current[post.id] = el;
-              }}
-              item={{ ...post, type: "post" }}
-              actions={actions}
-            />
-          );
-        })}
-      </div>
+          ].filter(Boolean) as DropboxItem[];
+        }}
+        postRefs={postRefs}
+      />
 
       {visibleCount < filteredPosts.length && (
         <div className="flex justify-center mt-6">
@@ -201,4 +178,4 @@ export default function PostsDashboardContent() {
       )}
     </div>
   );
-}
+};

@@ -6,10 +6,10 @@ import {
   PostEditorContextType,
   CustomisedBusinessInfo,
   PlatformState,
-  PostCategory,
+  SelectableCategory,
   PostEditorMode,
   Post,
-} from "@/app/types/post";
+} from "@/types/post";
 import { useEffect } from "react";
 import { POSTS_API } from "@/constants/api";
 import { useFetchData } from "@/hooks/dataHooks";
@@ -38,7 +38,9 @@ export const PostEditorProvider = ({
       vibe: "",
       isUsingSalesData: false,
     });
-  const [postCategories, setPostCategories] = useState<PostCategory[]>([]);
+  const [selectableCategories, setSelectableCategories] = useState<
+    SelectableCategory[]
+  >([]);
   const [additionalPrompt, setAdditionalPrompt] = useState("");
   const [platformStates, setPlatformStates] = useState<PlatformState[]>([]);
   const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
@@ -53,8 +55,8 @@ export const PostEditorProvider = ({
       });
     }
 
-    if (data?.postCategories) {
-      setPostCategories(data.postCategories);
+    if (data?.selectableCategories) {
+      setSelectableCategories(data.selectableCategories);
     }
 
     if (data?.linkedPlatforms) {
@@ -87,6 +89,14 @@ export const PostEditorProvider = ({
         caption: post.caption,
       },
     ]);
+    if (post.selectedCategoryLabels) {
+      const mappedCategories = selectableCategories.map((category) => ({
+        ...category,
+        isSelected: post.selectedCategoryLabels.includes(category.label),
+      }));
+      setSelectableCategories(mappedCategories);
+      console.log(mappedCategories);
+    }
   };
 
   const setCaption = (platformKey: string, newCaption: string) => {
@@ -117,7 +127,7 @@ export const PostEditorProvider = ({
       vibe: "",
       isUsingSalesData: false,
     });
-    setPostCategories([]);
+    setSelectableCategories([]);
     setAdditionalPrompt("");
     setPlatformStates([]);
     setCaptionSuggestions([]);
@@ -129,6 +139,7 @@ export const PostEditorProvider = ({
         mode,
         selectedPost,
         setSelectedPost,
+        initializeEditorFromPost,
         uploadedImageUrl,
         setUploadedImageUrl,
         image,
@@ -138,8 +149,8 @@ export const PostEditorProvider = ({
         hasSalesData,
         customisedBusinessInfo,
         setCustomisedBusinessInfo,
-        postCategories,
-        setPostCategories,
+        selectableCategories,
+        setSelectableCategories,
         additionalPrompt,
         setAdditionalPrompt,
         platformStates,
@@ -149,7 +160,6 @@ export const PostEditorProvider = ({
         setCaption,
         updateCaptionSuggestion,
         resetPostEditor,
-        initializeEditorFromPost,
       }}
     >
       {children}
