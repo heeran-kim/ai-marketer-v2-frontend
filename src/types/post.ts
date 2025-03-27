@@ -5,7 +5,7 @@ import { Business, Platform } from "./business";
 export interface Post {
   id: string; // Unique post ID
   business: string; // Associated business name (ex: "My Coffee Shop")
-  platform: Platform; // ex: "facebook", "twitter"
+  platform: string; // ex: "facebook", "twitter"
   selectedCategoryLabels: string[];
   caption: string; // Text content of the post
   image: string; // URL of the attached image

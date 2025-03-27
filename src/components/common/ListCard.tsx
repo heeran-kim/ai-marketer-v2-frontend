@@ -49,7 +49,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLinks([
           {
             link: (item as Post).link ?? "Link not available yet",
-            platform: (item as Post).platform.key,
+            platform: (item as Post).platform,
           },
         ]);
         setDescription((item as Post).caption);

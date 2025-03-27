@@ -30,6 +30,15 @@ export const PLATFORM_OPTIONS_WITH_LABEL = Object.entries(platformConfig).map(
 );
 
 export const getPlatformIcon = (platform: string, additionalClasses = "") => {
+  if (!platform) {
+    return (
+      <FaCircleQuestion
+        className={`text-gray-500 ${additionalClasses} hover:opacity-80 transition`}
+        size={20}
+      />
+    );
+  }
+
   const formattedPlatform = platform.trim().toLowerCase();
   const config = platformConfig[formattedPlatform] || {
     icon: FaCircleQuestion,

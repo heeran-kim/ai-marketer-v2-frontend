@@ -1,10 +1,8 @@
-import { Platform } from "./business";
-
 // Raw post data received from backend
 export interface PostDto {
   id: string;
   business: string;
-  platform: Platform;
+  platform: string;
   categories: string[];
   caption: string;
   image: string;
