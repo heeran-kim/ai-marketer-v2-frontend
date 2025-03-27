@@ -8,25 +8,19 @@ import CaptionSelection from "./create/CaptionSelection";
 import PostReviewStep from "./create/PostReviewStep";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 import { AI_API } from "@/constants/api";
 import apiClient from "@/utils/apiClient";
-import { Post, PostMode } from "@/app/types/post";
+import { PostEditorMode } from "@/app/types/post";
 
-type PostEditorFlowProps = {
-  mode: PostMode;
-  postData?: Post;
-};
-
-export const PostEditorFlow = ({ mode, postData }: PostEditorFlowProps) => {
-  const isEdit = mode === PostMode.EDIT;
-
+export const PostEditorFlow = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const {
+    mode,
     image,
     detectedItems,
     customisedBusinessInfo,
@@ -34,7 +28,9 @@ export const PostEditorFlow = ({ mode, postData }: PostEditorFlowProps) => {
     platformStates,
     additionalPrompt,
     setCaptionSuggestions,
-  } = usePostEditor();
+  } = usePostEditorContext();
+
+  const isEditing = mode === PostEditorMode.EDIT;
 
   useEffect(() => {
     contentRef.current?.scrollTo({
@@ -44,7 +40,7 @@ export const PostEditorFlow = ({ mode, postData }: PostEditorFlowProps) => {
   }, [detectedItems]);
 
   const handleNext = async (skipConfirm = false) => {
-    if (step === 1 && !image) {
+    if (step === 1 && !image && !isEditing) {
       alert("⚠️ Please upload an image before proceeding.");
       return;
     }

@@ -3,17 +3,25 @@
 import { useState } from "react";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import Card from "@/components/common/CompactCard";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
 import { ImageAnalysisResponse } from "@/app/types/post";
 import { AI_API } from "@/constants/api";
 
 export default function ImageAnalyser() {
-  const { image, setImage, detectedItems, setDetectedItems } = usePostEditor();
+  const {
+    imageUrl,
+    setImageUrl,
+    image,
+    setImage,
+    detectedItems,
+    setDetectedItems,
+  } = usePostEditorContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImageUpload = (file: File | null) => {
     setImage(file);
+    setImageUrl(null);
     setDetectedItems([]);
   };
 
@@ -56,7 +64,7 @@ export default function ImageAnalyser() {
         description="Upload an image and let AI detect key elements to generate captions."
       >
         <DragAndDropUploader
-          value={image ? URL.createObjectURL(image) : ""}
+          value={image ? URL.createObjectURL(image) : imageUrl ?? ""}
           onChange={handleImageUpload}
           fileType="image"
         />

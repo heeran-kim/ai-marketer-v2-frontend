@@ -1,7 +1,7 @@
 // src/app/(protected)/posts/create/components/CaptionSelection.tsx
 "use client";
 
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
@@ -19,7 +19,7 @@ export default function CaptionSelection() {
     platformStates,
     updateCaptionSuggestion,
     setCaption,
-  } = usePostEditor();
+  } = usePostEditorContext();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedView, setSelectedView] = useState<
     "suggestedCaptions" | string

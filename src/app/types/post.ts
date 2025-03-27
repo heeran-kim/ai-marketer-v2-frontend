@@ -5,7 +5,7 @@ import { Business, Platform } from "./business";
 export interface Post {
   id: string; // Unique post ID
   business: string; // Associated business name (ex: "My Coffee Shop")
-  platform: string; // ex: "facebook", "twitter"
+  platform: Platform; // ex: "facebook", "twitter"
   categories: string[]; // ex: ["Brand Story", "Product Highlight"]
   caption: string; // Text content of the post
   image: string; // URL of the attached image
@@ -65,6 +65,14 @@ export interface CustomisedBusinessInfo
 
 // Context type for managing post creation state
 export interface PostEditorContextType {
+  mode: PostEditorMode | null;
+
+  selectedPost: Post | null;
+  setSelectedPost: (post: Post | null) => void;
+
+  imageUrl: string | null;
+  setImageUrl: (imageUrl: string | null) => void;
+
   // Selected image for the post
   image: File | null;
   setImage: (image: File | null) => void;
@@ -98,9 +106,11 @@ export interface PostEditorContextType {
 
   // Function to reset all post creation data
   resetPostEditor: () => void;
+
+  initializeEditorFromPost: (post: Post) => void;
 }
 
-export enum PostMode {
+export enum PostEditorMode {
   CREATE = "create",
   EDIT = "edit",
 }

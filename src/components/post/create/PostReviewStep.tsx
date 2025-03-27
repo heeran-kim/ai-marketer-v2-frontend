@@ -2,10 +2,10 @@
 
 import Card from "@/components/common/CompactCard";
 import ListCard from "@/components/common/ListCard";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function PostReviewStep() {
-  const { image, postCategories, platformStates } = usePostEditor();
+  const { image, postCategories, platformStates } = usePostEditorContext();
 
   if (!image) {
     throw new Error(

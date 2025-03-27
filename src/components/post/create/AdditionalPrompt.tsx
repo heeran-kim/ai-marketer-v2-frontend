@@ -1,10 +1,10 @@
 "use client";
 
 import Card from "@/components/common/CompactCard";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function AdditionalPrompt() {
-  const { additionalPrompt, setAdditionalPrompt } = usePostEditor();
+  const { additionalPrompt, setAdditionalPrompt } = usePostEditorContext();
 
   return (
     <Card title="Anything else to add?">

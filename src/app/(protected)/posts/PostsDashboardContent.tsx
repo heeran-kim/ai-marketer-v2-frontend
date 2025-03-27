@@ -17,11 +17,14 @@ import { Post } from "@/app/types/post";
 import { DropboxItem } from "@/app/types/index";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
 import { POSTS_API } from "@/constants/api";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 
 const ITEMS_PER_PAGE = 5;
 
 export default function PostsDashboardContent() {
   const router = useRouter();
+  const { setSelectedPost, initializeEditorFromPost } = usePostEditorContext();
+
   const [postId, setPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | undefined>(
     undefined
@@ -46,7 +49,7 @@ export default function PostsDashboardContent() {
   });
 
   const { data, error, mutate } = useFetchData<{ posts: Post[] }>(
-    POSTS_API.GET_ALL
+    POSTS_API.LIST
   );
   const posts = data?.posts || [];
 
@@ -54,7 +57,7 @@ export default function PostsDashboardContent() {
 
   const filteredPosts = posts.filter(
     (post) =>
-      (!selectedPlatform || post.platform === selectedPlatform) &&
+      (!selectedPlatform || post.platform.key === selectedPlatform) &&
       (!selectedStatus || post.status === selectedStatus) &&
       (!searchTerm ||
         post.caption.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -108,6 +111,8 @@ export default function PostsDashboardContent() {
   };
 
   const handleEdit = (post: Post) => {
+    setSelectedPost(post);
+    initializeEditorFromPost(post);
     router.push(`/posts?mode=edit&id=${post.id}`);
   };
 

@@ -33,10 +33,11 @@ export const SETTINGS_API = {
 
 // Posts API Endpoints
 export const POSTS_API = {
-  GET_ALL: `${BASE_URL}/posts/`,
-  CREATE: `${BASE_URL}/posts/?create=true`,
-  UPDATE: (id: string) => `${BASE_URL}/posts/${id}/edit/`,
-  DELETE: (id: string) => `${BASE_URL}/posts/${id}/delete/`,
+  LIST: `${BASE_URL}/posts/`, // GET
+  DETAIL: (id: string) => `${BASE_URL}/posts/${id}/`, // GET
+  CREATE: `${BASE_URL}/posts/?create=true`, // POST
+  UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`, // PATCH or PUT
+  DELETE: (id: string) => `${BASE_URL}/posts/${id}/`, // DELETE
 };
 
 // Promotions API Endpoints

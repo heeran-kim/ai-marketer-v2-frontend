@@ -2,7 +2,7 @@
 
 import Card from "@/components/common/CompactCard";
 import { getPlatformIcon, PLATFORM_OPTIONS } from "@/utils/icon";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function PostSettings() {
   const {
@@ -10,7 +10,7 @@ export default function PostSettings() {
     setPostCategories,
     platformStates,
     setPlatformStates,
-  } = usePostEditor();
+  } = usePostEditorContext();
 
   const handleCategoryToggle = (categoryLabel: string) => {
     setPostCategories(

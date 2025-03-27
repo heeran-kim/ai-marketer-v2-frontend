@@ -1,11 +1,14 @@
 // src/context/PostEditornContext.tsx
 import { createContext, useContext, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   PostEditorConfig,
   PostEditorContextType,
   CustomisedBusinessInfo,
   PlatformState,
   PostCategory,
+  PostEditorMode,
+  Post,
 } from "@/app/types/post";
 import { useEffect } from "react";
 import { POSTS_API } from "@/constants/api";
@@ -20,6 +23,12 @@ export const PostEditorProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+
+  const [mode, setMode] = useState<PostEditorMode | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [hasSalesData, setHasSalesData] = useState<boolean>(false);
@@ -62,6 +71,24 @@ export const PostEditorProvider = ({
     }
   }, [data]);
 
+  useEffect(() => {
+    if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
+    else if (modeParam == PostEditorMode.EDIT) setMode(PostEditorMode.EDIT);
+    else setMode(null);
+  }, [modeParam]);
+
+  const initializeEditorFromPost = (post: Post) => {
+    setImageUrl(post.image);
+    setPlatformStates([
+      {
+        key: post.platform.key,
+        label: post.platform.label,
+        isSelected: true,
+        caption: post.caption,
+      },
+    ]);
+  };
+
   const setCaption = (platformKey: string, newCaption: string) => {
     setPlatformStates((prevStates) =>
       prevStates.map((state) =>
@@ -79,6 +106,9 @@ export const PostEditorProvider = ({
   };
 
   const resetPostEditor = () => {
+    setMode(null);
+    setSelectedPost(null);
+    setImageUrl(null);
     setImage(null);
     setDetectedItems([]);
     setHasSalesData(false);
@@ -96,6 +126,11 @@ export const PostEditorProvider = ({
   return (
     <PostEditorContext.Provider
       value={{
+        mode,
+        selectedPost,
+        setSelectedPost,
+        imageUrl,
+        setImageUrl,
         image,
         setImage,
         detectedItems,
@@ -113,7 +148,8 @@ export const PostEditorProvider = ({
         setCaptionSuggestions,
         setCaption,
         updateCaptionSuggestion,
-        resetPostEditor: resetPostEditor,
+        resetPostEditor,
+        initializeEditorFromPost,
       }}
     >
       {children}
@@ -121,10 +157,12 @@ export const PostEditorProvider = ({
   );
 };
 
-export const usePostEditor = () => {
+export const usePostEditorContext = () => {
   const context = useContext(PostEditorContext);
   if (!context) {
-    throw new Error("usePostEditor must be used within a PostEditorProvider");
+    throw new Error(
+      "usePostEditorContext must be used within a PostEditorProvider"
+    );
   }
   return context;
 };

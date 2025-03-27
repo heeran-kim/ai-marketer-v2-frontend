@@ -2,11 +2,11 @@
 
 import Card from "@/components/common/CompactCard";
 import { FaQuestionCircle } from "react-icons/fa";
-import { usePostEditor } from "@/context/PostEditorContext";
+import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function BusinessInfo() {
   const { hasSalesData, customisedBusinessInfo, setCustomisedBusinessInfo } =
-    usePostEditor();
+    usePostEditorContext();
 
   const handleInputChange = (
     field: keyof typeof customisedBusinessInfo,
