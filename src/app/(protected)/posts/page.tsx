@@ -4,7 +4,7 @@
 import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Modal from "@/components/common/Modal";
-import PostCreationFlow from "@/components/post/create/PostCreationFlow";
+import PostEditorFlow from "@/components/post/PostEditorFlow";
 import PostsDashboardContent from "./PostsDashboardContent";
 import { PostCreationProvider } from "@/context/PostCreationContext";
 
@@ -26,7 +26,7 @@ function PostsContent() {
       {isCreating && window.innerWidth >= 640 && (
         <PostCreationProvider>
           <Modal isOpen={true} onClose={() => router.push("/posts")}>
-            <PostCreationFlow />
+            <PostEditorFlow />
           </Modal>
         </PostCreationProvider>
       )}

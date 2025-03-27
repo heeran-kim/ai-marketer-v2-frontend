@@ -34,7 +34,7 @@ export const SETTINGS_API = {
 // Posts API Endpoints
 export const POSTS_API = {
   GET_ALL: `${BASE_URL}/posts/`,
-  CREATE: `${BASE_URL}/posts/create/`,
+  CREATE: `${BASE_URL}/posts/?create=true`,
   UPDATE: (id: string) => `${BASE_URL}/posts/${id}/edit/`,
   DELETE: (id: string) => `${BASE_URL}/posts/${id}/delete/`,
 };

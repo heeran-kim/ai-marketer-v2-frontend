@@ -2,17 +2,17 @@
 "use client";
 
 import { LoadingModal, ConfirmModal } from "@/components/common";
-import ImageAnalyser from "./ImageAnalyser";
-import PostDetails from "./PostDetails";
-import CaptionSelection from "./CaptionSelection";
-import PostReviewStep from "./PostReviewStep";
+import ImageAnalyser from "./create/ImageAnalyser";
+import PostDetails from "./create/PostDetails";
+import CaptionSelection from "./create/CaptionSelection";
+import PostReviewStep from "./create/PostReviewStep";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { usePostCreation } from "@/context/PostCreationContext";
 import { AI_API } from "@/constants/api";
 import apiClient from "@/utils/apiClient";
 
-export default function PostCreationFlow() {
+export default function PostEditorFlow() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
