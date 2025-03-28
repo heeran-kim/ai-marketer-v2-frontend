@@ -42,54 +42,61 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
     useEffect(() => {
       if ((item as Post).type === "post") {
-        setImagePreviewUrl((item as Post).image);
-        setDate(
-          format(new Date((item as Post).scheduledAt), "yyyy-MM-dd hh:mm a")
-        );
+        const post = item as Post;
+        setImagePreviewUrl(post.image);
+
+        let date = "";
+        if (post.status === "Posted" && post.postedAt) date = post.postedAt;
+        else if (post.status === "Scheduled" && post.scheduledAt)
+          date = post.scheduledAt;
+        else if (post.status === "Failed" && post.createdAt)
+          date = post.createdAt;
+        setDate(format(new Date(date), "yyyy-MM-dd hh:mm a"));
+
         setSocialLinks([
           {
-            link: (item as Post).link ?? "Link not available yet",
-            platformKey: (item as Post).platform.key,
+            link: post.link ?? "Link not available yet",
+            platformKey: post.platform.key,
           },
         ]);
-        setDescription((item as Post).caption);
-        setStatus((item as Post).status);
+        setDescription(post.caption);
+        setStatus(post.status);
       }
 
       if ((item as Promotion).type === "promotion") {
+        const promo = item as Promotion;
         setImagePreviewUrl(
-          ((item as Promotion).posts ?? []).length > 0
-            ? (item as Promotion).posts[0].image
+          (promo.posts ?? []).length > 0
+            ? promo.posts[0].image
             : imagePreviewUrl
         );
         setDate(
-          `${format(
-            new Date((item as Promotion).startDate),
+          `${format(new Date(promo.startDate), "yyyy-MM-dd")} ~ ${format(
+            new Date(promo.endDate),
             "yyyy-MM-dd"
-          )} ~ ${format(new Date((item as Promotion).endDate), "yyyy-MM-dd")}`
+          )}`
         );
         setSocialLinks(
-          (item as Promotion).posts?.map((post) => ({
+          promo.posts?.map((post) => ({
             link: `/posts?id=${post.id}`,
             platformKey: post.platform.key ?? "unknown",
           })) ?? []
         );
-        setDescription((item as Promotion).description);
-        setStatus((item as Promotion).status);
+        setDescription(promo.description);
+        setStatus(promo.status);
       }
 
       if ((item as PostReview).type === "postReview") {
-        setImagePreviewUrl((item as PostReview).image);
-        if ((item as PostReview).scheduleDate) {
+        const review = item as PostReview;
+        setImagePreviewUrl(review.image);
+        if (review.scheduleDate) {
           setScheduleType("scheduled");
-          setDate((item as PostReview).scheduleDate);
+          setDate(review.scheduleDate);
         } else {
           setDate(new Date().toISOString().slice(0, 16));
         }
-        setSocialLinks([
-          { link: "", platformKey: (item as PostReview).platform },
-        ]);
-        setDescription((item as PostReview).caption);
+        setSocialLinks([{ link: "", platformKey: review.platform }]);
+        setDescription(review.caption);
       }
     }, [item, imagePreviewUrl]);
 
@@ -153,8 +160,11 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                   <select
                     value={scheduleType}
                     onChange={(e) => {
-                      if (e.target.value === "instant")
+                      if (e.target.value === "instant") {
                         setDate(new Date().toISOString().slice(0, 16));
+                        if (item.type === "postReview")
+                          (item as PostReview).onScheduleChange("");
+                      }
                       setScheduleType(
                         e.target.value as "instant" | "scheduled"
                       );
