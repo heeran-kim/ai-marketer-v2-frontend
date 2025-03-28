@@ -2,12 +2,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  NotificationModal,
-  NotificationType,
-  DragAndDropUploader,
-} from "@/components/common";
+import { Card, DragAndDropUploader } from "@/components/common";
+import { useNotification } from "@/context/NotificationContext";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/types/business";
 import { INDUSTRY_OPTIONS } from "@/constants/settings";
@@ -23,36 +19,11 @@ export default function GeneralSettings() {
   const [editedBusiness, setEditedBusiness] =
     useState<Business>(EMPTY_BUSINESS);
   const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
-  const [notification, setNotification] = useState<{
-    type: NotificationType;
-    message: string;
-    isOpen: boolean;
-  }>({
-    type: "info",
-    message: "",
-    isOpen: false,
-  });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const isPredefinedCategory = INDUSTRY_OPTIONS.includes(
     editedBusiness?.category ?? ""
   );
-
-  // Show notification helper function
-  const showNotification = (type: NotificationType, message: string) => {
-    setNotification({
-      type,
-      message,
-      isOpen: true,
-    });
-  };
-
-  // Close notification helper function
-  const closeNotification = () => {
-    setNotification((prev) => ({
-      ...prev,
-      isOpen: false,
-    }));
-  };
+  const { showNotification } = useNotification();
 
   // Initialize `editedBusiness` with `businessData` when it loads
   useEffect(() => {
@@ -253,13 +224,6 @@ export default function GeneralSettings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <NotificationModal
-        isOpen={notification.isOpen}
-        type={notification.type}
-        message={notification.message}
-        onClose={closeNotification}
-      />
-
       {/* Business Name */}
       <Card
         id="name"

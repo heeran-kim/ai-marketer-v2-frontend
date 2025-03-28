@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFetchData } from "@/hooks/dataHooks";
-import { NotificationModal, NotificationType } from "@/components/common";
+import { useNotification } from "@/context/NotificationContext";
 import { DeletePostHandler } from "@/components/post/DeletePostHandler";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/types/post";
@@ -39,15 +39,7 @@ export const PostsDashboardView = () => {
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
-  const [notification, setNotification] = useState<{
-    type: NotificationType;
-    message: string;
-    isOpen: boolean;
-  }>({
-    type: "info",
-    message: "",
-    isOpen: false,
-  });
+  const { showNotification } = useNotification();
 
   const { data, error, mutate } = useFetchData<{ posts: PostDto[] }>(
     POSTS_API.LIST
@@ -89,23 +81,6 @@ export const PostsDashboardView = () => {
     );
   }
 
-  // Show notification helper function
-  const showNotification = (type: NotificationType, message: string) => {
-    setNotification({
-      type,
-      message,
-      isOpen: true,
-    });
-  };
-
-  // Close notification helper function
-  const closeNotification = () => {
-    setNotification((prev) => ({
-      ...prev,
-      isOpen: false,
-    }));
-  };
-
   // Replace your old delete functionality with:
   const handleOpenDeleteModal = (postId: string) => {
     setSelectedPostId(postId);
@@ -123,13 +98,6 @@ export const PostsDashboardView = () => {
 
   return (
     <div>
-      <NotificationModal
-        isOpen={notification.isOpen}
-        type={notification.type}
-        message={notification.message}
-        onClose={closeNotification}
-      />
-
       <DeletePostHandler
         selectedPostId={selectedPostId}
         onClose={() => setSelectedPostId(undefined)}

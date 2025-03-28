@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { LoadingModal, ConfirmModal } from "@/components/common";
+import { useNotification } from "@/context/NotificationContext";
 import { PostImageSelector } from "./create/PostImageSelector";
 import PostDetails from "./create/PostDetails";
 import CaptionEditor from "./create/CaptionEditor";
@@ -36,6 +37,7 @@ export const PostEditorFlow = () => {
     selectedPost,
     image,
     detectedItems,
+    scheduledTime,
     customisedBusinessInfo,
     selectableCategories,
     platformStates,
@@ -45,6 +47,8 @@ export const PostEditorFlow = () => {
 
   const isCreating = mode === PostEditorMode.CREATE;
   const isEditing = mode === PostEditorMode.EDIT;
+
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     contentRef.current?.scrollTo({
@@ -88,22 +92,49 @@ export const PostEditorFlow = () => {
     if (!selectedPost) return;
     setIsLoading(true);
     try {
-      // Update the post using the API
-      const postData = {
-        // TODO: Image
-        caption: platformStates[0]?.caption,
-        categories: selectableCategories
-          .filter((cat) => cat.isSelected)
-          .map((cat) => cat.label),
-      };
+      // Create FormData to handle file uploads
+      const formData = new FormData();
 
-      await apiClient.patch(`${POSTS_API.UPDATE(selectedPost?.id)}`, postData);
+      // Add caption
+      formData.append("caption", platformStates[0]?.caption || "");
 
-      // TODO: Show success notification and redirect
+      // Add categories as an array
+      const selectedCategories = selectableCategories
+        .filter((cat) => cat.isSelected)
+        .map((cat) => cat.label);
+
+      // Add each category as a separate form field with the same name
+      selectedCategories.forEach((category) => {
+        formData.append("categories", category);
+      });
+
+      // Add scheduled time if available and it's a scheduled post
+      if (scheduledTime) {
+        formData.append("scheduled_at", scheduledTime);
+      }
+
+      // Add image if a new one was uploaded
+      if (image) {
+        formData.append("image", image);
+      }
+
+      // Use the PATCH endpoint to update the post
+      await apiClient.patch(
+        POSTS_API.UPDATE(selectedPost.id),
+        formData,
+        {},
+        true // isFormData flag
+      );
+
+      // Show success notification
+      showNotification("success", "Post updated successfully!");
+
+      // Redirect back to the posts page
       router.push("/posts");
     } catch (error) {
       console.error("Error updating post:", error);
-      // TODO: Show error notification
+      // Show error notification
+      showNotification("error", "Failed to update post. Please try again.");
     } finally {
       setIsLoading(false);
     }
