@@ -4,22 +4,29 @@ import { BackendHealthProvider } from "@/components/providers/BackendHealthProvi
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import NavbarWrapper from "@/components/layout/NavbarWrapper";
 import Footer from "@/components/layout/Footer";
+import { NotificationProvider } from "@/context/NotificationContext";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <html lang="en">
-            <body className="flex flex-col min-h-screen">
-                <AuthProvider>
-                    <BackendHealthProvider>
-                        <NavbarWrapper >
-                            <main className="flex-grow bg-gray-50 dark:bg-black">
-                                {children}
-                            </main>
-                        </NavbarWrapper>
-                        <Footer />
-                    </BackendHealthProvider>
-                </AuthProvider>
-            </body>
-        </html>
-   );
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className="flex flex-col min-h-screen">
+        <AuthProvider>
+          <BackendHealthProvider>
+            <NotificationProvider>
+              <NavbarWrapper>
+                <main className="flex-grow bg-gray-50 dark:bg-black">
+                  {children}
+                </main>
+              </NavbarWrapper>
+              <Footer />
+            </NotificationProvider>
+          </BackendHealthProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
 }

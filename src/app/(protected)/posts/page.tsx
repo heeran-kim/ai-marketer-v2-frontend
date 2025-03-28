@@ -1,46 +1,25 @@
 // src/app/(protected)/posts/page.tsx
 "use client";
 
-import { Suspense, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import Modal from "@/components/common/Modal";
-import PostCreationFlow from "./create/components/PostCreationFlow";
-import PostsDashboardContent from "./PostsDashboardContent";
-import { PostCreationProvider } from "@/context/PostCreationContext";
-
-function PostsContent() {
-    const searchParams = useSearchParams();
-    const isCreating = searchParams.get("create") === "true";
-    const router = useRouter();
-
-    useEffect(() => {
-        // If the user is on a mobile device and trying to create a post, redirect to a full page
-        if (isCreating && window.innerWidth < 640) {
-            router.replace("/posts/create");
-        }
-    }, [isCreating, router]);
-
-    return (
-        <>
-            {/* Show a modal only on desktop (>=640) */}
-            {isCreating && window.innerWidth >= 640 && (
-                <PostCreationProvider>
-                    <Modal isOpen={true} onClose={() => router.push("/posts")}>
-                        <PostCreationFlow />
-                    </Modal>
-                </PostCreationProvider>
-            )}
-
-            {/* Render the posts dashboard */}
-            <PostsDashboardContent />
-        </>
-    );
-}
+import { Suspense } from "react";
+import { PostEditorProvider } from "@/context/PostEditorContext";
+import { PostEditorEntry } from "./editor";
+import { useFetchData } from "@/hooks/dataHooks";
+import { POSTS_API } from "@/constants/api";
+import { PostDto } from "@/types/dto";
+import { mapPostDtoToPost } from "@/utils/transformers";
 
 export default function PostsDashboard() {
-    return (
-        <Suspense fallback={<p>Loading...</p>}>
-            <PostsContent />
-        </Suspense>
-    );
+  const { data, error, mutate } = useFetchData<{ posts: PostDto[] }>(
+    POSTS_API.LIST
+  );
+  const posts = (data?.posts || []).map(mapPostDtoToPost);
+
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <PostEditorProvider>
+        <PostEditorEntry posts={posts} mutate={mutate} error={error} />
+      </PostEditorProvider>
+    </Suspense>
+  );
 }
