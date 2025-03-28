@@ -58,12 +58,29 @@ export default function PostReviewStep() {
 
           if (isEditing && platformState.scheduleDate) {
             // Convert to Date object
-            const scheduledTime = new Date(platformState.scheduleDate);
+            const scheduledDateTime = new Date(platformState.scheduleDate);
             const currentTime = new Date();
 
-            // If scheduled time is not in the past, keep the original scheduled time
-            if (scheduledTime >= currentTime) {
-              scheduleDate = scheduledTime.toISOString().slice(0, 16);
+            // Only use the scheduled date if it's in the future
+            if (scheduledDateTime > currentTime) {
+              // Format date for datetime-local input without timezone adjustment
+              // This format is: YYYY-MM-DDThh:mm
+              const year = scheduledDateTime.getFullYear();
+              const month = String(scheduledDateTime.getMonth() + 1).padStart(
+                2,
+                "0"
+              );
+              const day = String(scheduledDateTime.getDate()).padStart(2, "0");
+              const hours = String(scheduledDateTime.getHours()).padStart(
+                2,
+                "0"
+              );
+              const minutes = String(scheduledDateTime.getMinutes()).padStart(
+                2,
+                "0"
+              );
+
+              scheduleDate = `${year}-${month}-${day}T${hours}:${minutes}`;
             }
           }
 

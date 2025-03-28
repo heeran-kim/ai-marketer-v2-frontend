@@ -120,10 +120,20 @@ export const PostEditorProvider = ({
   };
 
   const updatePlatformScheduleDate = (platformKey: string, newDate: string) => {
+    let formattedDate;
+    if (newDate) {
+      const inputDate = new Date(newDate);
+      const isoString = inputDate.toISOString();
+      formattedDate = isoString;
+    } else {
+      // If date is cleared, pass empty string
+      formattedDate = "";
+    }
+
     setPlatformStates((prev) =>
       prev.map((platform) =>
         platform.key === platformKey
-          ? { ...platform, scheduleDate: newDate }
+          ? { ...platform, scheduleDate: formattedDate }
           : platform
       )
     );
