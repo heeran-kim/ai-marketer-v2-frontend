@@ -89,7 +89,7 @@ export default function DragAndDropUploader({
                     : "w-full p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps({ disabled: !!preview })} />
 
       {uploadedFile || preview ? (
         fileType === "image" || fileType === "logo" ? (
