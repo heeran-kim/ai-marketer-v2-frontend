@@ -28,6 +28,7 @@ export type PostReview = {
   selectedCategoryLabels: string[]; // Selected categories describing the post content (e.g., ["Brand Story", "Product Highlight"])
   caption: string; // User-selected caption for the post
   type: string;
+  onScheduleChange: (newDate: string) => void;
   scheduleDate: string;
 };
 
@@ -52,6 +53,7 @@ export interface PlatformState {
   label: string; // ex: "Facebook"
   isSelected: boolean; // Whether this platform is selected for posting
   caption: string; // The final caption chosen for this platform
+  scheduleDate?: string; // (Optional) ISO timestamp for scheduled post time on this platform
 }
 
 // Represents the response from AI image analysis
@@ -113,6 +115,8 @@ export interface PostEditorContextType {
 
   // Updates a specific caption suggestion (after user edits)
   updateCaptionSuggestion: (index: number, editedCaption: string) => void;
+
+  updatePlatformScheduleDate: (platformKey: string, newDate: string) => void;
 
   // Resets all editor state back to initial
   resetPostEditor: () => void;

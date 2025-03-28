@@ -43,7 +43,6 @@ export const PostEditorFlow = ({
     selectedPost,
     image,
     detectedItems,
-    scheduledTime,
     customisedBusinessInfo,
     selectableCategories,
     platformStates,
@@ -115,8 +114,10 @@ export const PostEditorFlow = ({
       });
 
       // Add scheduled time if available and it's a scheduled post
-      if (scheduledTime) {
-        formData.append("scheduled_at", scheduledTime);
+      if (platformStates[0]?.scheduleDate) {
+        formData.append("scheduled_at", platformStates[0]?.scheduleDate);
+      } else {
+        formData.append("scheduled_at", "");
       }
 
       // Add image if a new one was uploaded

@@ -15,6 +15,7 @@ export default function PostReviewStep() {
     image,
     selectableCategories,
     platformStates,
+    updatePlatformScheduleDate,
   } = usePostEditorContext();
   const isEditing = mode === PostEditorMode.EDIT;
 
@@ -55,9 +56,9 @@ export default function PostReviewStep() {
           // If editing, check scheduling status
           let scheduleDate = "";
 
-          if (isEditing && selectedPost?.scheduledAt) {
+          if (isEditing && platformState.scheduleDate) {
             // Convert to Date object
-            const scheduledTime = new Date(selectedPost.scheduledAt);
+            const scheduledTime = new Date(platformState.scheduleDate);
             const currentTime = new Date();
 
             // If scheduled time is not in the past, keep the original scheduled time
@@ -72,6 +73,8 @@ export default function PostReviewStep() {
             selectedCategoryLabels: categories,
             caption: platformState.caption,
             scheduleDate,
+            onScheduleChange: (newDate: string) =>
+              updatePlatformScheduleDate(platformState.key, newDate),
             type: "postReview" as const,
           };
         });
@@ -93,6 +96,7 @@ export default function PostReviewStep() {
     platformStates,
     isEditing,
     selectedPost,
+    updatePlatformScheduleDate,
   ]);
 
   return (

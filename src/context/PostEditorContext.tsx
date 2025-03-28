@@ -84,6 +84,7 @@ export const PostEditorProvider = ({
           label: selectedPost.platform.label,
           isSelected: true,
           caption: selectedPost.caption,
+          scheduleDate: selectedPost.scheduledAt,
         },
       ]);
       const mappedCategories = selectableCategories.map((category) => ({
@@ -116,6 +117,16 @@ export const PostEditorProvider = ({
       updatedCaptions[index] = editedCaption;
       return updatedCaptions;
     });
+  };
+
+  const updatePlatformScheduleDate = (platformKey: string, newDate: string) => {
+    setPlatformStates((prev) =>
+      prev.map((platform) =>
+        platform.key === platformKey
+          ? { ...platform, scheduleDate: newDate }
+          : platform
+      )
+    );
   };
 
   const resetPostEditor = () => {
@@ -161,6 +172,7 @@ export const PostEditorProvider = ({
         setCaptionSuggestions,
         setCaption,
         updateCaptionSuggestion,
+        updatePlatformScheduleDate,
         resetPostEditor,
       }}
     >

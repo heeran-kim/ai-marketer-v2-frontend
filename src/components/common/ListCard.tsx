@@ -169,7 +169,13 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                     type="datetime-local"
                     disabled={scheduleType !== "scheduled"}
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e) => {
+                      const newDate = e.target.value;
+                      setDate(newDate);
+                      if (item.type === "postReview") {
+                        (item as PostReview).onScheduleChange(newDate);
+                      }
+                    }}
                     className="w-full text-xs p-1 border rounded-md focus:ring focus:ring-blue-300 mt-2"
                   />
                 </div>
