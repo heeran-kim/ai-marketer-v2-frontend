@@ -11,9 +11,19 @@ import Modal from "@/components/common/Modal";
 import { PostsDashboardView } from "@/app/(protected)/posts/dashboard";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import { PostEditorMode } from "@/types/post";
+import { Post, PostEditorMode } from "@/types/post";
+import type { KeyedMutator } from "swr";
+import type { PostDto } from "@/types/dto";
 
-export const PostEditorEntry = () => {
+export const PostEditorEntry = ({
+  posts,
+  mutate,
+  error,
+}: {
+  posts: Post[];
+  mutate: KeyedMutator<{ posts: PostDto[] }>;
+  error: unknown;
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
@@ -51,12 +61,12 @@ export const PostEditorEntry = () => {
             router.push("/posts");
           }}
         >
-          <PostEditorFlow />
+          <PostEditorFlow mutate={mutate} />
         </Modal>
       )}
 
       {/* Render the posts dashboard */}
-      <PostsDashboardView />
+      <PostsDashboardView posts={posts} mutate={mutate} error={error} />
     </>
   );
 };

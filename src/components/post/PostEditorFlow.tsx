@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import type { KeyedMutator } from "swr";
 
 import { LoadingModal, ConfirmModal } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
@@ -16,6 +17,7 @@ import { apiClient } from "@/hooks/dataHooks";
 
 import { AI_API, POSTS_API } from "@/constants/api";
 import { PostEditorMode } from "@/types/post";
+import { PostDto } from "@/types/dto";
 
 enum ConfirmModalMode {
   CLOSE,
@@ -24,7 +26,11 @@ enum ConfirmModalMode {
   STEP1_EDIT_NO_IMAGE,
 }
 
-export const PostEditorFlow = () => {
+export const PostEditorFlow = ({
+  mutate,
+}: {
+  mutate: KeyedMutator<{ posts: PostDto[] }>;
+}) => {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [step, setStep] = useState(1);
@@ -130,6 +136,7 @@ export const PostEditorFlow = () => {
       showNotification("success", "Post updated successfully!");
 
       // Redirect back to the posts page
+      mutate();
       router.push("/posts");
     } catch (error) {
       console.error("Error updating post:", error);

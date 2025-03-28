@@ -7,22 +7,28 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useFetchData } from "@/hooks/dataHooks";
 import { useNotification } from "@/context/NotificationContext";
 import { DeletePostHandler } from "@/components/post/DeletePostHandler";
 import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Post } from "@/types/post";
 import { DropboxItem } from "@/types/index";
-import { POSTS_API } from "@/constants/api";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostsFilterBar } from "./PostsFilterBar";
 import { PostList } from "./PostList";
-import { mapPostDtoToPost } from "@/utils/transformers";
-import { PostDto } from "@/types/dto";
+import type { KeyedMutator } from "swr";
+import type { PostDto } from "@/types/dto";
 
 const ITEMS_PER_PAGE = 5;
 
-export const PostsDashboardView = () => {
+export const PostsDashboardView = ({
+  posts,
+  mutate,
+  error,
+}: {
+  posts: Post[];
+  mutate: KeyedMutator<{ posts: PostDto[] }>;
+  error: unknown;
+}) => {
   const router = useRouter();
   const { setSelectedPost } = usePostEditorContext();
 
@@ -40,11 +46,6 @@ export const PostsDashboardView = () => {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const { showNotification } = useNotification();
-
-  const { data, error, mutate } = useFetchData<{ posts: PostDto[] }>(
-    POSTS_API.LIST
-  );
-  const posts = (data?.posts || []).map(mapPostDtoToPost);
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
 
