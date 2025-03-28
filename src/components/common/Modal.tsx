@@ -47,7 +47,7 @@ export default function Modal({
     >
       <div
         // Modal content box
-        className="bg-white p-2 rounded-lg w-[430px] h-[600px] max-w-md shadow-lg flex flex-col"
+        className="bg-white p-2 w-full sm:w-[430px] h-full sm:h-[500px] max-w-md shadow-lg flex flex-col"
       >
         {children}
       </div>

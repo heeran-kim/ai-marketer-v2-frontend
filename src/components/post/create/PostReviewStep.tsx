@@ -6,6 +6,7 @@ import ListCard from "@/components/common/ListCard";
 import { LoadingModal } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostEditorMode, PostReview } from "@/types/post";
+import { formatDateToLocalInput } from "@/utils/dateFormatter";
 
 export default function PostReviewStep() {
   const {
@@ -64,23 +65,7 @@ export default function PostReviewStep() {
             // Only use the scheduled date if it's in the future
             if (scheduledDateTime > currentTime) {
               // Format date for datetime-local input without timezone adjustment
-              // This format is: YYYY-MM-DDThh:mm
-              const year = scheduledDateTime.getFullYear();
-              const month = String(scheduledDateTime.getMonth() + 1).padStart(
-                2,
-                "0"
-              );
-              const day = String(scheduledDateTime.getDate()).padStart(2, "0");
-              const hours = String(scheduledDateTime.getHours()).padStart(
-                2,
-                "0"
-              );
-              const minutes = String(scheduledDateTime.getMinutes()).padStart(
-                2,
-                "0"
-              );
-
-              scheduleDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+              scheduleDate = formatDateToLocalInput(scheduledDateTime);
             }
           }
 

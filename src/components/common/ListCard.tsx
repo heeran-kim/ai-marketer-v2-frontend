@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useState, useEffect, useRef } from "react";
 import { getPlatformIcon } from "@/utils/icon";
+import { convertISOToLocalInput } from "@/utils/dateFormatter";
 import { format } from "date-fns";
 import { getStatusClass } from "@/components/styles";
 import ActionDropdown from "@/components/common/ActionDropdown";
@@ -160,11 +161,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                   <select
                     value={scheduleType}
                     onChange={(e) => {
-                      if (e.target.value === "instant") {
-                        setDate(new Date().toISOString().slice(0, 16));
-                        if (item.type === "postReview")
-                          (item as PostReview).onScheduleChange("");
-                      }
+                      if (e.target.value === "instant")
+                        (item as PostReview).onScheduleChange("");
                       setScheduleType(
                         e.target.value as "instant" | "scheduled"
                       );
@@ -177,16 +175,17 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
                   <input
                     type="datetime-local"
-                    disabled={scheduleType !== "scheduled"}
                     value={date}
                     onChange={(e) => {
                       const newDate = e.target.value;
-                      setDate(newDate);
+                      setDate(convertISOToLocalInput(newDate));
                       if (item.type === "postReview") {
                         (item as PostReview).onScheduleChange(newDate);
                       }
                     }}
-                    className="w-full text-xs p-1 border rounded-md focus:ring focus:ring-blue-300 mt-2"
+                    className={`w-full text-xs p-1 border rounded-md focus:ring focus:ring-blue-300 mt-2 max-w-full sm:max-w-xs sm:w-auto sm:mx-auto ${
+                      scheduleType === "instant" ? "hidden" : ""
+                    }`}
                   />
                 </div>
               ) : (
