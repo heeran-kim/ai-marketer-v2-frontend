@@ -1,4 +1,4 @@
-// src/app/(protected)/posts/create/components/PostCreationFlow.tsx
+// src/components/post/PostEditorFlow.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -35,6 +35,7 @@ export const PostEditorFlow = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [confirmModalMode, setConfirmModalMode] = useState<ConfirmModalMode>(
     ConfirmModalMode.CLOSE
   );
@@ -96,6 +97,7 @@ export const PostEditorFlow = ({
   const handleUpdate = async () => {
     if (!selectedPost) return;
     setIsLoading(true);
+    setLoadingMessage("Updating post...");
     try {
       // Create FormData to handle file uploads
       const formData = new FormData();
@@ -136,8 +138,8 @@ export const PostEditorFlow = ({
       // Show success notification
       showNotification("success", "Post updated successfully!");
 
-      // Redirect back to the posts page
-      mutate();
+      // Refresh the data and redirect
+      await mutate();
       router.push("/posts");
     } catch (error) {
       console.error("Error updating post:", error);
@@ -178,7 +180,7 @@ export const PostEditorFlow = ({
 
   return (
     <>
-      <LoadingModal isOpen={isLoading} />
+      <LoadingModal isOpen={isLoading} message={loadingMessage} />
       {confirmModalMode === ConfirmModalMode.STEP1_CREATE_NO_IMAGE && (
         <ConfirmModal
           isOpen={true}
