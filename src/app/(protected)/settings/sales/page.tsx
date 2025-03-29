@@ -7,6 +7,7 @@ import Card from "@/components/common/Card";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import { SETTINGS_API } from "@/constants/api";
 import { SalesDailyRevenue } from "@/types/sales";
+import { useNotification } from "@/context/NotificationContext";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -39,6 +40,7 @@ export default function SalesDataUpload() {
   const [salesFile, setSalesFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
+  const { showNotification } = useNotification();
   const { data, isLoading, mutate } = useFetchData<SalesDailyRevenue>(
     SETTINGS_API.SALES
   );
@@ -97,7 +99,7 @@ export default function SalesDataUpload() {
     if (!hasToday) {
       chartData.push({
         x: today.toISOString(),
-        y: 0,
+        y: null as unknown as number,
       });
     }
 
@@ -158,10 +160,17 @@ export default function SalesDataUpload() {
           },
         },
         y: {
-          beginAtZero: true,
-          title: {
-            display: !isMobile,
-            text: "Revenue",
+          ticks: {
+            callback: function (value: string | number) {
+              const numericValue =
+                typeof value === "number" ? value : parseFloat(value);
+              return numericValue >= 1000
+                ? numericValue / 1000 + "k"
+                : numericValue;
+            },
+            font: {
+              size: 11,
+            },
           },
         },
       },
@@ -196,6 +205,7 @@ export default function SalesDataUpload() {
       await apiClient.post(SETTINGS_API.SALES, formData, {}, true);
       await mutate();
       setSalesFile(null);
+      showNotification("success", "File Uploaded successfully!");
     } catch (err) {
       if (err instanceof Error) {
         try {
@@ -215,7 +225,7 @@ export default function SalesDataUpload() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-xs sm:max-w-3xl mx-auto space-y-6">
       <Card
         title="Recent Sales Data"
         description={`Displaying sales data from ${

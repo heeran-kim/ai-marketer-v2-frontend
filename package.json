@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem node server.js",
+    "dev": "node set-cert-env.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
