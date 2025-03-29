@@ -47,7 +47,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setImagePreviewUrl(post.image);
 
         let date = "";
-        if (post.status === "Posted" && post.postedAt) date = post.postedAt;
+        if (post.status === "Published" && post.postedAt) date = post.postedAt;
         else if (post.status === "Scheduled" && post.scheduledAt)
           date = post.scheduledAt;
         else if (post.status === "Failed" && post.createdAt)

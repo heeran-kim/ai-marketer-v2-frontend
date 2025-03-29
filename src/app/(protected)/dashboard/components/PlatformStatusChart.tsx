@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { PostsSummary } from "@/types/business";
-import { STATUS_COLORS_CHART } from "@/components/styles";
+import { Platform } from "@/types/business";
+import { PLATFORM_CHART_COLORS } from "@/components/styles";
 import {
   ChartData,
   ChartEvent,
@@ -17,11 +17,11 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-interface PostStatusChartProps {
-  data: PostsSummary;
+interface PlatformStatusChartProps {
+  data: Platform[];
 }
 
-export const PostStatusChart = ({ data }: PostStatusChartProps) => {
+export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
   const router = useRouter();
   const [chartData, setChartData] = useState<ChartData<"doughnut"> | null>(
     null
@@ -29,16 +29,16 @@ export const PostStatusChart = ({ data }: PostStatusChartProps) => {
 
   useEffect(() => {
     if (data) {
-      const labels: string[] = ["Scheduled", "Published", "Failed"];
-      const counts = [data.numScheduled, data.numPublished, data.numFailed];
+      const labels = data.map((p) => p.label);
+      const counts = data.map((p) => p.numPublished);
 
-      const backgroundColors = labels.map(
-        (status) => STATUS_COLORS_CHART[status] ?? "rgba(0, 0, 0, 0.3)"
+      const backgroundColors = data.map(
+        (p) => PLATFORM_CHART_COLORS[p.key] ?? PLATFORM_CHART_COLORS.default
       );
 
-      const borderColors = labels.map(
-        (status) =>
-          STATUS_COLORS_CHART[status]?.replace("0.6", "1") ?? "rgba(0,0,0,1)"
+      const borderColors = data.map(
+        (p) =>
+          PLATFORM_CHART_COLORS[p.key]?.replace("0.6", "1") ?? "rgba(0,0,0,1)"
       );
 
       const chart: ChartData<"doughnut"> = {
@@ -98,7 +98,7 @@ export const PostStatusChart = ({ data }: PostStatusChartProps) => {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h3 className="text-lg font-semibold mb-4">Post Status Overview</h3>
+      <h3 className="text-lg font-semibold mb-4">Platform Status Overview</h3>
       <div className="h-64 flex items-center justify-center">
         <Doughnut data={chartData!} options={options} />
       </div>

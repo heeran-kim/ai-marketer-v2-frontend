@@ -26,13 +26,14 @@ export interface Platform {
   label: string; // Display name (ex: "Facebook", "Twitter / X")
   link: string; // ex: "https://facebook.com/mybusiness"
   username: string; // ex: "mybusiness" (Social media account name)
+  numPublished?: number;
 }
 
 // Summary of posts for the dashboard (Key Metric for Business)
 export interface PostsSummary {
-  numScheduledPosts: number; // Number of scheduled posts
-  numPublishedPosts: number; // Number of successfully uploaded posts
-  numFailedPosts: number; // Number of posts that failed to upload
+  numScheduled: number; // Number of scheduled posts
+  numPublished: number; // Number of successfully uploaded posts
+  numFailed: number; // Number of posts that failed to upload
   lastActivity: string | null; // ex: "2024-03-01T12:00:00Z" (ISO timestamp) or null
   lastPostLink: string | null; // ex: "https://facebook.com/mybusiness/posts/12345" or null
 }

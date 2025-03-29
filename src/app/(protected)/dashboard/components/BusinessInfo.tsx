@@ -1,6 +1,5 @@
 // app/(protected)/dashboard/components/BusinessInfo.tsx
 import LinkedPlatformIcons from "./LinkedPlatformIcons";
-import BusinessStatus from "./BusinessStatus";
 import LastPostInfo from "./LastPostInfo";
 import { DashboardData } from "@/types/business";
 
@@ -19,8 +18,6 @@ export default function BusinessInfo({ dashboardData }: BusinessInfoProps) {
       </div>
 
       <LastPostInfo postsSummary={dashboardData.postsSummary} />
-
-      <BusinessStatus postsSummary={dashboardData.postsSummary} />
     </div>
   );
 }
