@@ -1,8 +1,7 @@
 /**
- * EmailLoginPage Component
+ * 2FALoginPage Component
  * 
- * Handles traditional email/password authentication.
- * Supports both login and automatic registration when accounts don't exist.
+ * Handles 2FA authentication.
  */
 "use client";
 
@@ -18,14 +17,23 @@ export default function EmailLoginPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         email: "",
-        password: ""
+        password: "",
+        code: "",
     });
+
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (authState.status === "authenticated") router.push("/dashboard");
     }, [authState, router]);
+
+    useEffect(() => {
+        const storedUser = sessionStorage.getItem("userDetails");
+        if (storedUser) {
+          setFormData(JSON.parse(storedUser)); // Retrieve and parse data
+        }
+      }, []);
 
     // Show loading UI
     if (authState.status !== "unauthenticated") {
@@ -81,21 +89,16 @@ export default function EmailLoginPage() {
         setIsLoading(true);
         
         try {
-            await login(formData.email, formData.password,'traditional');
+            await login(formData.email, formData.password,'2fa', formData.code);
             // Successful login will redirect via AuthProvider
         } catch (error: unknown) {
             // Handle authentication errors
             const errorMessage = error instanceof Error 
                 ? error.message 
                 : "Authentication failed. Please check your credentials.";
-            setErrors({ server: errorMessage });
 
-            if(errorMessage==="Requires 2FA.")  //Push client to the 2FA Page
-            {
-                router.push("/login/2fa")
-            }
+            setErrors({ server: errorMessage });
         } finally {
-            sessionStorage.setItem("userDetails", JSON.stringify(formData));
             setIsLoading(false);
         }
     };
@@ -103,40 +106,30 @@ export default function EmailLoginPage() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="w-full max-w-md p-8">
+                {formData.password?
                 <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
-                    Sign in with Email
+                    Please enter the code on your Authenticator App
                 </h1>
-                
+                :
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                    Please Sign In First!
+                </h1>
+                }
+                {formData.password?
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Email field */}
+                    {/* AuthCode field */}
                     <div>
                         <input
-                            type="email"
-                            name="email"
-                            placeholder="Email address"
+                            type="code"
+                            name="code"
+                            placeholder="Code"
                             className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors
-                                ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
-                            value={formData.email}
+                                ${errors.code ? 'border-red-500 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
+                            value={formData.code}
                             onChange={handleChange}
                         />
-                        {errors.email && (
-                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                        )}
-                    </div>
-                
-                    {/* Password field */}
-                    <div>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors
-                                ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                        {errors.password && (
-                            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                        {errors.code && (
+                            <p className="mt-1 text-sm text-red-600">{errors.code}</p>
                         )}
                     </div>
                     
@@ -153,32 +146,17 @@ export default function EmailLoginPage() {
                         className={`${primaryNavItemClass} w-full justify-center py-3`}
                         disabled={isLoading}
                     >
-                        {isLoading ? "Signing in..." : "Sign in"}
+                        {isLoading ? "Authenticating..." : "Authenticate"}
                     </button>
                 </form>
+                :
+                <h1 className="text-l mb-6 text-center text-gray-900 dark:text-white">
+                    Use the link below!
+                </h1>
+                }
                 
                 {/* Help links */}
-                <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400 space-y-2">
-                    <p>
-                        Don&apos;t have an account? 
-                        <span className="ml-1 text-indigo-600 dark:text-indigo-400">
-                            <Link 
-                                href="/register" 
-                                className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
-                            >
-                                Sign Up
-                            </Link>
-                        </span>
-                    </p>
-                    <p>
-                        <Link 
-                            href="/forgot-password" 
-                            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
-                        >
-                            Forgot your password?
-                        </Link>
-                    </p>
-                </div>
+                <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400 space-y-2"></div>
                 
                 {/* Back button */}
                 <div className="mt-6 text-center">
