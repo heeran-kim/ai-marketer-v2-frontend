@@ -1,4 +1,3 @@
-// src/app/(protected)/dashboard/components/BusinessProfileCard.tsx
 import Image from "next/image";
 import { Business } from "@/types/business";
 import { useRouter } from "next/navigation";
@@ -9,30 +8,44 @@ interface Props {
 
 export const BusinessProfileCard = ({ business }: Props) => {
   const router = useRouter();
-  const { name, logo, category } = business;
+  const { name, logo, category, vibe } = business;
 
   return (
     <div
       onClick={() => router.push("/settings/general")}
-      className="bg-white rounded-lg shadow p-4 cursor-pointer hover:shadow-md transition"
+      className="relative bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-md transition h-36 sm:h-40"
     >
-      <h3 className="text-lg font-semibold mb-4">Business Overview</h3>
-      <div className="flex items-center gap-4">
+      {/* Background logo */}
+      <div className="absolute inset-0 opacity-10 dark:opacity-20">
         <Image
           src={`${logo}?t=${new Date().getTime()}` || "/default-logo.png"}
           alt={`${name} Logo`}
-          width={60}
-          height={60}
-          className="rounded-full object-cover w-[60px] h-[60px]"
+          layout="fill"
+          objectFit="cover"
+          className="w-full h-full"
         />
-        <div>
-          <p className="text-base font-semibold">{name}</p>
-          {category && (
-            <span className="inline-block mt-1 px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded-full">
-              {category}
-            </span>
-          )}
-        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col justify-center px-6">
+        <p className="text-xl font-semibold text-gray-900 dark:text-white">
+          {name}
+        </p>
+
+        {vibe && (
+          <p className="text-sm text-gray-800 dark:text-gray-300 mt-1">
+            {vibe}
+          </p>
+        )}
+      </div>
+
+      {/* Tags - Category and Vibe */}
+      <div className="absolute bottom-3 right-3 flex gap-2 z-20">
+        {category && (
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-700 text-white dark:bg-white dark:text-gray-800 shadow">
+            {category}
+          </span>
+        )}
       </div>
     </div>
   );
