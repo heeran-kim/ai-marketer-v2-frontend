@@ -6,7 +6,6 @@ import ListCard from "@/components/common/ListCard";
 import { LoadingModal } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostEditorMode, PostReview } from "@/types/post";
-import { formatDateToLocalInput } from "@/utils/dateFormatter";
 
 export default function PostReviewStep() {
   const {
@@ -54,27 +53,12 @@ export default function PostReviewStep() {
       const reviewItems = platformStates
         .filter((platform) => platform.isSelected)
         .map((platformState) => {
-          // If editing, check scheduling status
-          let scheduleDate = "";
-
-          if (isEditing && platformState.scheduleDate) {
-            // Convert to Date object
-            const scheduledDateTime = new Date(platformState.scheduleDate);
-            const currentTime = new Date();
-
-            // Only use the scheduled date if it's in the future
-            if (scheduledDateTime > currentTime) {
-              // Format date for datetime-local input without timezone adjustment
-              scheduleDate = formatDateToLocalInput(scheduledDateTime);
-            }
-          }
-
           return {
             image: currentImageUrl,
             platform: platformState.key,
             selectedCategoryLabels: categories,
             caption: platformState.caption,
-            scheduleDate,
+            scheduleDate: platformState.scheduleDate || "",
             onScheduleChange: (newDate: string) =>
               updatePlatformScheduleDate(platformState.key, newDate),
             type: "postReview" as const,

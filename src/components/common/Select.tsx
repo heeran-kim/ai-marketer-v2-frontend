@@ -49,12 +49,20 @@ export default function Select({
                 "
       >
         {value ? (
-          value
+          typeof value === "string" ? (
+            options.find(
+              (opt): opt is { key: string; label: string } =>
+                typeof opt !== "string" && opt.key === value
+            )?.label || value
+          ) : (
+            value
+          )
         ) : (
           <span className="text-gray-500 dark:text-gray-400">
             {placeholder}
           </span>
         )}
+
         <FaChevronDown
           className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
@@ -97,7 +105,7 @@ export default function Select({
                                         dark:hover:bg-gray-800 hover:bg-gray-100 transition"
               >
                 {label}
-                {value === opt && <FaCheck />}
+                {value === key && <FaCheck />}
               </li>
             );
           })}

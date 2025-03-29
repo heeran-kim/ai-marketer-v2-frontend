@@ -23,18 +23,22 @@ export const EMPTY_BUSINESS: Business = {
 // Represents a linked social media account
 export interface Platform {
   key: string; // Internal key for platform (e.g., "facebook", "twitter")
-  label: string; // Display name (ex: "Facebook", "Twitter / X")
+  label: string; // Display name (ex: "Facebook", "Twitter")
   link: string; // ex: "https://facebook.com/mybusiness"
   username: string; // ex: "mybusiness" (Social media account name)
+  numPublished?: number;
 }
 
 // Summary of posts for the dashboard (Key Metric for Business)
 export interface PostsSummary {
-  upcomingPosts: number; // Number of scheduled posts
-  uploadedPosts: number; // Number of successfully uploaded posts
-  failedPosts: number; // Number of posts that failed to upload
-  lastActivity: string | null; // ex: "2024-03-01T12:00:00Z" (ISO timestamp) or null
-  lastPostLink: string | null; // ex: "https://facebook.com/mybusiness/posts/12345" or null
+  numScheduled: number; // Number of scheduled posts
+  numPublished: number; // Number of successfully uploaded posts
+  numFailed: number; // Number of posts that failed to upload
+}
+
+export interface PostActivityData {
+  postDates: Record<string, string[]>; // { "2025-03-29": ["facebook", "instagram"] }
+  lastPostDate: string | null; // ISO string (e.g., "2025-03-29T10:00:00Z")
 }
 
 // Data structure for the dashboard view
@@ -42,4 +46,5 @@ export interface DashboardData {
   business: Pick<Business, "name" | "logo">;
   linkedPlatforms: Platform[];
   postsSummary: PostsSummary;
+  postActivity: PostActivityData;
 }

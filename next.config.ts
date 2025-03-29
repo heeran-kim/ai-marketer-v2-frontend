@@ -1,16 +1,11 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "localhost",
-        port: "8000",
-        pathname: "/media/**",
-      },
-    ],
+    unoptimized: isDev,
   },
 };
 

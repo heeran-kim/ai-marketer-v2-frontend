@@ -17,6 +17,8 @@ import { PostsFilterBar } from "./PostsFilterBar";
 import { PostList } from "./PostList";
 import type { KeyedMutator } from "swr";
 import type { PostDto } from "@/types/dto";
+import { POST_STATUS_OPTIONS } from "@/constants/posts";
+import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -31,8 +33,6 @@ export const PostsDashboardView = ({
 }) => {
   const router = useRouter();
   const { setSelectedPost } = usePostEditorContext();
-
-  const [postId, setPostId] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | undefined>(
     undefined
   );
@@ -59,14 +59,26 @@ export const PostsDashboardView = ({
 
   const slicedPosts = filteredPosts.slice(0, visibleCount);
   const searchParams = useSearchParams();
+  // const postIdParam = searchParams.get("id"); // TODO
+  const statusParam = searchParams.get("status");
+  const platformParam = searchParams.get("platform");
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    const newPostId = searchParams.get("id");
-    if (newPostId && newPostId !== postId) {
-      setPostId(newPostId);
-    }
-  }, [searchParams, postId]);
+    const normalisedStatus =
+      POST_STATUS_OPTIONS.find(
+        (s) => s.key.toLowerCase() === statusParam?.toLowerCase()
+      )?.key ?? null;
+    setSelectedStatus(normalisedStatus);
+  }, [statusParam]);
+
+  useEffect(() => {
+    const normalisedPlatform =
+      PLATFORM_OPTIONS_WITH_LABEL.find(
+        (p) => p.key.toLowerCase() === platformParam?.toLowerCase()
+      )?.key ?? null;
+    setSelectedPlatform(normalisedPlatform);
+  }, [platformParam]);
 
   if (error) {
     return (

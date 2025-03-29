@@ -13,6 +13,7 @@ import {
 import { useEffect } from "react";
 import { POSTS_API } from "@/constants/api";
 import { useFetchData } from "@/hooks/dataHooks";
+import { toUtcFromLocalInput } from "@/utils/date";
 
 const PostEditorContext = createContext<PostEditorContextType | undefined>(
   undefined
@@ -120,14 +121,9 @@ export const PostEditorProvider = ({
   };
 
   const updatePlatformScheduleDate = (platformKey: string, newDate: string) => {
-    let formattedDate;
+    let formattedDate = "";
     if (newDate) {
-      const inputDate = new Date(newDate);
-      const isoString = inputDate.toISOString();
-      formattedDate = isoString;
-    } else {
-      // If date is cleared, pass empty string
-      formattedDate = "";
+      formattedDate = toUtcFromLocalInput(newDate);
     }
 
     setPlatformStates((prev) =>

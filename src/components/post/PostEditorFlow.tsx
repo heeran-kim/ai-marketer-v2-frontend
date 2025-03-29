@@ -49,6 +49,7 @@ export const PostEditorFlow = ({
     platformStates,
     additionalPrompt,
     setCaptionSuggestions,
+    resetPostEditor,
   } = usePostEditorContext();
 
   const isCreating = mode === PostEditorMode.CREATE;
@@ -146,6 +147,7 @@ export const PostEditorFlow = ({
       // Show error notification
       showNotification("error", "Failed to update post. Please try again.");
     } finally {
+      resetPostEditor();
       setIsLoading(false);
     }
   };
