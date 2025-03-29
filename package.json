@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem node server.js",
+    "dev": "cross-env NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@headlessui/react": "^2.2.0",
     "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
     "framer-motion": "^12.4.10",
     "next": "^15.1.7",
     "react": "^19.0.0",
