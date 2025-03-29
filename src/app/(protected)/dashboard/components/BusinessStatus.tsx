@@ -7,24 +7,24 @@ export default function BusinessStatus({
 }: {
   postsSummary: PostsSummary;
 }) {
-  const { failedPosts, upcomingPosts, uploadedPosts } = postsSummary;
+  const { numFailedPosts, numScheduledPosts, numPublishedPosts } = postsSummary;
 
   let statusMessage;
   let statusColor;
 
-  if (failedPosts > 0) {
-    statusMessage = `${failedPosts} post${
-      failedPosts > 1 ? "s" : ""
+  if (numFailedPosts > 0) {
+    statusMessage = `${numFailedPosts} post${
+      numFailedPosts > 1 ? "s" : ""
     } failed. Please try again.`;
     statusColor = "text-red-600 dark:text-red-400 bg-red-500";
-  } else if (upcomingPosts > 0) {
-    statusMessage = `${upcomingPosts} post${
-      upcomingPosts > 1 ? "s" : ""
+  } else if (numScheduledPosts > 0) {
+    statusMessage = `${numScheduledPosts} post${
+      numScheduledPosts > 1 ? "s" : ""
     } scheduled.`;
     statusColor = "text-yellow-600 dark:text-yellow-400 bg-yellow-500";
   } else {
-    statusMessage = `${uploadedPosts} post${
-      uploadedPosts > 1 ? "s" : ""
+    statusMessage = `${numPublishedPosts} post${
+      numPublishedPosts > 1 ? "s" : ""
     } uploaded successfully.`;
     statusColor = "text-green-600 dark:text-green-400 bg-green-500";
   }

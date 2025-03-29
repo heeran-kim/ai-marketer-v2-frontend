@@ -1,7 +1,7 @@
 // src/app/dashboard/page.tsx
 "use client";
 
-import DashboardCard from "./components/DashboardCard";
+import { DashboardContent } from "./components/DashboardContent";
 import EmptyBusinessState from "./components/EmptyBusinessState";
 import { useFetchData } from "@/hooks/dataHooks";
 import { DashboardData } from "@/types/business";
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
   // Determine which component to render based on business data
   const content = data?.business ? (
-    <DashboardCard dashboardData={data} />
+    <DashboardContent data={data} />
   ) : (
     <EmptyBusinessState />
   );

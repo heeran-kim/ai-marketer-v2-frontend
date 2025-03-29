@@ -2,33 +2,41 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useFetchData } from "@/hooks/dataHooks";
-import { POSTS_API } from "@/constants/api";
-import { PostDto } from "@/types/dto";
 import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { PostsSummary } from "@/types/business";
+import {
+  ChartData,
+  ChartEvent,
+  ActiveElement,
+  ChartOptions,
+  TooltipItem,
+} from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function PostStatusChart() {
+interface PostStatusChartProps {
+  data: PostsSummary;
+}
+
+export const PostStatusChart = ({ data }: PostStatusChartProps) => {
   const router = useRouter();
-  const { data } = useFetchData<{ posts: PostDto[] }>(POSTS_API.LIST);
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData<"doughnut"> | null>(
+    null
+  );
 
   useEffect(() => {
-    if (data?.posts) {
-      const statusCounts = data.posts.reduce((acc, post) => {
-        const status = post.status;
-        acc[status] = (acc[status] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+    if (data) {
+      const labels: string[] = ["Scheduled", "Published", "Failed"];
+      const counts = [
+        data.numScheduledPosts,
+        data.numPublishedPosts,
+        data.numFailedPosts,
+      ];
 
-      const statuses = Object.keys(statusCounts);
-      const counts = Object.values(statusCounts);
-
-      setChartData({
-        labels: statuses,
+      const chart: ChartData<"doughnut"> = {
+        labels,
         datasets: [
           {
             data: counts,
@@ -45,19 +53,25 @@ export default function PostStatusChart() {
             borderWidth: 1,
           },
         ],
-      });
+      };
+
+      setChartData(chart);
     }
   }, [data]);
 
-  const handleStatusClick = (event: any, elements: any) => {
-    if (elements.length > 0) {
+  const handleStatusClick = (event: ChartEvent, elements: ActiveElement[]) => {
+    if (elements.length > 0 && chartData?.labels) {
       const { index } = elements[0];
-      const status = chartData.labels[index];
-      router.push(`/posts?status=${status}`);
+      const label = chartData.labels[index];
+
+      if (typeof label === "string") {
+        const status = label.toLowerCase();
+        router.push(`/posts?status=${status}`);
+      }
     }
   };
 
-  const options = {
+  const options: ChartOptions<"doughnut"> = {
     responsive: true,
     plugins: {
       legend: {
@@ -65,7 +79,7 @@ export default function PostStatusChart() {
       },
       tooltip: {
         callbacks: {
-          label: function (context: any) {
+          label: function (context: TooltipItem<"doughnut">) {
             const label = context.label || "";
             const value = context.raw || 0;
             return `${label}: ${value} posts`;
@@ -88,30 +102,35 @@ export default function PostStatusChart() {
     <div className="bg-white rounded-lg shadow p-4">
       <h3 className="text-lg font-semibold mb-4">Post Status Overview</h3>
       <div className="h-64">
-        <Doughnut data={chartData} options={options} />
+        <Doughnut data={chartData!} options={options} />
       </div>
       <div className="mt-4 grid grid-cols-3 gap-2">
-        {chartData.labels.map((status: string, index: number) => (
+        {chartData?.labels?.map((status, index) => (
           <div
-            key={status}
+            key={status as string}
             className="text-center cursor-pointer hover:bg-gray-100 p-2 rounded"
-            onClick={() => router.push(`/posts?status=${status}`)}
+            onClick={() =>
+              router.push(`/posts?status=${(status as string).toLowerCase()}`)
+            }
           >
             <div className="flex items-center justify-center">
               <div
                 className="w-3 h-3 rounded-full mr-1"
                 style={{
-                  backgroundColor: chartData.datasets[0].backgroundColor[index],
+                  backgroundColor:
+                    (chartData.datasets[0].backgroundColor as string[])[
+                      index
+                    ] ?? "#ccc",
                 }}
               ></div>
-              <span className="text-sm font-medium">{status}</span>
+              <span className="text-sm font-medium">{status as string}</span>
             </div>
             <div className="text-lg font-bold">
-              {chartData.datasets[0].data[index]}
+              {chartData?.datasets?.[0]?.data?.[index] ?? 0}
             </div>
           </div>
         ))}
       </div>
     </div>
   );
-}
+};

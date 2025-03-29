@@ -30,9 +30,9 @@ export interface Platform {
 
 // Summary of posts for the dashboard (Key Metric for Business)
 export interface PostsSummary {
-  upcomingPosts: number; // Number of scheduled posts
-  uploadedPosts: number; // Number of successfully uploaded posts
-  failedPosts: number; // Number of posts that failed to upload
+  numScheduledPosts: number; // Number of scheduled posts
+  numPublishedPosts: number; // Number of successfully uploaded posts
+  numFailedPosts: number; // Number of posts that failed to upload
   lastActivity: string | null; // ex: "2024-03-01T12:00:00Z" (ISO timestamp) or null
   lastPostLink: string | null; // ex: "https://facebook.com/mybusiness/posts/12345" or null
 }

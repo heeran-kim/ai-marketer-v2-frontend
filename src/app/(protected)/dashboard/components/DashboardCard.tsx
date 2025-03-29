@@ -7,13 +7,12 @@ import { NAV_ITEMS } from "@/constants/navItems";
 import { DashboardData } from "@/types/business";
 import ActionDropdown from "@/components/common/ActionDropdown";
 import BusinessInfo from "./BusinessInfo";
-import PostStatusChart from "./PostStatusChart";
 
 interface DashboardCardProps {
-  dashboardData: DashboardData;
+  data: DashboardData;
 }
 
-export default function DashboardCard({ dashboardData }: DashboardCardProps) {
+export default function DashboardCard({ data }: DashboardCardProps) {
   const router = useRouter();
 
   const actions = NAV_ITEMS.filter(({ href }) => href !== "/dashboard").map(
@@ -35,19 +34,16 @@ export default function DashboardCard({ dashboardData }: DashboardCardProps) {
         <div className="flex items-center space-x-4">
           <Image
             src={
-              `${dashboardData.business.logo}?t=${new Date().getTime()}` ||
+              `${data.business.logo}?t=${new Date().getTime()}` ||
               "/default-logo.png"
             }
-            alt={`${dashboardData.business.name} Logo`}
+            alt={`${data.business.name} Logo`}
             width={60}
             height={60}
             className="rounded-full"
           />
-          <BusinessInfo dashboardData={dashboardData} />
+          <BusinessInfo dashboardData={data} />
         </div>
-      </div>
-      <div className="mt-6">
-        <PostStatusChart />
       </div>
     </>
   );
