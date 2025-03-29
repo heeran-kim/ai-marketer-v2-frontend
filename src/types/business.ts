@@ -23,7 +23,7 @@ export const EMPTY_BUSINESS: Business = {
 // Represents a linked social media account
 export interface Platform {
   key: string; // Internal key for platform (e.g., "facebook", "twitter")
-  label: string; // Display name (ex: "Facebook", "Twitter / X")
+  label: string; // Display name (ex: "Facebook", "Twitter")
   link: string; // ex: "https://facebook.com/mybusiness"
   username: string; // ex: "mybusiness" (Social media account name)
   numPublished?: number;

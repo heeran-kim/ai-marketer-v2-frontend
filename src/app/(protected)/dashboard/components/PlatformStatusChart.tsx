@@ -30,7 +30,7 @@ export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
   useEffect(() => {
     if (data) {
       const labels = data.map((p) => p.label);
-      const counts = data.map((p) => p.numPublished);
+      const counts: number[] = data.map((p) => p.numPublished ?? 0);
 
       const backgroundColors = data.map(
         (p) => PLATFORM_CHART_COLORS[p.key] ?? PLATFORM_CHART_COLORS.default
@@ -60,11 +60,10 @@ export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
   const handleStatusClick = (event: ChartEvent, elements: ActiveElement[]) => {
     if (elements.length > 0 && chartData?.labels) {
       const { index } = elements[0];
-      const label = chartData.labels[index];
+      const platformKey = data[index]?.key;
 
-      if (typeof label === "string") {
-        const status = label.toLowerCase();
-        router.push(`/posts?platform=${status}`);
+      if (platformKey) {
+        router.push(`/posts?platform=${platformKey}`);
       }
     }
   };
@@ -103,13 +102,11 @@ export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
         <Doughnut data={chartData!} options={options} />
       </div>
       <div className="mt-4 grid grid-cols-3 gap-2">
-        {chartData?.labels?.map((status, index) => (
+        {(chartData?.labels as string[]).map((label: string, index: number) => (
           <div
-            key={status as string}
+            key={data[index]?.key}
             className="text-center cursor-pointer hover:bg-gray-100 p-2 rounded"
-            onClick={() =>
-              router.push(`/posts?status=${(status as string).toLowerCase()}`)
-            }
+            onClick={() => router.push(`/posts?platform=${data[index]?.key}`)}
           >
             <div className="flex items-center justify-center">
               <div
@@ -121,10 +118,10 @@ export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
                     ] ?? "#ccc",
                 }}
               ></div>
-              <span className="text-sm font-medium">{status as string}</span>
+              <span className="text-sm font-medium">{label}</span>
             </div>
             <div className="text-lg font-bold">
-              {chartData?.datasets?.[0]?.data?.[index] ?? 0}
+              {chartData.datasets[0].data[index] ?? 0}
             </div>
           </div>
         ))}
