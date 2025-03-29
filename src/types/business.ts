@@ -34,8 +34,11 @@ export interface PostsSummary {
   numScheduled: number; // Number of scheduled posts
   numPublished: number; // Number of successfully uploaded posts
   numFailed: number; // Number of posts that failed to upload
-  lastActivity: string | null; // ex: "2024-03-01T12:00:00Z" (ISO timestamp) or null
-  lastPostLink: string | null; // ex: "https://facebook.com/mybusiness/posts/12345" or null
+}
+
+export interface PostActivityData {
+  postDates: Record<string, string[]>; // { "2025-03-29": ["facebook", "instagram"] }
+  lastPostDate: string | null; // ISO string (e.g., "2025-03-29T10:00:00Z")
 }
 
 // Data structure for the dashboard view
@@ -43,4 +46,5 @@ export interface DashboardData {
   business: Pick<Business, "name" | "logo">;
   linkedPlatforms: Platform[];
   postsSummary: PostsSummary;
+  postActivity: PostActivityData;
 }

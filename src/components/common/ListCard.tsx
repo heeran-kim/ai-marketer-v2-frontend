@@ -2,8 +2,6 @@
 
 import React, { forwardRef, useState, useEffect, useRef } from "react";
 import { getPlatformIcon } from "@/utils/icon";
-import { convertISOToLocalInput } from "@/utils/dateFormatter";
-import { format } from "date-fns";
 import { getStatusClass } from "@/components/styles";
 import ActionDropdown from "@/components/common/ActionDropdown";
 import { FaRegCalendarAlt, FaTag } from "react-icons/fa";
@@ -11,6 +9,7 @@ import Image from "next/image";
 import { DropboxItem } from "@/types";
 import { Post, PostReview } from "@/types/post";
 import { Promotion } from "@/types/promotion";
+import { toLocalTime } from "@/utils/date";
 
 interface ListCardProps {
   item: Post | Promotion | PostReview;
@@ -46,13 +45,14 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         const post = item as Post;
         setImagePreviewUrl(post.image);
 
-        let date = "";
-        if (post.status === "Published" && post.postedAt) date = post.postedAt;
+        let tempDate = "";
+        if (post.status === "Published" && post.postedAt)
+          tempDate = post.postedAt;
         else if (post.status === "Scheduled" && post.scheduledAt)
-          date = post.scheduledAt;
+          tempDate = post.scheduledAt;
         else if (post.status === "Failed" && post.createdAt)
-          date = post.createdAt;
-        setDate(format(new Date(date), "yyyy-MM-dd hh:mm a"));
+          tempDate = post.createdAt;
+        setDate(toLocalTime(tempDate));
 
         setSocialLinks([
           {
@@ -72,11 +72,12 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             : imagePreviewUrl
         );
         setDate(
-          `${format(new Date(promo.startDate), "yyyy-MM-dd")} ~ ${format(
-            new Date(promo.endDate),
+          `${toLocalTime(promo.startDate, "yyyy-MM-dd")} ~ ${toLocalTime(
+            promo.endDate,
             "yyyy-MM-dd"
           )}`
         );
+
         setSocialLinks(
           promo.posts?.map((post) => ({
             link: `/posts?id=${post.id}`,
@@ -92,9 +93,9 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setImagePreviewUrl(review.image);
         if (review.scheduleDate) {
           setScheduleType("scheduled");
-          setDate(review.scheduleDate);
+          setDate(toLocalTime(review.scheduleDate, "yyyy-MM-dd'T'HH:mm"));
         } else {
-          setDate(new Date().toISOString().slice(0, 16));
+          setDate(toLocalTime(new Date(), "yyyy-MM-dd'T'HH:mm"));
         }
         setSocialLinks([{ link: "", platformKey: review.platform }]);
         setDescription(review.caption);
@@ -178,7 +179,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                     value={date}
                     onChange={(e) => {
                       const newDate = e.target.value;
-                      setDate(convertISOToLocalInput(newDate));
+                      setDate(toLocalTime(newDate));
                       if (item.type === "postReview") {
                         (item as PostReview).onScheduleChange(newDate);
                       }

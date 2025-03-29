@@ -9,7 +9,7 @@ interface Props {
 
 export const BusinessProfileCard = ({ business }: Props) => {
   const router = useRouter();
-  const { name, logo } = business;
+  const { name, logo, category } = business;
 
   return (
     <div
@@ -23,10 +23,15 @@ export const BusinessProfileCard = ({ business }: Props) => {
           alt={`${name} Logo`}
           width={60}
           height={60}
-          className="rounded-full"
+          className="rounded-full object-cover w-[60px] h-[60px]"
         />
         <div>
           <p className="text-base font-semibold">{name}</p>
+          {category && (
+            <span className="inline-block mt-1 px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded-full">
+              {category}
+            </span>
+          )}
         </div>
       </div>
     </div>
