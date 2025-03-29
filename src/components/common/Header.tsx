@@ -2,7 +2,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import ActionDropdown from "./ActionDropdown";
 import { FaPlus } from "react-icons/fa";
 import { HeaderProps } from "@/types/nav";
 
@@ -10,7 +9,6 @@ export default function Header({
   title,
   description,
   createAction,
-  moreActions,
 }: HeaderProps) {
   const router = useRouter();
   return (
@@ -19,14 +17,12 @@ export default function Header({
         <div className="relative text-xs">
           <button
             onClick={createAction(router)?.onClick}
-            className="absolute top-1/2 right-10 p-2 rounded-lg hover:bg-gray-200 transition"
+            className="absolute top-1/2 right-1 p-2 rounded-lg hover:bg-gray-200 transition"
           >
             <FaPlus className="text-gray-600" size={14} />
           </button>
         </div>
       )}
-
-      {moreActions && <ActionDropdown actions={moreActions(router) ?? []} />}
 
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
         {title}

@@ -7,8 +7,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/dashboard",
     header: {
       title: "Dashboard",
-      description:
-        "Welcome to your dashboard. Get an overview of your business, including posts and key metrics. More tools and insights will be available soon!",
     },
   },
   {
@@ -16,21 +14,9 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/posts",
     header: {
       title: "Posts",
-      description:
-        "Manage, schedule, and monitor your social media posts across multiple platforms in one place.",
       createAction: (router) => ({
         onClick: () => router.push("/posts?mode=create", { scroll: false }),
       }),
-      moreActions: (router) => [
-        {
-          label: "Learn about Social Media Management",
-          onClick: () => router.push("/features/social-media-management"),
-        },
-        {
-          label: "Learn about AI Captions",
-          onClick: () => router.push("/features/ai-captions"),
-        },
-      ],
     },
     subPages: [
       {
@@ -48,26 +34,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/promotions",
     header: {
       title: "Promotions",
-      description: `
-                Manage and track your event discounts, special deals, and creative promotions all in one place.
-                - 💸 **Event Discounts & Flash Sales:** Easily set up limited-time offers to draw in new customers.
-                - 🍔 **Menu & Combo Deals:** Get AI-driven suggestions for menu upgrades, combo deals, or seasonal offerings.
-                - 🤖 **Machine Learning Insights:** Leverage advanced recommendations to craft high-impact promotions that drive sales.
-                - 🔎 **Performance Tracking:** Stay on top of each promotion’s results, from redeemed discounts to boosted traffic.
-                
-                Want to create a brand-new promotion?
-                Just click the “⋯” (More Options) button on the top right and select “Create Promotion”.
-                `,
-      moreActions: (router) => [
-        {
-          label: "Create Promotion",
-          onClick: () => router.push("/promotions/new"),
-        },
-        {
-          label: "Learn More",
-          onClick: () => router.push("/features/promotion-suggestions"),
-        },
-      ],
     },
     subPages: [
       {

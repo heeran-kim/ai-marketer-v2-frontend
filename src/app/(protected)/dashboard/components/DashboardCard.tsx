@@ -7,6 +7,7 @@ import { NAV_ITEMS } from "@/constants/navItems";
 import { DashboardData } from "@/types/business";
 import ActionDropdown from "@/components/common/ActionDropdown";
 import BusinessInfo from "./BusinessInfo";
+import PostStatusChart from "./PostStatusChart";
 
 interface DashboardCardProps {
   dashboardData: DashboardData;
@@ -23,27 +24,31 @@ export default function DashboardCard({ dashboardData }: DashboardCardProps) {
   );
 
   return (
-    <div
-      className={clsx(
-        "relative p-4 rounded-lg shadow-sm hover:shadow-md transition flex flex-col cursor-pointer",
-        baseContainerClass
-      )}
-    >
-      <ActionDropdown actions={actions} />
-
-      <div className="flex items-center space-x-4">
-        <Image
-          src={
-            `${dashboardData.business.logo}?t=${new Date().getTime()}` ||
-            "/default-logo.png"
-          }
-          alt={`${dashboardData.business.name} Logo`}
-          width={60}
-          height={60}
-          className="rounded-full"
-        />
-        <BusinessInfo dashboardData={dashboardData} />
+    <>
+      <div
+        className={clsx(
+          "relative p-4 rounded-lg shadow-sm hover:shadow-md transition flex flex-col cursor-pointer",
+          baseContainerClass
+        )}
+      >
+        <ActionDropdown actions={actions} />
+        <div className="flex items-center space-x-4">
+          <Image
+            src={
+              `${dashboardData.business.logo}?t=${new Date().getTime()}` ||
+              "/default-logo.png"
+            }
+            alt={`${dashboardData.business.name} Logo`}
+            width={60}
+            height={60}
+            className="rounded-full"
+          />
+          <BusinessInfo dashboardData={dashboardData} />
+        </div>
       </div>
-    </div>
+      <div className="mt-6">
+        <PostStatusChart />
+      </div>
+    </>
   );
 }
