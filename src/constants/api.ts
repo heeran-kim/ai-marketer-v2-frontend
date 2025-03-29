@@ -29,6 +29,7 @@ export const SETTINGS_API = {
     `${BASE_URL}/social/connect/${provider}/`,
   DISCONNECT_SOCIAL: (provider: string) =>
     `${BASE_URL}/social/disconnect/${provider}/`,
+  SALES: `${BASE_URL}/sales/`,
 };
 
 // Posts API Endpoints
