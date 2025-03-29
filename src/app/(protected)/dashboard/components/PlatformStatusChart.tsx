@@ -64,7 +64,7 @@ export const PlatformStatusChart = ({ data }: PlatformStatusChartProps) => {
 
       if (typeof label === "string") {
         const status = label.toLowerCase();
-        router.push(`/posts?status=${status}`);
+        router.push(`/posts?platform=${status}`);
       }
     }
   };
