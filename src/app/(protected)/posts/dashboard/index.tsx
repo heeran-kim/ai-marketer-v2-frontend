@@ -135,7 +135,7 @@ export const PostsDashboardView = ({
             post.status === "Failed"
               ? { label: "Retry", onClick: () => handleRetry(post.id) }
               : false,
-            post.status !== "Posted"
+            post.status !== "Published"
               ? { label: "Edit", onClick: () => handleEdit(post) }
               : false,
             { label: "Delete", onClick: () => handleOpenDeleteModal(post.id) },
