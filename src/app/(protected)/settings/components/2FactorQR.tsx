@@ -1,7 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
-import { USERS_API } from '@/constants/api';
-import { Button } from "@headlessui/react";
+import { useState } from "react";
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useRouter } from "next/navigation";
 
@@ -14,7 +12,7 @@ export default function TwoFactorAuth() {
   const [rmButtonDisabled,setRMButtonDisabled] = useState(true);  //remove button
   const router = useRouter();
 
-  const { handle2FA, authState, logout } = useAuth();
+  const { handle2FA, logout } = useAuth();
 
   const getUser = async () => {
     const storedUser = sessionStorage.getItem("userDetails");
@@ -42,6 +40,7 @@ export default function TwoFactorAuth() {
       const errorMessage = error instanceof Error 
           ? error.message 
           : "Error Checking 2FA.";
+      console.log(errorMessage);
   } finally {
     setButtonDisabled(false);
     setRMButtonDisabled(false);
@@ -65,6 +64,7 @@ export default function TwoFactorAuth() {
         const errorMessage = error instanceof Error 
             ? error.message 
             : "Error Enabling 2FA.";
+        console.log(errorMessage);
     } finally {
       setRMButtonDisabled(false);
     }
@@ -86,6 +86,7 @@ export default function TwoFactorAuth() {
         const errorMessage = error instanceof Error 
             ? error.message 
             : "Error Enabling 2FA.";
+        console.log(errorMessage);
     } finally {
       setButtonDisabled(false);
     }

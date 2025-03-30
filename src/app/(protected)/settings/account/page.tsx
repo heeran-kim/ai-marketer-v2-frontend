@@ -1,15 +1,11 @@
-// src/app/(protected)/settings/general/page.tsx
+// src/app/(protected)/settings/account/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, NotificationModal, NotificationType, DragAndDropUploader } from "@/components/common";
-import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { INDUSTRY_OPTIONS } from "@/constants/settings";
-import { SETTINGS_API } from "@/constants/api";
-import TwoFactorAuth from "@/components/common/2FactorQR";
+import { useState } from "react";
+import { Card, NotificationModal, NotificationType } from "@/components/common";
+import TwoFactorAuth from "../components/2FactorQR";
 
 export default function GeneralSettings() {
-    const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
     const [notification, setNotification] = useState<{
         type: NotificationType;
         message: string;
@@ -19,7 +15,6 @@ export default function GeneralSettings() {
         message: "",
         isOpen: false
     });
-    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     
     // Close notification helper function
@@ -45,15 +40,8 @@ export default function GeneralSettings() {
                 title="2FA"
                 description="Enabling 2FA provides a greater security level towards your account."
                 restriction="Please follow the prompts."
-                buttonDisabled={savingFields["name"]}
-                buttonLoading={savingFields["name"]}
                 showButton={false}
             >
-                <div className="space-y-1">
-                    {fieldErrors.name && (
-                        <p className="text-red-500 text-xs">{fieldErrors.name}</p>
-                    )}
-                </div>
                 <TwoFactorAuth/>
             </Card>
         </div>
