@@ -90,7 +90,7 @@ export default function EmailLoginPage() {
                 : "Authentication failed. Please check your credentials.";
             setErrors({ server: errorMessage });
 
-            if(errorMessage==="Requires 2FA.")  //Push client to the 2FA Page
+            if(errorMessage==="Requires 2FA. Redirecting you now!")  //Push client to the 2FA Page
             {
                 router.push("/login/2fa")
             }

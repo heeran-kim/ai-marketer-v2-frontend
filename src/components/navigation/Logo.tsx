@@ -6,7 +6,7 @@ export default function Logo() {
     return (
         <Link href="/" className="flex items-center">
             <Image 
-                src="/aka.png" 
+                src="/AKA.png" 
                 alt="AI Marketer Logo"
                 width={80}
                 height={80}
