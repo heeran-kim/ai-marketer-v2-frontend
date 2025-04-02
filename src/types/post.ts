@@ -3,6 +3,7 @@ import { Business, Platform } from "./business";
 
 // Refined post model used in frontend
 export interface Post {
+  imageUrl: string | undefined;
   id: string; // Unique post ID
   business: string; // Associated business name (ex: "My Coffee Shop")
   platform: Platform; // Changed from string to Platform interface

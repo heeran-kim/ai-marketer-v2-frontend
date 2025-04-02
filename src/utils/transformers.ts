@@ -11,6 +11,7 @@ export const mapPostDtoToPost = (dto: PostDto): Post => {
 
   return {
     ...restDto,
+    imageUrl: "",
     platform: platformObject,
     selectedCategoryLabels: categories,
     type: "post",

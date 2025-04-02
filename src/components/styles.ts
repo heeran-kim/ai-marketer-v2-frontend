@@ -45,12 +45,12 @@ export const dropdownSubTextClass = "text-xs text-gray-500 dark:text-gray-400";
 
 // Status Color Mapping
 const STATUS_COLORS: Record<string, string> = {
-  Failed: "bg-red-100 text-red-600",
-  Scheduled: "bg-yellow-100 text-yellow-600",
-  Published: "bg-green-100 text-green-600",
-  Upcoming: "bg-blue-100 text-blue-600",
-  Ongoing: "bg-green-100 text-green-600",
-  Ended: "bg-gray-300 text-gray-700",
+  failed: "bg-red-100 text-red-600",
+  scheduled: "bg-yellow-100 text-yellow-600",
+  published: "bg-green-100 text-green-600",
+  upcoming: "bg-yellow-100 text-yellow-600",
+  ongoing: "bg-blue-100 text-blue-600",
+  ended: "bg-gray-300 text-gray-700",
 };
 
 export const getStatusClass = (status: string) =>
@@ -60,9 +60,9 @@ export const STATUS_COLORS_CHART: Record<string, string> = {
   Failed: "rgba(255, 99, 132, 0.6)",
   Scheduled: "rgba(255, 206, 86, 0.6)",
   Published: "rgba(75, 192, 192, 0.6)",
-  Upcoming: "rgba(54, 162, 235, 0.6)",
-  Ongoing: "rgba(153, 102, 255, 0.6)",
-  Ended: "rgba(201, 203, 207, 0.6)",
+  upcoming: "rgba(54, 162, 235, 0.6)",
+  ongoing: "rgba(153, 102, 255, 0.6)",
+  ended: "rgba(201, 203, 207, 0.6)",
 };
 
 export const PLATFORM_CHART_COLORS: Record<string, string> = {
