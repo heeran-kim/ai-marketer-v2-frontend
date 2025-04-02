@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ActionDropdown, CategoryChipList } from "@/components/common";
 import { Action } from "@/types/nav";
 import StatusIcon from "./StatusIcon";
+import { getPlatformIcon } from "@/utils/icon";
+import { useRouter } from "next/navigation";
 
 interface PromotionCardProps {
   promotion: Promotion;
@@ -20,6 +22,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
   onDuplicate,
   onDelete,
 }) => {
+  const router = useRouter();
   const {
     description,
     startDate,
@@ -30,7 +33,6 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
     categories,
   } = promotion;
 
-  console.log(posts);
   // Format dates
   const dateRange = formatDateRange(startDate, endDate);
 
@@ -58,7 +60,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
       </div>
 
       {/* Right: Content */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         {/* Top row: date/status on the left, dropdown on the right */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -75,24 +77,25 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
         )}
 
         {/* Description (post content) */}
-        <div className="text-gray-800 mt-2 whitespace-pre-line dark:text-gray-100">
+        <div className="text-gray-800 my-3 whitespace-pre-line dark:text-gray-100">
           {description}
         </div>
 
         {/* Connected post images */}
         {posts.length > 0 && (
-          <div className="flex space-x-2 overflow-x-auto mt-2">
+          <div className="flex overflow-x-auto gap-2">
             {posts.map((post) => (
               <div
                 key={post.id}
-                className="w-60 border border-gray-200 rounded-lg bg-white overflow-hidden relative"
+                className="w-80 flex-shrink-0 border border-gray-200 rounded-lg shadow-lg bg-white relative"
+                onClick={() => router.push(`/posts?id=${post.id}`)}
               >
-                {/* Image container (no longer needs 'relative' here) */}
-                <div className="relative w-60 h-40 overflow-hidden">
+                {/* Image container */}
+                <div className="relative w-80 h-40 overflow-hidden">
                   <Image
                     src={post.image}
                     alt="Connected post"
-                    className="object-cover"
+                    className="object-cover rounded-t-lg"
                     fill
                   />
                 </div>
@@ -104,8 +107,13 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
 
                 {/* Post details: caption, likes, comments */}
                 <div className="p-1 text-xs">
-                  <div className="h-32 overflow-y-auto py-1">
-                    <p className="font-semibold break-words">{post.caption}</p>
+                  <div className="relative h-32 overflow-y-auto py-1 scrollbar-hide">
+                    <span className="float-left mr-4">
+                      {getPlatformIcon(post.platform)}
+                    </span>
+                    <p className="font-semibold break-words whitespace-pre-line">
+                      {post.caption}
+                    </p>
                   </div>
                   <div className="mt-1 pt-1 text-gray-500 border-t border-gray-200 flex justify-between">
                     <span>❤️ {post.reactions}</span>

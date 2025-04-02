@@ -59,7 +59,7 @@ export const PostsDashboardView = ({
 
   const slicedPosts = filteredPosts.slice(0, visibleCount);
   const searchParams = useSearchParams();
-  // const postIdParam = searchParams.get("id"); // TODO
+  const postIdParam = searchParams.get("id");
   const statusParam = searchParams.get("status");
   const platformParam = searchParams.get("platform");
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -79,6 +79,25 @@ export const PostsDashboardView = ({
       )?.key ?? null;
     setSelectedPlatform(normalisedPlatform);
   }, [platformParam]);
+
+  useEffect(() => {
+    if (postIdParam && postRefs.current[postIdParam]) {
+      postRefs.current[postIdParam]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [postRefs, slicedPosts, postIdParam]);
+
+  useEffect(() => {
+    if (!postIdParam) return;
+
+    const isVisible = slicedPosts.some((p) => p.id === postIdParam);
+
+    if (!isVisible && filteredPosts.length > slicedPosts.length) {
+      setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
+    }
+  }, [postIdParam, slicedPosts, filteredPosts]);
 
   if (error) {
     return (

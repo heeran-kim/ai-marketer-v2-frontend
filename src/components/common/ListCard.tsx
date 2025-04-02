@@ -107,7 +107,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             ref.current = node;
           }
         }}
-        className={`relative p-4 bg-white rounded-lg shadow-md border transition hover:shadow-lg flex 
+        className={`relative p-4 bg-white rounded-lg shadow-md border transition hover:shadow-lg flex scroll-mt-24
                 ${
                   isMobileLayout
                     ? "flex-col items-center"
