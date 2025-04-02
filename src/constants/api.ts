@@ -1,60 +1,54 @@
 // src/constants/api.ts
 
-// Base API URL
-export const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-  : "https://localhost:8000/api";
-
 // Health Check API Endpoint (for backend status verification)
-export const HEALTH_CHECK_API = `${BASE_URL}/health/`;
+export const HEALTH_CHECK_API = "/health/";
 
 // Users API Endpoints
 export const USERS_API = {
-    LOGIN:      `${BASE_URL}/users/login/`,
-    LOGOUT:     `${BASE_URL}/users/logout/`,
-    REGISTER:   `${BASE_URL}/users/register/`,
-    ME:         `${BASE_URL}/users/me/`,
+  LOGIN: "/users/login/",
+  LOGOUT: "/users/logout/",
+  REGISTER: "/users/register/",
+  ME: "/users/me/",
 
-    //Added 2FA Endpoints
-    QR_2FA:     `${BASE_URL}/users/2fa-qr/`,
-    CHECK_2FA:  `${BASE_URL}/users/2fa-check/`,
-    REMOVE_2FA: `${BASE_URL}/users/2fa-remove/`
+  //Added 2FA Endpoints
+  QR_2FA: "/users/2fa-qr/",
+  CHECK_2FA: "/users/2fa-check/",
+  REMOVE_2FA: "/users/2fa-remove/",
 };
 
 // Dashboard API Endpoints
 export const DASHBOARD_API = {
-  GET_ALL: `${BASE_URL}/dashboard/`,
+  GET_ALL: "/dashboard/",
 };
 
 // Settings API Endpoints
 export const SETTINGS_API = {
-  GENERAL: `${BASE_URL}/businesses/me/`,
-  GET_SOCIAL: `${BASE_URL}/social/accounts/`,
-  CONNECT_SOCIAL: (provider: string) =>
-    `${BASE_URL}/social/connect/${provider}/`,
-  DISCONNECT_SOCIAL: (provider: string) =>
-    `${BASE_URL}/social/disconnect/${provider}/`,
-  SALES: `${BASE_URL}/sales/`,
+  GENERAL: "/businesses/me/",
+  GET_SOCIAL: "/social/accounts/",
+  CONNECT_SOCIAL: (provider: string) => `/social/connect/${provider}/`,
+  DISCONNECT_SOCIAL: (provider: string) => `/social/disconnect/${provider}/`,
+  SALES: "/sales/",
 };
 
 // Posts API Endpoints
 export const POSTS_API = {
-  LIST: `${BASE_URL}/posts/`, // GET
-  DETAIL: (id: string) => `${BASE_URL}/posts/${id}/`, // GET
-  CREATE: `${BASE_URL}/posts/?create=true`, // POST
-  UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`, // PATCH or PUT
-  DELETE: (id: string) => `${BASE_URL}/posts/${id}/`, // DELETE
+  LIST: "/posts/", // GET
+  DETAIL: (id: string) => `/posts/${id}/`, // GET
+  CREATE: "/posts/?create=true", // POST
+  UPDATE: (id: string) => `/posts/${id}/`, // PATCH or PUT
+  DELETE: (id: string) => `/posts/${id}/`, // DELETE
 };
 
 // Promotions API Endpoints
 export const PROMOTIONS_API = {
-  GET_ALL: `${BASE_URL}/promotions/`,
-  CREATE: `${BASE_URL}/promotions/create/`,
-  DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
+  LIST: "/promotions/",
+  DETAIL: (id: string) => `/promotions/${id}/`,
+  CREATE: "/promotions/create/",
+  DELETE: (id: string) => `/promotions/${id}/`,
 };
 
 // AI API Endpoints
 export const AI_API = {
-  IMG_ANALYSIS: `${BASE_URL}/ai/images/analyse/`,
-  CAPTION_GENERATE: `${BASE_URL}/ai/captions/generate/`,
+  IMG_ANALYSIS: "/ai/images/analyse/",
+  CAPTION_GENERATE: "/ai/captions/generate/",
 };

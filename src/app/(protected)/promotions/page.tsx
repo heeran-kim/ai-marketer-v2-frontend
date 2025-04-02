@@ -7,19 +7,21 @@ import { Promotion } from "@/types/promotion";
 import { PROMOTIONS_API } from "@/constants/api";
 import PromotionCard from "@/app/(protected)/promotions/components/PromotionCard";
 import { PromotionsFilterBar } from "./components/PromotionsFilterBar";
+import { useRouter } from "next/navigation";
 
 export default function PromotionsDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const router = useRouter();
 
   const { data } = useFetchData<{ promotions: Promotion[] }>(
-    PROMOTIONS_API.GET_ALL
+    PROMOTIONS_API.LIST
   );
   const promotions = data?.promotions || [];
 
   const handleCreatePost = (promotionId: string) => {
-    console.log(`Create a new post for promotion ID: ${promotionId}`);
+    router.push(`/posts?mode=create&promotionId=${promotionId}`);
   };
 
   const handleDuplicate = (promotionId: string) => {

@@ -10,8 +10,9 @@ import {
   PostEditorMode,
   Post,
 } from "@/types/post";
+import { Promotion } from "@/types/promotion";
 import { useEffect } from "react";
-import { POSTS_API } from "@/constants/api";
+import { POSTS_API, PROMOTIONS_API } from "@/constants/api";
 import { useFetchData } from "@/hooks/dataHooks";
 import { toUtcFromLocalInput } from "@/utils/date";
 
@@ -26,6 +27,7 @@ export const PostEditorProvider = ({
 }) => {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
+  const promoParam = searchParams.get("promotionId");
 
   const [mode, setMode] = useState<PostEditorMode | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -45,32 +47,40 @@ export const PostEditorProvider = ({
   const [additionalPrompt, setAdditionalPrompt] = useState("");
   const [platformStates, setPlatformStates] = useState<PlatformState[]>([]);
   const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
-  const { data } = useFetchData<PostEditorConfig>(POSTS_API.CREATE);
+  const { data: postCreateFormData } = useFetchData<PostEditorConfig>(
+    POSTS_API.CREATE
+  );
+  const { data: promoData } = useFetchData<Promotion>(
+    promoParam ? PROMOTIONS_API.DETAIL(promoParam) : null
+  );
 
   useEffect(() => {
-    if (data?.business) {
+    if (postCreateFormData?.business) {
       setCustomisedBusinessInfo({
-        targetCustomers: data.business.targetCustomers,
-        vibe: data.business.vibe,
-        isUsingSalesData: data.business.hasSalesData ?? false,
+        targetCustomers: postCreateFormData.business.targetCustomers,
+        vibe: postCreateFormData.business.vibe,
+        isUsingSalesData: postCreateFormData.business.hasSalesData ?? false,
       });
     }
 
-    if (data?.selectableCategories) {
-      setSelectableCategories(data.selectableCategories);
+    if (postCreateFormData?.selectableCategories) {
+      setSelectableCategories(postCreateFormData.selectableCategories);
     }
 
-    if (data?.linkedPlatforms) {
-      const platformStates: PlatformState[] = data.linkedPlatforms.map(
-        (platform) => ({
+    if (postCreateFormData?.linkedPlatforms) {
+      const platformStates: PlatformState[] =
+        postCreateFormData.linkedPlatforms.map((platform) => ({
           key: platform.key,
           label: platform.label,
           isSelected: true,
           caption: "",
-        })
-      );
+        }));
 
       setPlatformStates(platformStates);
+    }
+
+    if (mode === PostEditorMode.CREATE && promoData) {
+      setAdditionalPrompt(promoData.description);
     }
 
     if (
@@ -96,7 +106,7 @@ export const PostEditorProvider = ({
       }));
       setSelectableCategories(mappedCategories);
     }
-  }, [mode, selectedPost, data]);
+  }, [mode, selectedPost, postCreateFormData, selectableCategories, promoData]);
 
   useEffect(() => {
     if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);

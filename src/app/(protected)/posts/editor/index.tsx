@@ -39,7 +39,7 @@ export const PostEditorEntry = ({
           isOpen={true}
           onClose={() => {
             resetPostEditor();
-            router.push("/posts");
+            router.back();
           }}
         >
           <PostEditorFlow mutate={mutate} />
