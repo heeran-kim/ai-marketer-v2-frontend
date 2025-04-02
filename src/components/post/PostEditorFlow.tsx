@@ -195,7 +195,9 @@ export const PostEditorFlow = ({
       {confirmModalMode === ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS && (
         <ConfirmModal
           isOpen={true}
-          message="No objects were detected in the image. The generated captions may not reference image content. Do you want to continue?"
+          message={`No objects were detected in the image.
+          Captions may not reflect the image.
+          Do you want to continue?`}
           onConfirm={() => {
             setConfirmModalMode(ConfirmModalMode.CLOSE);
             handleNext(true);

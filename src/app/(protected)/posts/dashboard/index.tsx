@@ -80,6 +80,7 @@ export const PostsDashboardView = ({
     setSelectedPlatform(normalisedPlatform);
   }, [platformParam]);
 
+  // Auto-scroll to selected post when navigating from external links
   useEffect(() => {
     if (postIdParam && postRefs.current[postIdParam]) {
       postRefs.current[postIdParam]?.scrollIntoView({
@@ -89,6 +90,7 @@ export const PostsDashboardView = ({
     }
   }, [postRefs, slicedPosts, postIdParam]);
 
+  // Automatically load more posts if the selected post isn't in the current view
   useEffect(() => {
     if (!postIdParam) return;
 

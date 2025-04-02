@@ -2,10 +2,6 @@
 import backendCircuitBreaker from "./circuitBreaker";
 import { HEALTH_CHECK_API } from "@/constants/api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-  : "https://localhost:8000/api";
-
 // Converts snake_case to camelCase (for API responses)
 export const toCamelCase = <T>(obj: T): T => {
   if (Array.isArray(obj)) {
@@ -137,13 +133,10 @@ class ApiClient {
             },
       credentials: "include",
     };
-
-    const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
-
     // Use circuit breaker to wrap the fetch call
     return backendCircuitBreaker.execute<T>(async () => {
       try {
-        const response = await fetch(fullUrl, fetchOptions);
+        const response = await fetch(url, fetchOptions);
 
         // Handle HTTP error status codes
         if (!response.ok) {
@@ -176,10 +169,8 @@ class ApiClient {
 
   // Health check method to test backend connectivity
   async checkHealth(): Promise<boolean> {
-    const fullUrl = `${BASE_URL}${HEALTH_CHECK_API}`;
-
     try {
-      const response = await fetch(fullUrl, {
+      const response = await fetch(HEALTH_CHECK_API, {
         method: "GET",
         headers: this.defaultHeaders,
         credentials: "include",

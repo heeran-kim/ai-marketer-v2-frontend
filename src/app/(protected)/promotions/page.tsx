@@ -2,34 +2,59 @@
 "use client";
 
 import { useState } from "react";
-import { useFetchData } from "@/hooks/dataHooks";
+import { useRouter } from "next/navigation";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Promotion } from "@/types/promotion";
 import { PROMOTIONS_API } from "@/constants/api";
 import PromotionCard from "@/app/(protected)/promotions/components/PromotionCard";
 import { PromotionsFilterBar } from "./components/PromotionsFilterBar";
-import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/common";
+import { useNotification } from "@/context/NotificationContext";
 
 export default function PromotionsDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedPromotionId, setSelectedPromotionId] = useState<string | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const { showNotification } = useNotification();
   const router = useRouter();
 
-  const { data } = useFetchData<{ promotions: Promotion[] }>(
+  const { data, mutate } = useFetchData<{ promotions: Promotion[] }>(
     PROMOTIONS_API.LIST
   );
   const promotions = data?.promotions || [];
 
-  const handleCreatePost = (promotionId: string) => {
-    router.push(`/posts?mode=create&promotionId=${promotionId}`);
+  // Redirects to post creation with promotion context
+  const handleCreatePost = (id: string) => {
+    router.push(`/posts?mode=create&promotionId=${id}`);
   };
 
-  const handleDuplicate = (promotionId: string) => {
-    console.log(`Duplicate for promotion ID: ${promotionId}`);
+  const handleDuplicate = (id: string) => {
+    // TODO
+    console.log(`Duplicate for promotion ID: ${id}`);
   };
 
-  const handleDelete = (promotionId: string) => {
-    console.log(`Delete promotion ID: ${promotionId}`);
+  // Handles promotion deletion with error handling and notification feedback
+  const handleDelete = async () => {
+    if (!selectedPromotionId) return;
+    setIsLoading(true);
+    try {
+      await apiClient.delete(PROMOTIONS_API.DELETE(selectedPromotionId));
+      await mutate();
+      showNotification("success", "Promotion deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting promotion:", error);
+      showNotification(
+        "error",
+        "Failed to delete promotion. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+    setSelectedPromotionId(null);
   };
 
   // Apply filtering based on category, status, and search term
@@ -48,6 +73,21 @@ export default function PromotionsDashboard() {
 
   return (
     <div>
+      {selectedPromotionId && (
+        <ConfirmModal
+          isOpen={!!selectedPromotionId}
+          type="warning"
+          title="Delete Promotion"
+          message={`Are you sure you want to delete this promotion?
+            This will also delete all related posts.`}
+          confirmButtonText={isLoading ? "Deleting..." : "Delete"}
+          cancelButtonText="Cancel"
+          itemId={selectedPromotionId}
+          onConfirm={handleDelete}
+          onClose={() => setSelectedPromotionId(null)}
+        />
+      )}
+
       <PromotionsFilterBar
         setSearchTerm={setSearchTerm}
         selectedCategory={selectedCategory}
@@ -63,7 +103,7 @@ export default function PromotionsDashboard() {
             promotion={promo}
             onCreatePost={() => handleCreatePost(promo.id)}
             onDuplicate={() => handleDuplicate(promo.id)}
-            onDelete={() => handleDelete(promo.id)}
+            onDelete={() => setSelectedPromotionId(promo.id)}
           />
         ))}
       </div>

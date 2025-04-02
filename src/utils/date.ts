@@ -26,6 +26,9 @@ export const toUtcFromLocalInput = (localString: string) => {
   return utcDate.toISOString();
 };
 
+/**
+ * Format date ranges intelligently based on whether dates are in the same year
+ */
 export function formatDateRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);

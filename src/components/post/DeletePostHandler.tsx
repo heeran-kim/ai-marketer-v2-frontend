@@ -33,13 +33,17 @@ export const DeletePostHandler = ({
 
     switch (post.status) {
       case "Posted":
-        return "Are you sure you want to delete this posted content? This will remove it from social media platforms.";
+        return `Are you sure you want to delete this posted content?
+        This will remove it from social media platforms.`;
       case "Scheduled":
-        return "Are you sure you want to delete this scheduled post? This will cancel the scheduled publishing.";
+        return `Are you sure you want to delete this scheduled post?
+        This will cancel the scheduled publishing.`;
       case "Failed":
-        return "Are you sure you want to delete this failed post? You may want to retry publishing it instead.";
+        return `Are you sure you want to delete this failed post?
+        You may want to retry publishing it instead.`;
       default:
-        return "Are you sure you want to delete this post? This action cannot be undone.";
+        return `Are you sure you want to delete this post?
+        This action cannot be undone.`;
     }
   };
 
