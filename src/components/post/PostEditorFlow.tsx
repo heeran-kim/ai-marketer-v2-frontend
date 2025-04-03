@@ -9,7 +9,7 @@ import { LoadingModal, ConfirmModal } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
 import { PostImageSelector } from "./create/PostImageSelector";
 import PostDetails from "./create/PostDetails";
-import CaptionEditor from "./create/CaptionEditor";
+import CaptionEditor from "./components/captionEditor/CaptionEditor";
 import PostReviewStep from "./create/PostReviewStep";
 
 import { usePostEditorContext } from "@/context/PostEditorContext";

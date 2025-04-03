@@ -1,5 +1,6 @@
 "use client";
 
+import { usePostEditorContext } from "@/context/PostEditorContext";
 import { useRef, useEffect } from "react";
 import { useDrag, DragPreviewImage } from "react-dnd";
 
@@ -9,7 +10,6 @@ interface DraggableCaptionProps {
   index: number;
   editingIndex: number | null;
   setEditingIndex: (index: number | null) => void;
-  onEdit: (index: number, e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 export default function DraggableCaption({
@@ -18,8 +18,8 @@ export default function DraggableCaption({
   index,
   editingIndex,
   setEditingIndex,
-  onEdit,
 }: DraggableCaptionProps) {
+  const { updateCaptionSuggestion } = usePostEditorContext();
   const ref = useRef<HTMLDivElement>(null);
 
   const [{ isDragging }, drag, preview] = useDrag(
@@ -87,7 +87,9 @@ export default function DraggableCaption({
         {editingIndex === index ? (
           <textarea
             value={text}
-            onChange={(e) => onEdit(index, e)}
+            onChange={(e) => {
+              updateCaptionSuggestion(index, e.target.value);
+            }}
             autoFocus
             className="border p-1 rounded-md w-full flex-grow text-sm h-full min-h-full resize-none whitespace-pre-line"
             style={{ overflowY: "auto" }}

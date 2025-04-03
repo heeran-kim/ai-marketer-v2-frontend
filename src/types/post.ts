@@ -1,4 +1,5 @@
 // src/types/posts.ts
+import { PLATFORM_OPTIONS } from "@/utils/icon";
 import { Business, Platform } from "./business";
 
 // Refined post model used in frontend
@@ -50,7 +51,7 @@ export interface PostEditorConfig {
 
 // Represents a social media platform selection state
 export interface PlatformState {
-  key: string; // ex: "facebook"
+  key: (typeof PLATFORM_OPTIONS)[number]; // ex: "facebook"
   label: string; // ex: "Facebook"
   isSelected: boolean; // Whether this platform is selected for posting
   caption: string; // The final caption chosen for this platform
@@ -117,7 +118,7 @@ export interface PostEditorContextType {
   setPlatformStates: (states: PlatformState[]) => void;
 
   // Updates the caption for a specific platform
-  setCaption: (key: string, caption: string) => void;
+  setPlatformCaption: (key: string, caption: string) => void;
 
   // AI-generated caption suggestions (used in caption selection step)
   captionSuggestions: string[];

@@ -138,7 +138,7 @@ export const PostEditorProvider = ({
     setStep(1);
   }, [mode]);
 
-  const setCaption = (platformKey: string, newCaption: string) => {
+  const setPlatformCaption = (platformKey: string, newCaption: string) => {
     setPlatformStates((prevStates) =>
       prevStates.map((state) =>
         state.key === platformKey ? { ...state, caption: newCaption } : state
@@ -217,7 +217,7 @@ export const PostEditorProvider = ({
         setPlatformStates,
         captionSuggestions,
         setCaptionSuggestions,
-        setCaption,
+        setPlatformCaption: setPlatformCaption,
         updateCaptionSuggestion,
         updatePlatformScheduleDate,
         resetPostEditor,
