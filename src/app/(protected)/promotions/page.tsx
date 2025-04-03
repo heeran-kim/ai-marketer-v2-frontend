@@ -29,7 +29,7 @@ export default function PromotionsDashboard() {
 
   // Redirects to post creation with promotion context
   const handleCreatePost = (id: string) => {
-    router.push(`/posts?mode=create&promotionId=${id}`);
+    router.push(`/posts?mode=create&promotionId=${id}`, { scroll: false });
   };
 
   const handleDuplicate = (id: string) => {
