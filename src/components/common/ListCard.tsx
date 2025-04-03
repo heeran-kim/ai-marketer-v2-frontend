@@ -127,6 +127,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             width={320}
             height={400}
             className="aspect-[4/5] border border-gray-200 dark:border-gray-700 rounded-lg object-cover mx-auto sm:mx-0"
+            priority // Added priority to optimize LCP
           />
         </div>
 
