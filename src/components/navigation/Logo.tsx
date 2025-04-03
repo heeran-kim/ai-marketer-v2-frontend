@@ -7,10 +7,10 @@ export default function Logo() {
     <Link href="/" className="flex items-center">
       <Image
         src="/aka.png"
-        alt="AI Marketer Logo"
-        width={80}
-        height={80}
-        className="mr-2"
+        alt="Logo"
+        width="0" // Set width to 0 to let Next.js handle image size with CSS
+        height="0" // Set height to 0 to allow CSS to control the size
+        className="w-[80px] h-auto" // Use Tailwind CSS to set width to 80px and maintain aspect ratio with auto height
         priority // Added priority to optimize LCP
       />
     </Link>
