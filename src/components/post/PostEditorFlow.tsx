@@ -33,7 +33,6 @@ export const PostEditorFlow = ({
 }) => {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [confirmModalMode, setConfirmModalMode] = useState<ConfirmModalMode>(
@@ -41,6 +40,8 @@ export const PostEditorFlow = ({
   );
   const {
     mode,
+    step,
+    setStep,
     selectedPost,
     image,
     detectedItems,
@@ -87,7 +88,7 @@ export const PostEditorFlow = ({
     }
     setIsLoading(false);
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-    setStep((prev) => prev + 1);
+    setStep(step + 1);
   };
 
   const handlePost = async () => {
@@ -177,7 +178,7 @@ export const PostEditorFlow = ({
 
   const handleBack = () => {
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-    setStep((prev) => prev - 1);
+    setStep(step - 1);
   };
 
   return (

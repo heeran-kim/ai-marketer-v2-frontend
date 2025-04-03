@@ -25,6 +25,8 @@ export const PostEditorProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const [step, setStep] = useState(0);
+
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
   const promoParam = searchParams.get("promotionId");
@@ -114,6 +116,11 @@ export const PostEditorProvider = ({
     else setMode(null);
   }, [modeParam]);
 
+  useEffect(() => {
+    if (!mode) return;
+    setStep(1);
+  }, [mode]);
+
   const setCaption = (platformKey: string, newCaption: string) => {
     setPlatformStates((prevStates) =>
       prevStates.map((state) =>
@@ -146,6 +153,7 @@ export const PostEditorProvider = ({
   };
 
   const resetPostEditor = () => {
+    setStep(0);
     setMode(null);
     setSelectedPost(null);
     setUploadedImageUrl(null);
@@ -166,6 +174,8 @@ export const PostEditorProvider = ({
   return (
     <PostEditorContext.Provider
       value={{
+        step,
+        setStep,
         mode,
         selectedPost,
         setSelectedPost,

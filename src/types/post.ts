@@ -72,6 +72,9 @@ export interface PostEditorContextType {
   // Current editor mode: "create" or "edit"
   mode: PostEditorMode | null;
 
+  step: number;
+  setStep: (step: number) => void;
+
   // Post being edited (only available in edit mode)
   selectedPost: Post | null;
   setSelectedPost: (post: Post | null) => void;
