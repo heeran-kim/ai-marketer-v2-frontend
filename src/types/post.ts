@@ -69,6 +69,12 @@ export interface CustomisedBusinessInfo
 
 // Context type for managing post creation/editing state in the PostEditor
 export interface PostEditorContextType {
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
+
+  loadingMessage: string;
+  setLoadingMessage: (message: string) => void;
+
   // Current editor mode: "create" or "edit"
   mode: PostEditorMode | null;
 

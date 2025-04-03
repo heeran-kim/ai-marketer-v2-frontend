@@ -33,12 +33,14 @@ export const PostEditorFlow = ({
 }) => {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [confirmModalMode, setConfirmModalMode] = useState<ConfirmModalMode>(
     ConfirmModalMode.CLOSE
   );
   const {
+    isLoading,
+    setIsLoading,
+    loadingMessage,
+    setLoadingMessage,
     mode,
     step,
     setStep,

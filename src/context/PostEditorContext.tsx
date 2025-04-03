@@ -26,6 +26,8 @@ export const PostEditorProvider = ({
   children: React.ReactNode;
 }) => {
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading...");
 
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
@@ -49,15 +51,26 @@ export const PostEditorProvider = ({
   const [additionalPrompt, setAdditionalPrompt] = useState("");
   const [platformStates, setPlatformStates] = useState<PlatformState[]>([]);
   const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
-  const { data: postCreateFormData } = useFetchData<PostEditorConfig>(
-    POSTS_API.CREATE
-  );
-  const { data: promoData } = useFetchData<Promotion>(
-    promoParam ? PROMOTIONS_API.DETAIL(promoParam) : null
-  );
+
+  const { data: postCreateFormData, isLoading: isLoadingPostCreateForm } =
+    useFetchData<PostEditorConfig>(POSTS_API.CREATE);
+  const { data: promoData, isLoading: isLoadingPromotion } =
+    useFetchData<Promotion>(
+      promoParam ? PROMOTIONS_API.DETAIL(promoParam) : null
+    );
 
   useEffect(() => {
-    if (postCreateFormData?.business) {
+    if (!mode) return;
+    if (step !== 2) return;
+    setIsLoading(isLoadingPostCreateForm || isLoadingPromotion);
+  }, [mode, step, isLoadingPostCreateForm, isLoadingPromotion]);
+
+  useEffect(() => {
+    if (mode !== PostEditorMode.CREATE) return;
+    if (!postCreateFormData) return;
+    if (promoParam && !promoData) return;
+
+    if (postCreateFormData.business) {
       setCustomisedBusinessInfo({
         targetCustomers: postCreateFormData.business.targetCustomers,
         vibe: postCreateFormData.business.vibe,
@@ -65,11 +78,11 @@ export const PostEditorProvider = ({
       });
     }
 
-    if (postCreateFormData?.selectableCategories) {
+    if (postCreateFormData.selectableCategories) {
       setSelectableCategories(postCreateFormData.selectableCategories);
     }
 
-    if (postCreateFormData?.linkedPlatforms) {
+    if (postCreateFormData.linkedPlatforms) {
       const platformStates: PlatformState[] =
         postCreateFormData.linkedPlatforms.map((platform) => ({
           key: platform.key,
@@ -81,34 +94,38 @@ export const PostEditorProvider = ({
       setPlatformStates(platformStates);
     }
 
-    if (mode === PostEditorMode.CREATE && promoData) {
+    if (promoData) {
       setAdditionalPrompt(promoData.description);
     }
+  }, [mode, promoParam, postCreateFormData, promoData]);
 
-    if (
-      mode === PostEditorMode.EDIT &&
-      selectedPost &&
-      selectableCategories.length > 0
-    ) {
-      setUploadedImageUrl(selectedPost.image);
-      setPlatformStates([
-        {
-          key: selectedPost.platform.key,
-          label: selectedPost.platform.label,
-          isSelected: true,
-          caption: selectedPost.caption,
-          scheduleDate: selectedPost.scheduledAt,
-        },
-      ]);
-      const mappedCategories = selectableCategories.map((category) => ({
+  useEffect(() => {
+    if (mode !== PostEditorMode.EDIT) return;
+    if (!selectedPost) return;
+    if (!postCreateFormData) return;
+
+    setUploadedImageUrl(selectedPost.image);
+
+    setPlatformStates([
+      {
+        key: selectedPost.platform.key,
+        label: selectedPost.platform.label,
+        isSelected: true,
+        caption: selectedPost.caption,
+        scheduleDate: selectedPost.scheduledAt,
+      },
+    ]);
+
+    const mappedCategories = postCreateFormData.selectableCategories.map(
+      (category) => ({
         ...category,
         isSelected: selectedPost.selectedCategoryLabels.includes(
           category.label
         ),
-      }));
-      setSelectableCategories(mappedCategories);
-    }
-  }, [mode, selectedPost, postCreateFormData, selectableCategories, promoData]);
+      })
+    );
+    setSelectableCategories(mappedCategories);
+  }, [mode, selectedPost, postCreateFormData]);
 
   useEffect(() => {
     if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
@@ -174,6 +191,10 @@ export const PostEditorProvider = ({
   return (
     <PostEditorContext.Provider
       value={{
+        isLoading,
+        setIsLoading,
+        loadingMessage,
+        setLoadingMessage,
         step,
         setStep,
         mode,
