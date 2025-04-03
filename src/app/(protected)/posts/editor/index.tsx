@@ -26,26 +26,21 @@ export const PostEditorEntry = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
-  const showEditor = useMemo(
-    () => mode === "create" || mode === "edit",
-    [mode]
-  );
+  const showEditor = useMemo(() => mode !== null, [mode]);
   const { resetPostEditor } = usePostEditorContext();
 
   return (
     <>
-      {showEditor && (
-        <Modal
-          isOpen={true}
-          onClose={() => {
-            resetPostEditor();
-            // Use router.back() to maintain proper navigation history when closing modals
-            router.back();
-          }}
-        >
-          <PostEditorFlow mutate={mutate} />
-        </Modal>
-      )}
+      <Modal
+        isOpen={showEditor}
+        onClose={() => {
+          resetPostEditor();
+          // Use router.back() to maintain proper navigation history when closing modals
+          router.back();
+        }}
+      >
+        <PostEditorFlow mutate={mutate} />
+      </Modal>
 
       {/* Render the posts dashboard */}
       <PostsDashboardView posts={posts} mutate={mutate} error={error} />
