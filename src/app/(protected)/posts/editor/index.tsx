@@ -33,16 +33,18 @@ export const PostEditorEntry = ({
 
   return (
     <>
-      <Modal
-        isOpen={showEditor}
-        onClose={() => {
-          resetPostEditor();
-          // Use router.back() to maintain proper navigation history when closing modals
-          router.back();
-        }}
-      >
-        <PostEditorFlow mutate={mutate} />
-      </Modal>
+      {showEditor && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            resetPostEditor();
+            // Use router.back() to maintain proper navigation history when closing modals
+            router.back();
+          }}
+        >
+          <PostEditorFlow mutate={mutate} />
+        </Modal>
+      )}
 
       {/* Render the posts dashboard */}
       <PostsDashboardView
