@@ -56,7 +56,6 @@ export interface PostEditorConfig {
 export interface PlatformState {
   key: PlatformKey; // e.g. "facebook"
   label: string; // e.g. "Facebook"
-  isSelected: boolean; // Whether this platform is selected for posting
   caption: string; // Final caption chosen for this platform
 }
 

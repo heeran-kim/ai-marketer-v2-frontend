@@ -48,17 +48,15 @@ export default function PostReviewStep() {
         .filter((category) => category.isSelected)
         .map((category) => category.label);
 
-      const reviewItems = platformStates
-        .filter((platform) => platform.isSelected)
-        .map((platformState) => {
-          return {
-            image: currentImageUrl,
-            platform: platformState.key,
-            selectedCategoryLabels: categories,
-            caption: platformState.caption,
-            type: "postReview" as const,
-          };
-        });
+      const reviewItems = platformStates.map((platformState) => {
+        return {
+          image: currentImageUrl,
+          platform: platformState.key,
+          selectedCategoryLabels: categories,
+          caption: platformState.caption,
+          type: "postReview" as const,
+        };
+      });
 
       setPreparedReviewItems(reviewItems as PostReview[]);
       setIsLoading(false);

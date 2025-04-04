@@ -100,7 +100,6 @@ export const PostEditorProvider = ({
         postCreateFormData.linkedPlatforms.map((platform) => ({
           key: platform.key,
           label: platform.label,
-          isSelected: true, // TODO
           caption: "",
         }));
 
@@ -133,7 +132,6 @@ export const PostEditorProvider = ({
       {
         key: selectedPost.platform.key,
         label: selectedPost.platform.label,
-        isSelected: true,
         caption: selectedPost.caption,
       },
     ]);
