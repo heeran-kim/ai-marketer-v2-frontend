@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Post } from "@/types/post";
 import { POSTS_API } from "@/constants/api";
 import { apiClient } from "@/hooks/dataHooks";
-import { ConfirmModal } from "@/components/common/ConfirmModal";
+import { ConfirmModal } from "@/components/common";
 
 interface DeletePostHandlerProps {
   selectedPostId: string | undefined;

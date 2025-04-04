@@ -1,5 +1,6 @@
 // src/context/PostEditornContext.tsx
 import { createContext, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import {
   PostEditorConfig,
@@ -9,12 +10,17 @@ import {
   SelectableCategory,
   PostEditorMode,
   Post,
+  PlatformScheduleMap,
 } from "@/types/post";
 import { Promotion } from "@/types/promotion";
 import { useEffect } from "react";
-import { POSTS_API, PROMOTIONS_API } from "@/constants/api";
-import { useFetchData } from "@/hooks/dataHooks";
+import { AI_API, POSTS_API, PROMOTIONS_API } from "@/constants/api";
+import { apiClient, useFetchData } from "@/hooks/dataHooks";
 import { toUtcFromLocalInput } from "@/utils/date";
+import { KeyedMutator } from "swr";
+import { PostDto } from "@/types/dto";
+import { useNotification } from "@/context/NotificationContext";
+import { ScheduleType } from "@/constants/posts";
 
 const PostEditorContext = createContext<PostEditorContextType | undefined>(
   undefined
@@ -25,9 +31,13 @@ export const PostEditorProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const router = useRouter();
+
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { showNotification } = useNotification();
 
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
@@ -50,6 +60,9 @@ export const PostEditorProvider = ({
   >([]);
   const [additionalPrompt, setAdditionalPrompt] = useState("");
   const [platformStates, setPlatformStates] = useState<PlatformState[]>([]);
+  const [platformSchedule, setPlatformSchedule] = useState<PlatformScheduleMap>(
+    {}
+  );
   const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
 
   const { data: postCreateFormData, isLoading: isLoadingPostCreateForm } =
@@ -87,11 +100,21 @@ export const PostEditorProvider = ({
         postCreateFormData.linkedPlatforms.map((platform) => ({
           key: platform.key,
           label: platform.label,
-          isSelected: true,
+          isSelected: true, // TODO
           caption: "",
         }));
 
+      const platformSchedule: PlatformScheduleMap =
+        postCreateFormData.linkedPlatforms.reduce((acc, platform) => {
+          acc[platform.key] = {
+            scheduleType: "instant",
+            scheduleDate: null,
+          };
+          return acc;
+        }, {} as PlatformScheduleMap);
+
       setPlatformStates(platformStates);
+      setPlatformSchedule(platformSchedule);
     }
 
     if (promoData) {
@@ -112,9 +135,17 @@ export const PostEditorProvider = ({
         label: selectedPost.platform.label,
         isSelected: true,
         caption: selectedPost.caption,
-        scheduleDate: selectedPost.scheduledAt,
       },
     ]);
+
+    setPlatformSchedule({
+      [selectedPost.platform.key]: {
+        scheduleType:
+          selectedPost.status === "Scheduled" ? "scheduled" : "instant",
+        scheduleDate:
+          selectedPost.status === "Scheduled" ? selectedPost.scheduledAt : null,
+      },
+    });
 
     const mappedCategories = postCreateFormData.selectableCategories.map(
       (category) => ({
@@ -154,19 +185,32 @@ export const PostEditorProvider = ({
     });
   };
 
+  const updatePlatformScheduleType = (
+    platformKey: string,
+    newType: ScheduleType
+  ) => {
+    setPlatformSchedule((prev) => ({
+      ...prev,
+      [platformKey]: {
+        ...prev[platformKey],
+        scheduleType: newType,
+      },
+    }));
+  };
+
   const updatePlatformScheduleDate = (platformKey: string, newDate: string) => {
     let formattedDate = "";
     if (newDate) {
       formattedDate = toUtcFromLocalInput(newDate);
     }
 
-    setPlatformStates((prev) =>
-      prev.map((platform) =>
-        platform.key === platformKey
-          ? { ...platform, scheduleDate: formattedDate }
-          : platform
-      )
-    );
+    setPlatformSchedule((prev) => ({
+      ...prev,
+      [platformKey]: {
+        ...prev[platformKey],
+        scheduleDate: formattedDate,
+      },
+    }));
   };
 
   const resetPostEditor = () => {
@@ -188,6 +232,100 @@ export const PostEditorProvider = ({
     setCaptionSuggestions([]);
   };
 
+  const fetchCaptionSuggestions = async () => {
+    setIsLoading(true);
+    try {
+      const res = await apiClient.post<{ captions: string[] }>(
+        AI_API.CAPTION_GENERATE,
+        {
+          imgItems: detectedItems,
+          businessInfo: customisedBusinessInfo,
+          postCategories: selectableCategories,
+          platformStates: platformStates,
+          customText: additionalPrompt,
+        },
+        {},
+        false // isFormData flag
+      );
+
+      if (!res?.captions?.length) {
+        setErrorMessage(
+          "Failed to fetch caption generation result or empty data. Please try again."
+        );
+        setCaptionSuggestions([]);
+        return;
+      }
+      setErrorMessage(null);
+      setCaptionSuggestions(res.captions);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(
+        "Failed to fetch caption generation result or empty data. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updatePost = async (mutate: KeyedMutator<{ posts: PostDto[] }>) => {
+    if (!selectedPost) return;
+    setIsLoading(true);
+    setLoadingMessage("Updating post...");
+    try {
+      // Create FormData to handle file uploads
+      const formData = new FormData();
+
+      // Add caption
+      formData.append("caption", platformStates[0]?.caption || "");
+
+      // Add categories as an array
+      const selectedCategories = selectableCategories
+        .filter((cat) => cat.isSelected)
+        .map((cat) => cat.label);
+
+      // Add each category as a separate form field with the same name
+      selectedCategories.forEach((category) => {
+        formData.append("categories", category);
+      });
+
+      // Add scheduled time if available and it's a scheduled post
+      const scheduleDate =
+        platformSchedule[platformStates[0].key]?.scheduleDate ?? null;
+      if (scheduleDate) {
+        formData.append("scheduled_at", scheduleDate);
+      } else {
+        formData.append("scheduled_at", "");
+      }
+
+      // Add image if a new one was uploaded
+      if (image) {
+        formData.append("image", image);
+      }
+
+      // Use the PATCH endpoint to update the post
+      await apiClient.patch(
+        POSTS_API.UPDATE(selectedPost.id),
+        formData,
+        {},
+        true // isFormData flag
+      );
+
+      // Show success notification
+      showNotification("success", "Post updated successfully!");
+
+      // Refresh the data and redirect
+      await mutate();
+      router.back();
+    } catch (error) {
+      console.error("Error updating post:", error);
+      // Show error notification
+      showNotification("error", "Failed to update post. Please try again.");
+    } finally {
+      resetPostEditor();
+      setIsLoading(false);
+    }
+  };
+
   return (
     <PostEditorContext.Provider
       value={{
@@ -195,6 +333,7 @@ export const PostEditorProvider = ({
         setIsLoading,
         loadingMessage,
         setLoadingMessage,
+        errorMessage,
         step,
         setStep,
         mode,
@@ -215,12 +354,16 @@ export const PostEditorProvider = ({
         setAdditionalPrompt,
         platformStates,
         setPlatformStates,
+        platformSchedule,
         captionSuggestions,
         setCaptionSuggestions,
-        setPlatformCaption: setPlatformCaption,
+        setPlatformCaption,
         updateCaptionSuggestion,
+        updatePlatformScheduleType,
         updatePlatformScheduleDate,
         resetPostEditor,
+        fetchCaptionSuggestions,
+        updatePost,
       }}
     >
       {children}

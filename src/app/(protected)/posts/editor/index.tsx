@@ -6,7 +6,7 @@
 
 import { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Modal from "@/components/common/Modal";
+import { Modal } from "@/components/common";
 import { PostsDashboardView } from "@/app/(protected)/posts/dashboard";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { usePostEditorContext } from "@/context/PostEditorContext";

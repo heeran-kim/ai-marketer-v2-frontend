@@ -1,11 +1,11 @@
 // src/app/(protected)/posts/components/captionEditor/PlatformSelect.tsx
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import { getPlatformIcon, PLATFORM_OPTIONS } from "@/utils/icon";
+import { getPlatformIcon, PLATFORM_OPTIONS, PlatformKey } from "@/utils/icon";
 import PlatformDropZone from "./PlatformDropZone";
 
 interface PlatformSelectProps {
-  activePlatform: (typeof PLATFORM_OPTIONS)[number] | undefined;
-  setActivePlatform: (platform: (typeof PLATFORM_OPTIONS)[number]) => void;
+  activePlatform: PlatformKey | undefined;
+  setActivePlatform: (platform: PlatformKey) => void;
 }
 
 export const PlatformSelect = ({

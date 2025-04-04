@@ -10,7 +10,7 @@ const BRISBANE_OFFSET_MINUTES = 600;
  */
 export const toLocalTime = (
   input: string | Date,
-  fmt: string = "dd-MM-yyyy hh:mm a"
+  fmt: string = "dd-MMM-yyyy hh:mm a"
 ): string => {
   const date = typeof input === "string" ? new Date(input) : input;
   const brisbaneTime = toZonedTime(date, TIMEZONE);

@@ -24,7 +24,7 @@ export default function CaptionEditor() {
       <div className="flex flex-col h-full">
         {isCreating && (
           <SuggestedCaptions
-            isSelected={activeSegment === "suggestedCaptions"}
+            isExpanded={activeSegment === "suggestedCaptions"}
             setActiveSegment={setActiveSegment}
           />
         )}

@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@/context/NotificationContext";
 import { DeletePostHandler } from "@/components/post/DeletePostHandler";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { PlatformKey } from "@/utils/icon";
 import { Post } from "@/types/post";
 import { DropboxItem } from "@/types/index";
 import { usePostEditorContext } from "@/context/PostEditorContext";
@@ -38,9 +38,9 @@ export const PostsDashboardView = ({
   );
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPlatform, setSelectedPlatform] = useState<
-    (typeof PLATFORM_OPTIONS)[number] | null
-  >(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<PlatformKey | null>(
+    null
+  );
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);

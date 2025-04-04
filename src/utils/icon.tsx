@@ -19,6 +19,8 @@ export const platformConfig: Record<
   threads: { label: "Threads", icon: FaThreads, color: "text-black" },
 };
 
+export type PlatformKey = (typeof PLATFORM_OPTIONS)[number];
+
 export const PLATFORM_OPTIONS = Object.keys(
   platformConfig
 ) as (keyof typeof platformConfig)[];

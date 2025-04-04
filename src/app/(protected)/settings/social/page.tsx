@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SETTINGS_API } from "@/constants/api";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Platform } from "@/types/business";
-import Card from "@/components/common/Card";
+import { Card } from "@/components/common";
 import { PLATFORM_OPTIONS, getPlatformIcon } from "@/utils/icon";
 
 export default function SocialMediaSettings() {

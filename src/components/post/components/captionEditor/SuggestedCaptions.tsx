@@ -1,30 +1,22 @@
 // src/app/(protected)/posts/components/captionEditor/SelectedCaptions.tsx
-import { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
-import DraggableCaption from "./DraggableCaption";
 import { usePostEditorContext } from "@/context/PostEditorContext";
+import { CaptionSwiper } from "./CaptionSwiper";
 
 interface SuggestedCaptionsProps {
-  isSelected: boolean;
+  isExpanded: boolean;
   setActiveSegment: (segment: "suggestedCaptions" | "platformCaption") => void;
 }
 
 export const SuggestedCaptions = ({
-  isSelected,
+  isExpanded,
   setActiveSegment,
 }: SuggestedCaptionsProps) => {
-  const { captionSuggestions } = usePostEditorContext();
-
-  // State for tracking the currently edited caption index
-  const [activeSuggestedIndex, setActiveSuggestedIndex] = useState<
-    number | null
-  >(null);
+  const { errorMessage, fetchCaptionSuggestions } = usePostEditorContext();
 
   return (
     <div
       className={`transition-all duration-300 bg-gray-100 rounded-lg ${
-        isSelected ? "h-[calc(100%-70px)]" : "h-[40px]"
+        isExpanded ? "h-[calc(100%-70px)]" : "h-[40px]"
       }`}
     >
       <div
@@ -34,43 +26,24 @@ export const SuggestedCaptions = ({
         <h2 className="text-sm font-bold text-gray-600">Suggested Captions</h2>
       </div>
 
-      {isSelected && (
+      {isExpanded && (
         <div
           className="p-3 overflow-y-auto"
           style={{ height: "calc(100% - 40px)" }}
         >
-          <Swiper
-            spaceBetween={10}
-            slidesPerView={1.4}
-            centeredSlides={true}
-            freeMode={true}
-            grabCursor={false}
-            simulateTouch={false}
-            mousewheel={{ forceToAxis: true }}
-            modules={[Mousewheel]}
-            className="p-3 h-full"
-          >
-            {captionSuggestions.length > 0 ? (
-              captionSuggestions.map((caption, index) => (
-                <SwiperSlide
-                  key={`caption-${index}`}
-                  className="w-auto flex item-stretch h-full"
-                >
-                  <DraggableCaption
-                    id={`caption-${index}`}
-                    text={caption}
-                    index={index}
-                    editingIndex={activeSuggestedIndex}
-                    setEditingIndex={setActiveSuggestedIndex}
-                  />
-                </SwiperSlide>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm text-center">
-                No AI-generated captions available.
-              </p>
-            )}
-          </Swiper>
+          {errorMessage ? (
+            <div className="flex flex-col justify-center items-center text-center h-64 text-red-500">
+              <p>{errorMessage}</p>
+              <button
+                onClick={async () => await fetchCaptionSuggestions()}
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <CaptionSwiper />
+          )}
         </div>
       )}
     </div>

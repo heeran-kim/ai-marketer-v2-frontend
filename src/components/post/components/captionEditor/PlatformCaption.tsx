@@ -4,7 +4,7 @@ import { PlatformCaptionEditor } from "./PlatformCaptionEditor";
 import { PlatformSelect } from "./PlatformSelect";
 import { PostEditorMode } from "@/types/post";
 import { useEffect, useState } from "react";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { PlatformKey } from "@/utils/icon";
 
 interface PlatformCaptionProps {
   isExpanded: boolean;
@@ -17,7 +17,7 @@ export const PlatformCaption = ({
 }: PlatformCaptionProps) => {
   const { mode, platformStates } = usePostEditorContext();
   const [activePlatform, setActivePlatform] = useState<
-    (typeof PLATFORM_OPTIONS)[number] | undefined
+    PlatformKey | undefined
   >();
 
   useEffect(() => {

@@ -1,6 +1,9 @@
 // src/types/posts.ts
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { PlatformKey } from "@/utils/icon";
 import { Business, Platform } from "./business";
+import { PLATFORM_SCHEDULE_OPTIONS, ScheduleType } from "@/constants/posts";
+import { KeyedMutator } from "swr";
+import { PostDto } from "./dto";
 
 // Refined post model used in frontend
 export interface Post {
@@ -51,12 +54,19 @@ export interface PostEditorConfig {
 
 // Represents a social media platform selection state
 export interface PlatformState {
-  key: (typeof PLATFORM_OPTIONS)[number]; // ex: "facebook"
-  label: string; // ex: "Facebook"
+  key: PlatformKey; // e.g. "facebook"
+  label: string; // e.g. "Facebook"
   isSelected: boolean; // Whether this platform is selected for posting
-  caption: string; // The final caption chosen for this platform
-  scheduleDate?: string; // (Optional) ISO timestamp for scheduled post time on this platform
+  caption: string; // Final caption chosen for this platform
 }
+
+// Represents the schedule state for each platform
+export interface PlatformSchedule {
+  scheduleType: (typeof PLATFORM_SCHEDULE_OPTIONS)[number]["key"]; // The type of schedule (e.g., "instant", "scheduled", "dontPost")
+  scheduleDate: string | null; // The scheduled date in ISO datetime format or null if not set
+}
+
+export type PlatformScheduleMap = Record<PlatformKey, PlatformSchedule>;
 
 // Represents the response from AI image analysis
 export interface ImageAnalysisResponse {
@@ -75,6 +85,7 @@ export interface PostEditorContextType {
 
   loadingMessage: string;
   setLoadingMessage: (message: string) => void;
+  errorMessage: string | null;
 
   // Current editor mode: "create" or "edit"
   mode: PostEditorMode | null;
@@ -116,6 +127,9 @@ export interface PostEditorContextType {
   // Platforms where the post will be published (e.g., Facebook, Twitter), with caption state
   platformStates: PlatformState[];
   setPlatformStates: (states: PlatformState[]) => void;
+  deselectPlatform: (platformKey: string) => void;
+
+  platformSchedule: PlatformScheduleMap;
 
   // Updates the caption for a specific platform
   setPlatformCaption: (key: string, caption: string) => void;
@@ -126,11 +140,16 @@ export interface PostEditorContextType {
 
   // Updates a specific caption suggestion (after user edits)
   updateCaptionSuggestion: (index: number, editedCaption: string) => void;
-
+  updatePlatformScheduleType: (
+    platformKey: string,
+    newType: ScheduleType
+  ) => void;
   updatePlatformScheduleDate: (platformKey: string, newDate: string) => void;
 
   // Resets all editor state back to initial
   resetPostEditor: () => void;
+  fetchCaptionSuggestions: () => void;
+  updatePost: (mutate: KeyedMutator<{ posts: PostDto[] }>) => void;
 }
 
 // Editor mode used in PostEditorContext

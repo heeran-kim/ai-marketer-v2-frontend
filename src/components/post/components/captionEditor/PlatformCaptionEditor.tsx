@@ -1,9 +1,9 @@
 // src/app/(protected)/posts/components/captionEditor/PlatformCaptionEditor.tsx
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import { PLATFORM_OPTIONS } from "@/utils/icon";
+import { PlatformKey } from "@/utils/icon";
 
 interface PlatformCaptionEditorProps {
-  activePlatform: (typeof PLATFORM_OPTIONS)[number] | undefined;
+  activePlatform: PlatformKey | undefined;
 }
 
 export const PlatformCaptionEditor = ({

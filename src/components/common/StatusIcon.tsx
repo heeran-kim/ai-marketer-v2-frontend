@@ -11,9 +11,13 @@ import {
 
 interface StatusIconProps {
   status: string;
+  size?: "small" | "default";
 }
 
-const StatusIcon: React.FC<StatusIconProps> = ({ status }) => {
+const StatusIcon: React.FC<StatusIconProps> = ({
+  status,
+  size = "default",
+}) => {
   const lowerStatus = status.toLowerCase();
   let IconComponent;
 
@@ -29,14 +33,21 @@ const StatusIcon: React.FC<StatusIconProps> = ({ status }) => {
     IconComponent = null;
   }
 
+  const iconSize = size === "default" ? 10 : 10;
+  const circleSize = size === "default" ? iconSize + 20 : iconSize + 10;
+
   return (
     <div
       className={clsx(
-        "flex items-center justify-center w-8 h-8 rounded-full",
+        "flex items-center justify-center rounded-full",
         getStatusClass(status)
       )}
+      style={{
+        width: circleSize,
+        height: circleSize,
+      }}
     >
-      {IconComponent && <IconComponent size={10} />}
+      {IconComponent && <IconComponent size={iconSize} />}
     </div>
   );
 };
