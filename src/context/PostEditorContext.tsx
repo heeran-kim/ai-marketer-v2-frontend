@@ -284,7 +284,6 @@ export const PostEditorProvider = ({
 
       // For each selected platform, create a post
       for (const platform of platformsToPost) {
-        console.log("-----------------------", platform);
         // Create FormData to handle file uploads
         const formData = new FormData();
 
@@ -307,12 +306,8 @@ export const PostEditorProvider = ({
         // Add categories as an array
         const selectedCategories = selectableCategories
           .filter((cat) => cat.isSelected)
-          .map((cat) => cat.key);
-
-        // Add each category as a separate form field with the same name
-        selectedCategories.forEach((category) => {
-          formData.append("categories", category);
-        });
+          .map((cat) => cat.id);
+        formData.append("categories", JSON.stringify(selectedCategories));
 
         // Add scheduled time if available and it's a scheduled post
         const scheduleDate =
@@ -322,11 +317,10 @@ export const PostEditorProvider = ({
         }
 
         // Add promotion ID if posting through a promotion
-        if (promoParam) {
-          formData.append("promotion", promoParam);
+        if (promoData) {
+          formData.append("promotion", promoData.id);
         }
 
-        console.log(formData);
         // Send the request to create the post
         await apiClient.post(POSTS_API.LIST, formData, {}, true);
       }
