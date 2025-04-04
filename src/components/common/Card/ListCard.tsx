@@ -31,6 +31,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       updatePlatformScheduleDate,
       platformSchedule,
     } = usePostEditorContext();
+    const isInitialized = useRef<boolean>(false); // useRef to track whether initial setup logic in useEffect has run
     const cardRef = useRef<HTMLDivElement>(null);
     const [isMobileLayout, setIsMobileLayout] = useState(false);
 
@@ -45,6 +46,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
     const [status, setStatus] = useState<string>("");
 
     useEffect(() => {
+      if (isInitialized.current) return;
+
       if ((item as Post).type === "post") {
         const post = item as Post;
         setImagePreviewUrl(post.image);
@@ -79,6 +82,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setSocialLink({ link: "", platformKey: review.platform });
         setDescription(review.caption);
       }
+
+      isInitialized.current = true;
     }, [item, platformSchedule]);
 
     useEffect(() => {
@@ -115,10 +120,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newDate = e.target.value;
-      setDate(toLocalTime(newDate, "yyyy-MM-dd'T'HH:mm"));
-      if (item.type === "postReview") {
-        updatePlatformScheduleDate((item as PostReview).platform, newDate);
-      }
+      setDate(newDate);
+      updatePlatformScheduleDate((item as PostReview).platform, newDate);
     };
 
     return (

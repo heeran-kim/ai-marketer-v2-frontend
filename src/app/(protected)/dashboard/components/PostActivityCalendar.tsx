@@ -1,7 +1,8 @@
 import React from "react";
 import { PostActivityData } from "@/types/business";
 import { PLATFORM_CHART_COLORS } from "@/components/styles";
-import { format, toZonedTime } from "date-fns-tz";
+import { toLocalDateObject, toLocalTime } from "@/utils/date";
+import { format } from "date-fns-tz";
 
 interface PostActivityCalendarProps {
   postActivity: PostActivityData;
@@ -10,11 +11,44 @@ interface PostActivityCalendarProps {
 export const PostActivityCalendar = ({
   postActivity,
 }: PostActivityCalendarProps) => {
-  const timezone = "Australia/Brisbane";
-  const { postDates, lastPostDate } = postActivity;
+  const { platformsByDatetime, lastPostDate } = postActivity;
+
+  const groupAndCountPostsByLocalDate = (
+    posts: Record<string, string[]>
+  ): {
+    platformsByDate: Record<string, string[]>;
+    postCountByDate: Record<string, number>;
+  } => {
+    const platformSetByDate: Record<string, Set<string>> = {};
+    const postCountByDate: Record<string, number> = {};
+
+    Object.entries(posts).forEach(([dateStr, platforms]) => {
+      const localDate = toLocalTime(dateStr, "yyyy-MM-dd");
+
+      if (!platformSetByDate[localDate]) {
+        platformSetByDate[localDate] = new Set();
+        postCountByDate[localDate] = 0;
+      }
+
+      postCountByDate[localDate] += platforms.length;
+      platforms.forEach((platform) =>
+        platformSetByDate[localDate].add(platform)
+      );
+    });
+
+    const platformsByDate: Record<string, string[]> = {};
+    for (const [date, platformSet] of Object.entries(platformSetByDate)) {
+      platformsByDate[date] = Array.from(platformSet);
+    }
+
+    return { platformsByDate, postCountByDate };
+  };
+
+  const { platformsByDate, postCountByDate } =
+    groupAndCountPostsByLocalDate(platformsByDatetime);
 
   // Get current month days
-  const today = toZonedTime(new Date(), timezone);
+  const today = toLocalDateObject(new Date());
   const year = today.getFullYear();
   const month = today.getMonth();
 
@@ -25,7 +59,7 @@ export const PostActivityCalendar = ({
   const daysSinceLastPost = lastPostDate
     ? Math.floor(
         (today.getTime() -
-          toZonedTime(new Date(lastPostDate), timezone).getTime()) /
+          toLocalDateObject(new Date(lastPostDate)).getTime()) /
           (1000 * 60 * 60 * 24)
       )
     : null;
@@ -63,7 +97,7 @@ export const PostActivityCalendar = ({
 
   // Get today's posts
   const todayString = format(today, "yyyy-MM-dd");
-  const todayPosts = postDates[todayString] || [];
+  const numPostsToday = postCountByDate[todayString] || 0;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
@@ -93,9 +127,8 @@ export const PostActivityCalendar = ({
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1;
               const date = new Date(year, month, day);
-              const zonedDate = toZonedTime(date, timezone);
-              const dateString = format(zonedDate, "yyyy-MM-dd");
-              const platforms = postDates[dateString] || [];
+              const dateString = toLocalTime(date, "yyyy-MM-dd");
+              const platforms = platformsByDate[dateString] || [];
               const isToday =
                 today.getDate() === day &&
                 today.getMonth() === month &&
@@ -133,10 +166,9 @@ export const PostActivityCalendar = ({
           </div>
 
           <div className="mt-2 text-center text-sm">
-            {todayPosts.length > 0 ? (
+            {numPostsToday > 0 ? (
               <span className="text-green-600 dark:text-green-400">
-                {todayPosts.length} post{todayPosts.length !== 1 ? "s" : ""}{" "}
-                today
+                {numPostsToday} post{numPostsToday !== 1 ? "s" : ""} today
               </span>
             ) : (
               <span className="text-gray-500">No posts today</span>
