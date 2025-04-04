@@ -86,6 +86,7 @@ export interface PostEditorContextType {
   loadingMessage: string;
   setLoadingMessage: (message: string) => void;
   errorMessage: string | null;
+  setErrorMessage: (message: string | null) => void;
 
   // Current editor mode: "create" or "edit"
   mode: PostEditorMode | null;
@@ -127,7 +128,6 @@ export interface PostEditorContextType {
   // Platforms where the post will be published (e.g., Facebook, Twitter), with caption state
   platformStates: PlatformState[];
   setPlatformStates: (states: PlatformState[]) => void;
-  deselectPlatform: (platformKey: string) => void;
 
   platformSchedule: PlatformScheduleMap;
 
@@ -149,6 +149,7 @@ export interface PostEditorContextType {
   // Resets all editor state back to initial
   resetPostEditor: () => void;
   fetchCaptionSuggestions: () => void;
+  createPost: (mutate: KeyedMutator<{ posts: PostDto[] }>) => void;
   updatePost: (mutate: KeyedMutator<{ posts: PostDto[] }>) => void;
 }
 

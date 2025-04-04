@@ -38,7 +38,7 @@ export const PlatformCaption = ({
   return (
     <div
       className={`transition-all duration-300 ${
-        isExpanded ? "h-[calc(100%-40px)]" : "h-[40px]"
+        isExpanded ? "h-[calc(100%-40px)]" : "h-[70px]"
       }`}
     >
       {mode === PostEditorMode.CREATE && (

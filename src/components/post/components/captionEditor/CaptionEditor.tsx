@@ -2,8 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import "swiper/css";
-import "swiper/css/mousewheel";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { usePostEditorContext } from "@/context/PostEditorContext";
@@ -21,7 +19,7 @@ export default function CaptionEditor() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-col h-full">
+      <div className="h-full">
         {isCreating && (
           <SuggestedCaptions
             isExpanded={activeSegment === "suggestedCaptions"}

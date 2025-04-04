@@ -5,7 +5,7 @@ import { useState } from "react";
 import { SETTINGS_API } from "@/constants/api";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Platform } from "@/types/business";
-import { Card } from "@/components/common";
+import { Card, ErrorFallback } from "@/components/common";
 import { PLATFORM_OPTIONS, getPlatformIcon } from "@/utils/icon";
 
 export default function SocialMediaSettings() {
@@ -17,6 +17,7 @@ export default function SocialMediaSettings() {
   // Fetches linked social accounts data
   const {
     data: linkedPlatforms,
+    isLoading,
     error,
     mutate,
   } = useFetchData<Platform[]>(SETTINGS_API.GET_SOCIAL);
@@ -33,18 +34,16 @@ export default function SocialMediaSettings() {
   // Handle error state for the initial data fetch from useFetchData
   // This doesn't cover errors from connect/disconnect operations
   if (error) {
-    console.error("Error occurred while loading data:", error);
+    const handleRetry = async () => {
+      await mutate();
+    };
 
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-red-500">
-        <p>Failed to load data. Please try again later.</p>
-        <button
-          onClick={() => mutate()}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorFallback
+        message="Failed to load data. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
     );
   }
 

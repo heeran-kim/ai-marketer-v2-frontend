@@ -19,6 +19,7 @@ import type { KeyedMutator } from "swr";
 import type { PostDto } from "@/types/dto";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
 import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
+import { ErrorFallback } from "@/components/common";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -26,10 +27,12 @@ export const PostsDashboardView = ({
   posts,
   mutate,
   error,
+  isLoading,
 }: {
   posts: Post[];
   mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
+  isLoading: boolean;
 }) => {
   const router = useRouter();
   const { setSelectedPost } = usePostEditorContext();
@@ -101,17 +104,18 @@ export const PostsDashboardView = ({
     }
   }, [postIdParam, slicedPosts, filteredPosts]);
 
+  // Show error UI if there's an error
   if (error) {
+    const handleRetry = async () => {
+      await mutate();
+    };
+
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-red-500">
-        <p>Failed to load posts.</p>
-        <button
-          onClick={() => mutate()}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorFallback
+        message="Failed to load posts. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
     );
   }
 

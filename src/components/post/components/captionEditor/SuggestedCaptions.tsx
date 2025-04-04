@@ -1,6 +1,7 @@
 // src/app/(protected)/posts/components/captionEditor/SelectedCaptions.tsx
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { CaptionSwiper } from "./CaptionSwiper";
+import { ErrorFallback } from "@/components/common";
 
 interface SuggestedCaptionsProps {
   isExpanded: boolean;
@@ -32,15 +33,10 @@ export const SuggestedCaptions = ({
           style={{ height: "calc(100% - 40px)" }}
         >
           {errorMessage ? (
-            <div className="flex flex-col justify-center items-center text-center h-64 text-red-500">
-              <p>{errorMessage}</p>
-              <button
-                onClick={async () => await fetchCaptionSuggestions()}
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-              >
-                Retry
-              </button>
-            </div>
+            <ErrorFallback
+              message={errorMessage}
+              onRetry={fetchCaptionSuggestions}
+            />
           ) : (
             <CaptionSwiper />
           )}

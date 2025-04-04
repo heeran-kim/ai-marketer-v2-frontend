@@ -10,7 +10,7 @@ import { PostDto } from "@/types/dto";
 import { mapPostDtoToPost } from "@/utils/transformers";
 
 export default function PostsDashboard() {
-  const { data, error, mutate } = useFetchData<{ posts: PostDto[] }>(
+  const { data, isLoading, error, mutate } = useFetchData<{ posts: PostDto[] }>(
     POSTS_API.LIST
   );
   const posts = (data?.posts || []).map(mapPostDtoToPost);
@@ -18,7 +18,12 @@ export default function PostsDashboard() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <PostEditorProvider>
-        <PostEditorEntry posts={posts} mutate={mutate} error={error} />
+        <PostEditorEntry
+          posts={posts}
+          mutate={mutate}
+          error={error}
+          isLoading={isLoading}
+        />
       </PostEditorProvider>
     </Suspense>
   );

@@ -230,10 +230,14 @@ export const PostEditorProvider = ({
     setAdditionalPrompt("");
     setPlatformStates([]);
     setCaptionSuggestions([]);
+    setLoadingMessage("Loading...");
+    setErrorMessage(null);
   };
 
   const fetchCaptionSuggestions = async () => {
     setIsLoading(true);
+    setLoadingMessage("Generating captions...");
+
     try {
       const res = await apiClient.post<{ captions: string[] }>(
         AI_API.CAPTION_GENERATE,
@@ -262,6 +266,81 @@ export const PostEditorProvider = ({
       setErrorMessage(
         "Failed to fetch caption generation result or empty data. Please try again."
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const createPost = async (mutate: KeyedMutator<{ posts: PostDto[] }>) => {
+    setIsLoading(true);
+    setLoadingMessage("Creating posts...");
+
+    try {
+      // Filter platforms based on scheduleType, skipping those marked as "dontPost"
+      const platformsToPost = platformStates.filter(
+        (platform) =>
+          platformSchedule[platform.key]?.scheduleType !== "dontPost"
+      );
+
+      // For each selected platform, create a post
+      for (const platform of platformsToPost) {
+        console.log("-----------------------", platform);
+        // Create FormData to handle file uploads
+        const formData = new FormData();
+
+        // Add platform
+        formData.append("platform", platform.key);
+
+        // Add image
+        if (image) {
+          formData.append("image", image);
+        } else {
+          showNotification(
+            "error",
+            "Failed to upload the image. Please try again."
+          );
+        }
+
+        // Add caption
+        formData.append("caption", platform.caption);
+
+        // Add categories as an array
+        const selectedCategories = selectableCategories
+          .filter((cat) => cat.isSelected)
+          .map((cat) => cat.key);
+
+        // Add each category as a separate form field with the same name
+        selectedCategories.forEach((category) => {
+          formData.append("categories", category);
+        });
+
+        // Add scheduled time if available and it's a scheduled post
+        const scheduleDate =
+          platformSchedule[platform.key]?.scheduleDate ?? null;
+        if (scheduleDate) {
+          formData.append("scheduled_at", scheduleDate);
+        }
+
+        // Add promotion ID if posting through a promotion
+        if (promoParam) {
+          formData.append("promotion", promoParam);
+        }
+
+        console.log(formData);
+        // Send the request to create the post
+        await apiClient.post(POSTS_API.LIST, formData, {}, true);
+      }
+
+      // Show success notification
+      showNotification("success", "Posts created successfully!");
+
+      // Refresh the data and redirect
+      await mutate();
+      resetPostEditor();
+      router.back();
+    } catch (error) {
+      console.error("Error creating posts:", error);
+      showNotification("error", "Failed to create post. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -315,13 +394,12 @@ export const PostEditorProvider = ({
 
       // Refresh the data and redirect
       await mutate();
+      resetPostEditor();
       router.back();
     } catch (error) {
       console.error("Error updating post:", error);
-      // Show error notification
       showNotification("error", "Failed to update post. Please try again.");
     } finally {
-      resetPostEditor();
       setIsLoading(false);
     }
   };
@@ -334,6 +412,7 @@ export const PostEditorProvider = ({
         loadingMessage,
         setLoadingMessage,
         errorMessage,
+        setErrorMessage,
         step,
         setStep,
         mode,
@@ -363,6 +442,7 @@ export const PostEditorProvider = ({
         updatePlatformScheduleDate,
         resetPostEditor,
         fetchCaptionSuggestions,
+        createPost,
         updatePost,
       }}
     >

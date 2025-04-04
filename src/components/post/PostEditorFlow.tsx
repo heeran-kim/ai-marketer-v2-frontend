@@ -33,6 +33,7 @@ export const PostEditorFlow = ({
     isLoading,
     setIsLoading,
     loadingMessage,
+    setErrorMessage,
     mode,
     step,
     setStep,
@@ -40,6 +41,7 @@ export const PostEditorFlow = ({
     detectedItems,
     resetPostEditor,
     fetchCaptionSuggestions,
+    createPost,
     updatePost,
     platformSchedule,
   } = usePostEditorContext();
@@ -71,7 +73,6 @@ export const PostEditorFlow = ({
     }
 
     if (step === 4 && !skipConfirm) {
-      console.log(platformSchedule);
       const allDontPost = Object.values(platformSchedule).every(
         (schedule) => schedule.scheduleType === "dontPost"
       );
@@ -89,26 +90,25 @@ export const PostEditorFlow = ({
     }
 
     if (step === 4 && isCreating) {
-      handlePost();
+      await createPost(mutate);
     }
 
     if (step === 4 && isEditing) {
-      updatePost(mutate);
+      await updatePost(mutate);
     }
 
     setIsLoading(false);
-    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-    setStep(step + 1);
-  };
 
-  const handlePost = async () => {
-    setIsLoading(true);
-    setIsLoading(false);
+    if (step < 4) {
+      contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      setStep(step + 1);
+    }
   };
 
   const handleBack = () => {
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     setStep(step - 1);
+    setErrorMessage(null);
   };
 
   return (
@@ -157,11 +157,8 @@ export const PostEditorFlow = ({
           className="mx-auto p-2 w-full overflow-y-auto h-[calc(100%-40px)]"
         >
           {step === 1 && <PostImageSelector />}
-
           {step === 2 && <PostDetails />}
-
           {step === 3 && <CaptionEditor />}
-
           {step === 4 && <PostReviewStep />}
         </div>
       </div>

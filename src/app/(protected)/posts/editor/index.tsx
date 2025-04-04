@@ -18,10 +18,12 @@ export const PostEditorEntry = ({
   posts,
   mutate,
   error,
+  isLoading,
 }: {
   posts: Post[];
   mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
+  isLoading: boolean;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,7 +45,12 @@ export const PostEditorEntry = ({
       </Modal>
 
       {/* Render the posts dashboard */}
-      <PostsDashboardView posts={posts} mutate={mutate} error={error} />
+      <PostsDashboardView
+        posts={posts}
+        mutate={mutate}
+        error={error}
+        isLoading={isLoading}
+      />
     </>
   );
 };
