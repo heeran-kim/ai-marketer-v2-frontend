@@ -8,25 +8,21 @@ const fetcher = async <T>(url: string): Promise<T> => {
 };
 
 // Hook for fetching data with SWR and circuit breaker protection
-export function useFetchData<T>(url: string, config?: SWRConfiguration) {
-  const { data, error, isValidating, mutate } = useSWR<T>(
-    url, 
-    fetcher, 
-    {
-      revalidateOnFocus: true,
-      shouldRetryOnError: true,
-      errorRetryCount: 3,
-      errorRetryInterval: 5000,
-      suspense: false,
-      ...config
-    }
-  );
+export function useFetchData<T>(url: string | null, config?: SWRConfiguration) {
+  const { data, error, isValidating, mutate } = useSWR<T>(url, fetcher, {
+    revalidateOnFocus: true,
+    shouldRetryOnError: true,
+    errorRetryCount: 3,
+    errorRetryInterval: 5000,
+    suspense: false,
+    ...config,
+  });
 
-  return { 
-    data, 
-    error, 
-    isLoading: isValidating, 
-    mutate 
+  return {
+    data,
+    error,
+    isLoading: isValidating,
+    mutate,
   };
 }
 

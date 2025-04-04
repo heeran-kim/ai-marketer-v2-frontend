@@ -1,5 +1,6 @@
 // src/components/common/index.ts
 export { default as ActionDropdown } from "./ActionDropdown";
+export { default as CategoryChipList } from "./CategoryChipList";
 export { default as Card } from "./Card";
 export { default as DarkModeToggle } from "./DarkModeToggle";
 export { default as Header } from "./Header";

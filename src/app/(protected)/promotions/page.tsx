@@ -1,91 +1,109 @@
 // src/app/(protected)/promotions/page.tsx
 "use client";
 
-// import "@/mocks/mockPromotions";
-// import { useState } from "react";
-// import { deletePost } from "@/models/post";
-// import { TYPE_OPTIONS, STATUS_OPTIONS } from "@/models/promotion";
-// import SearchBar from "@/components/common/SearchBar";
-import ListCard from "@/components/common/ListCard";
-// import Select from "@/components/common/Select";
-import { useFetchData } from "@/hooks/dataHooks";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Promotion } from "@/types/promotion";
 import { PROMOTIONS_API } from "@/constants/api";
+import PromotionCard from "@/app/(protected)/promotions/components/PromotionCard";
+import { PromotionsFilterBar } from "./components/PromotionsFilterBar";
+import { ConfirmModal } from "@/components/common";
+import { useNotification } from "@/context/NotificationContext";
 
 export default function PromotionsDashboard() {
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [selectedType, setSelectedType] = useState<string | null>(null);
-  // const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const { data } = useFetchData<{ promotions: Promotion[] }>(
-    PROMOTIONS_API.GET_ALL
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [selectedPromotionId, setSelectedPromotionId] = useState<string | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const { showNotification } = useNotification();
+  const router = useRouter();
+
+  const { data, mutate } = useFetchData<{ promotions: Promotion[] }>(
+    PROMOTIONS_API.LIST
   );
   const promotions = data?.promotions || [];
 
-  // const [promotions, setPromotions] = useState();
-
-  // const handleDelete = (promotionId: string) => {
-  //     const promotion = promotions.find((promo) => promo.id === promotionId);
-  //     if (!promotion) return;
-
-  //     const relatedPosts = promotion.postId || [];
-
-  //     if (relatedPosts.length > 0) {
-  //         const confirmDelete = window.confirm(
-  //             `There are ${relatedPosts.length} linked posts for this promotion. Do you want to delete them as well?`
-  //         );
-
-  //         if (confirmDelete) {
-  //             relatedPosts.forEach((postId) => deletePost(postId));
-  //         }
-  //     }
-  //     deletePromotion(promotionId);
-  //     setPromotions((prevPromotions) => prevPromotions.filter((promo) => promo.id !== promotionId));
-  // };
-
-  const handleCreatePost = (promotionId: string) => {
-    console.log(`Create a new post for promotion ID: ${promotionId}`);
+  // Redirects to post creation with promotion context
+  const handleCreatePost = (id: string) => {
+    router.push(`/posts?mode=create&promotionId=${id}`);
   };
 
-  const handleDuplicate = (promotionId: string) => {
-    console.log(`Duplicate for promotion ID: ${promotionId}`);
+  const handleDuplicate = (id: string) => {
+    // TODO
+    console.log(`Duplicate for promotion ID: ${id}`);
   };
 
-  const handleDelete = (promotionId: string) => {
-    console.log(`Delete promotion ID: ${promotionId}`);
+  // Handles promotion deletion with error handling and notification feedback
+  const handleDelete = async () => {
+    if (!selectedPromotionId) return;
+    setIsLoading(true);
+    try {
+      await apiClient.delete(PROMOTIONS_API.DELETE(selectedPromotionId));
+      await mutate();
+      showNotification("success", "Promotion deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting promotion:", error);
+      showNotification(
+        "error",
+        "Failed to delete promotion. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+    setSelectedPromotionId(null);
   };
 
-  // const filteredPromotions = promotions.filter(promo =>
-  // (!selectedType || promo.categories === selectedType) &&
-  // (!selectedStatus || promo.status === selectedStatus) &&
-  // (!searchTerm || promo.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  // );
-
-  // const ongoingPromotions = filteredPromotions.filter(promo => promo.status === "Ongoing");
-  // const upcomingPromotions = filteredPromotions.filter(promo => promo.status === "Upcoming");
-  // const endedPromotions = filteredPromotions.filter(promo => promo.status === "Ended");
+  // Apply filtering based on category, status, and search term
+  const filteredPromotions = promotions.filter((promo) => {
+    const categoryMatch =
+      !selectedCategory ||
+      promo.categories.some((cat) => cat.key === selectedCategory);
+    const statusMatch =
+      !selectedStatus ||
+      promo.status.toLowerCase() === selectedStatus.toLowerCase();
+    const searchMatch =
+      !searchTerm ||
+      promo.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return categoryMatch && statusMatch && searchMatch;
+  });
 
   return (
     <div>
-      <div className="flex items-center space-x-4 py-4 border-b">
-        {/* <SearchBar setSearchTerm={setSearchTerm} placeholder="Search promotions..." /> */}
-        {/* <Select value={selectedType} onChange={setSelectedType} options={TYPE_OPTIONS} placeholder="All Types"/>
-                <Select value={selectedStatus} onChange={setSelectedStatus} options={STATUS_OPTIONS} placeholder="All Status"/> */}
-      </div>
+      {selectedPromotionId && (
+        <ConfirmModal
+          isOpen={!!selectedPromotionId}
+          type="warning"
+          title="Delete Promotion"
+          message={`Are you sure you want to delete this promotion?
+            This will also delete all related posts.`}
+          confirmButtonText={isLoading ? "Deleting..." : "Delete"}
+          cancelButtonText="Cancel"
+          itemId={selectedPromotionId}
+          onConfirm={handleDelete}
+          onClose={() => setSelectedPromotionId(null)}
+        />
+      )}
+
+      <PromotionsFilterBar
+        setSearchTerm={setSearchTerm}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={setSelectedStatus}
+      />
 
       <div className="space-y-4 mt-2">
-        {promotions.map((promo) => (
-          // {[...upcomingPromotions, ...ongoingPromotions, ...endedPromotions].map((promo) => (
-          <ListCard
+        {filteredPromotions.map((promo) => (
+          <PromotionCard
             key={promo.id}
-            item={{ ...promo, type: "promotion" }}
-            actions={[
-              {
-                label: "Create Post",
-                onClick: () => handleCreatePost(promo.id),
-              },
-              { label: "Duplicate", onClick: () => handleDuplicate(promo.id) },
-              { label: "Delete", onClick: () => handleDelete(promo.id) },
-            ]}
+            promotion={promo}
+            onCreatePost={() => handleCreatePost(promo.id)}
+            onDuplicate={() => handleDuplicate(promo.id)}
+            onDelete={() => setSelectedPromotionId(promo.id)}
           />
         ))}
       </div>
