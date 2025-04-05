@@ -1,112 +1,45 @@
 // src/app/(protected)/promotions/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { Promotion } from "@/types/promotion";
-import { PROMOTIONS_API } from "@/constants/api";
-import PromotionCard from "@/app/(protected)/promotions/components/PromotionCard";
-import { PromotionsFilterBar } from "./components/PromotionsFilterBar";
-import { ConfirmModal } from "@/components/common";
-import { useNotification } from "@/context/NotificationContext";
+import React, { useState } from "react";
+import ManagementView from "./management/ManagementView";
+import SuggestionsView from "./suggestions/SuggestionsView";
 
-export default function PromotionsDashboard() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedPromotionId, setSelectedPromotionId] = useState<string | null>(
-    null
+const PromotionsDashboard = () => {
+  const [activeView, setActiveView] = useState<"management" | "suggestions">(
+    "management"
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const { showNotification } = useNotification();
-  const router = useRouter();
-
-  const { data, mutate } = useFetchData<{ promotions: Promotion[] }>(
-    PROMOTIONS_API.LIST
-  );
-  const promotions = data?.promotions || [];
-
-  // Redirects to post creation with promotion context
-  const handleCreatePost = (id: string) => {
-    router.push(`/posts?mode=create&promotionId=${id}`, { scroll: false });
-  };
-
-  const handleDuplicate = (id: string) => {
-    // TODO
-    console.log(`Duplicate for promotion ID: ${id}`);
-  };
-
-  // Handles promotion deletion with error handling and notification feedback
-  const handleDelete = async () => {
-    if (!selectedPromotionId) return;
-    setIsLoading(true);
-    try {
-      await apiClient.delete(PROMOTIONS_API.DELETE(selectedPromotionId));
-      await mutate();
-      showNotification("success", "Promotion deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting promotion:", error);
-      showNotification(
-        "error",
-        "Failed to delete promotion. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-    setSelectedPromotionId(null);
-  };
-
-  // Apply filtering based on category, status, and search term
-  const filteredPromotions = promotions.filter((promo) => {
-    const categoryMatch =
-      !selectedCategory ||
-      promo.categories.some((cat) => cat.key === selectedCategory);
-    const statusMatch =
-      !selectedStatus ||
-      promo.status.toLowerCase() === selectedStatus.toLowerCase();
-    const searchMatch =
-      !searchTerm ||
-      promo.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return categoryMatch && statusMatch && searchMatch;
-  });
 
   return (
-    <div>
-      {selectedPromotionId && (
-        <ConfirmModal
-          isOpen={!!selectedPromotionId}
-          type="warning"
-          title="Delete Promotion"
-          message={`Are you sure you want to delete this promotion?
-            This will also delete all related posts.`}
-          confirmButtonText={isLoading ? "Deleting..." : "Delete"}
-          cancelButtonText="Cancel"
-          itemId={selectedPromotionId}
-          onConfirm={handleDelete}
-          onClose={() => setSelectedPromotionId(null)}
-        />
-      )}
-
-      <PromotionsFilterBar
-        setSearchTerm={setSearchTerm}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-      />
-
-      <div className="space-y-4 mt-2">
-        {filteredPromotions.map((promo) => (
-          <PromotionCard
-            key={promo.id}
-            promotion={promo}
-            onCreatePost={() => handleCreatePost(promo.id)}
-            onDuplicate={() => handleDuplicate(promo.id)}
-            onDelete={() => setSelectedPromotionId(promo.id)}
-          />
-        ))}
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Segmented Control */}
+      <div className="flex justify-center items-center rounded-lg bg-gray-100 p-1 w-full mb-6">
+        <button
+          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition ${
+            activeView === "management"
+              ? "bg-white shadow-sm text-gray-800"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveView("management")}
+        >
+          My Promotions
+        </button>
+        <button
+          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition ${
+            activeView === "suggestions"
+              ? "bg-white shadow-sm text-gray-800"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveView("suggestions")}
+        >
+          Suggestions
+        </button>
       </div>
+
+      {/* Content based on active view */}
+      {activeView === "management" ? <ManagementView /> : <SuggestionsView />}
     </div>
   );
-}
+};
+
+export default PromotionsDashboard;

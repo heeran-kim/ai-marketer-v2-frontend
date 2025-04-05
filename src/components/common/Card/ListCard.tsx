@@ -161,9 +161,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
         <div className="flex flex-1 flex-col p-4">
           <div className="flex gap-2 items-center text-sm">
-            {status && (
-              <StatusIcon status={status.toLowerCase()} size="small" />
-            )}
+            {status && <StatusIcon status={status} />}
             {item.type === "postReview" && (
               <>
                 <select
@@ -192,7 +190,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
               </>
             )}
             {item.type === "post" && (
-              <span className="font-semibold">{date}</span>
+              <span className="font-medium">{date}</span>
             )}
           </div>
 
