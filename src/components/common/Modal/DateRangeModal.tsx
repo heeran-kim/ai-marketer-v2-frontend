@@ -5,7 +5,7 @@ import Modal from "./Modal";
 interface DateRangeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (startDate: string, endDate: string) => void;
+  onSubmit: (startDate: string | null, endDate: string | null) => void;
   title: string;
 }
 
@@ -15,16 +15,24 @@ export const DateRangeModal = ({
   onSubmit,
   title,
 }: DateRangeModalProps) => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
+    // If both startDate and endDate are null, allow it
+    if (startDate === null && endDate === null) {
+      onSubmit(null, null);
+      onClose();
+      return;
+    }
+    // Check if both start and end dates are provided
     if (!startDate || !endDate) {
       setError("Please enter both start and end dates.");
       return;
     }
 
+    // Check if end date is later than start date
     if (new Date(startDate) > new Date(endDate)) {
       setError("End date must be later than start date.");
       return;
@@ -43,7 +51,7 @@ export const DateRangeModal = ({
           <input
             type="date"
             className="w-full p-2 border rounded"
-            value={startDate}
+            value={startDate || ""}
             onChange={(e) => {
               setStartDate(e.target.value);
               setError("");
@@ -56,7 +64,7 @@ export const DateRangeModal = ({
           <input
             type="date"
             className="w-full p-2 border rounded"
-            value={endDate}
+            value={endDate || ""}
             onChange={(e) => {
               setEndDate(e.target.value);
               setError("");
