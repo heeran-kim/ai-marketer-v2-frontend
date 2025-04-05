@@ -5,9 +5,12 @@ import React, { useState } from "react";
 import PromotionCard from "./PromotionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 
-import { ConfirmModal } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
-import { ErrorFallback } from "@/components/common";
+import {
+  ConfirmModal,
+  DateRangeModal,
+  ErrorFallback,
+} from "@/components/common";
 
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
@@ -21,9 +24,8 @@ const ManagementView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedPromotionId, setSelectedPromotionId] = useState<string | null>(
-    null
-  );
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [duplicateId, setDuplicateId] = useState<string | null>(null);
 
   const {
     data: promotions,
@@ -49,7 +51,7 @@ const ManagementView = () => {
 
     return (
       <ErrorFallback
-        message="Failed to load promotion suggestions data. Please try again later."
+        message="Failed to load promotion data. Please try again later."
         onRetry={handleRetry}
         isProcessing={isLoading}
       />
@@ -61,17 +63,46 @@ const ManagementView = () => {
     router.push(`/posts?mode=create&promotionId=${id}`, { scroll: false });
   };
 
-  const handleDuplicate = (id: string) => {
-    // TODO
-    console.log(`Duplicate for promotion ID: ${id}`);
+  const handleDuplicate = async (startDate: string, endDate: string) => {
+    const promo = promotions.find((promo) => promo.id === duplicateId);
+    if (!promo) {
+      console.error("Something wrong with promotion data");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await apiClient.post(
+        PROMOTIONS_API.CREATE,
+        {
+          categoryIds: promo.categories.map((cat) => cat.id),
+          description: promo.description,
+          startDate,
+          endDate,
+        },
+        {},
+        false
+      );
+      await mutate();
+      showNotification("success", "The promotion was successfully duplicated!");
+      setDuplicateId(null);
+    } catch (error) {
+      console.error("Error duplicating promotion:", error);
+      showNotification(
+        "error",
+        "Failed to duplicate promotion. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handles promotion deletion with error handling and notification feedback
   const handleDelete = async () => {
-    if (!selectedPromotionId) return;
+    if (!deleteId) return;
     setIsLoading(true);
     try {
-      await apiClient.delete(PROMOTIONS_API.DELETE(selectedPromotionId));
+      await apiClient.delete(PROMOTIONS_API.DELETE(deleteId));
       await mutate();
       showNotification("success", "Promotion deleted successfully!");
     } catch (error) {
@@ -83,7 +114,7 @@ const ManagementView = () => {
     } finally {
       setIsLoading(false);
     }
-    setSelectedPromotionId(null);
+    setDeleteId(null);
   };
 
   // Apply filtering based on category, status, and search term
@@ -102,18 +133,29 @@ const ManagementView = () => {
 
   return (
     <div>
-      {selectedPromotionId && (
+      {duplicateId && (
+        <DateRangeModal
+          isOpen={true}
+          onClose={() => {
+            setDuplicateId(null);
+          }}
+          onSubmit={handleDuplicate}
+          title="Select Promotion Date Range"
+        />
+      )}
+
+      {deleteId && (
         <ConfirmModal
-          isOpen={!!selectedPromotionId}
+          isOpen={true}
           type="warning"
           title="Delete Promotion"
           message={`Are you sure you want to delete this promotion?
           This will also delete all related posts.`}
           confirmButtonText={isLoading ? "Deleting..." : "Delete"}
           cancelButtonText="Cancel"
-          itemId={selectedPromotionId}
+          itemId={deleteId}
           onConfirm={handleDelete}
-          onClose={() => setSelectedPromotionId(null)}
+          onClose={() => setDeleteId(null)}
         />
       )}
 
@@ -131,8 +173,8 @@ const ManagementView = () => {
             key={promo.id}
             promotion={promo}
             onCreatePost={() => handleCreatePost(promo.id)}
-            onDuplicate={() => handleDuplicate(promo.id)}
-            onDelete={() => setSelectedPromotionId(promo.id)}
+            onDuplicate={() => setDuplicateId(promo.id)}
+            onDelete={() => setDeleteId(promo.id)}
           />
         ))}
       </div>

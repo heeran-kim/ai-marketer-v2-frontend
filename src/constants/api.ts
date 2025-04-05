@@ -51,7 +51,7 @@ export const PROMOTIONS_API = {
   LIST: (type: "management" | "suggestions") =>
     `${BASE_URL}/promotions/?type=${type}`,
   DETAIL: (id: string) => `${BASE_URL}/promotions/${id}/`,
-  CREATE: `${BASE_URL}/promotions/create/`,
+  CREATE: `${BASE_URL}/promotions/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
 };
 
