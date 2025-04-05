@@ -1,5 +1,6 @@
 // src/app/(protected)/promotions/management/ManagementView.tsx
-import { useState } from "react";
+
+import React, { useState } from "react";
 import PromotionCard from "@/app/(protected)/promotions/management/PromotionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 import { ConfirmModal } from "@/components/common";

@@ -36,7 +36,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
   const dateRange = formatDateRange(startDate, endDate);
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden mx-4 md:m-0">
+    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center space-x-2">

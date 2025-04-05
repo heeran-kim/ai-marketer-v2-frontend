@@ -23,7 +23,7 @@ export const PromotionsFilterBar = ({
   setSelectedStatus,
 }: Props) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2 p-4 md:px-0">
+    <div className="flex flex-col sm:flex-row gap-2">
       <SearchBar
         setSearchTerm={setSearchTerm}
         placeholder="Search promotions..."
