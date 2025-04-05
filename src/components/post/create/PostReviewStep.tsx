@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Card from "@/components/common/CompactCard";
-import ListCard from "@/components/common/ListCard";
+import { CompactCard, ListCard } from "@/components/common";
 import { LoadingModal } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostEditorMode, PostReview } from "@/types/post";
@@ -15,7 +14,6 @@ export default function PostReviewStep() {
     image,
     selectableCategories,
     platformStates,
-    updatePlatformScheduleDate,
   } = usePostEditorContext();
   const isEditing = mode === PostEditorMode.EDIT;
 
@@ -50,20 +48,15 @@ export default function PostReviewStep() {
         .filter((category) => category.isSelected)
         .map((category) => category.label);
 
-      const reviewItems = platformStates
-        .filter((platform) => platform.isSelected)
-        .map((platformState) => {
-          return {
-            image: currentImageUrl,
-            platform: platformState.key,
-            selectedCategoryLabels: categories,
-            caption: platformState.caption,
-            scheduleDate: platformState.scheduleDate || "",
-            onScheduleChange: (newDate: string) =>
-              updatePlatformScheduleDate(platformState.key, newDate),
-            type: "postReview" as const,
-          };
-        });
+      const reviewItems = platformStates.map((platformState) => {
+        return {
+          image: currentImageUrl,
+          platform: platformState.key,
+          selectedCategoryLabels: categories,
+          caption: platformState.caption,
+          type: "postReview" as const,
+        };
+      });
 
       setPreparedReviewItems(reviewItems as PostReview[]);
       setIsLoading(false);
@@ -82,14 +75,13 @@ export default function PostReviewStep() {
     platformStates,
     isEditing,
     selectedPost,
-    updatePlatformScheduleDate,
   ]);
 
   return (
     <>
       <LoadingModal isOpen={isLoading} />
 
-      <Card>
+      <CompactCard>
         {!isLoading && preparedReviewItems.length > 0 && (
           <div className="space-y-4 mt-2">
             {preparedReviewItems.map((reviewItem, index) => (
@@ -100,7 +92,7 @@ export default function PostReviewStep() {
             ))}
           </div>
         )}
-      </Card>
+      </CompactCard>
     </>
   );
 }

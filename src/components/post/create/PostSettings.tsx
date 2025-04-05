@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/components/common/CompactCard";
+import { CompactCard } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function PostSettings() {
@@ -18,7 +18,7 @@ export default function PostSettings() {
   };
 
   return (
-    <Card title="📌 Select Purpose">
+    <CompactCard title="📌 Select Purpose">
       <div className="space-y-3">
         <div>
           <div className="flex flex-wrap gap-2">
@@ -38,6 +38,6 @@ export default function PostSettings() {
           </div>
         </div>
       </div>
-    </Card>
+    </CompactCard>
   );
 }

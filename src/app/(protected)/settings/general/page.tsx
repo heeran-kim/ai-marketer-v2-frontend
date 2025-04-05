@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, DragAndDropUploader } from "@/components/common";
+import { Card, DragAndDropUploader, ErrorFallback } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business, EMPTY_BUSINESS } from "@/types/business";
@@ -200,7 +200,7 @@ export default function GeneralSettings() {
     }
   };
 
-  if (isLoading) {
+  if (businessData === undefined) {
     return (
       <div className="flex justify-center items-center h-64">
         <p className="text-gray-500">Loading...</p>
@@ -208,17 +208,18 @@ export default function GeneralSettings() {
     );
   }
 
+  // Show error UI if there's an error
   if (error) {
+    const handleRetry = async () => {
+      await mutate();
+    };
+
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-red-500">
-        <p>Failed to load business data.</p>
-        <button
-          onClick={() => mutate()}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorFallback
+        message="Failed to load business data. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
     );
   }
 

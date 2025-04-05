@@ -1,16 +1,14 @@
 // src/utils/date.ts
 import { toZonedTime, format } from "date-fns-tz";
-import { addMinutes } from "date-fns";
 
 const TIMEZONE = "Australia/Brisbane";
-const BRISBANE_OFFSET_MINUTES = 600;
 
 /**
  * Converts ISO string or Date to a formatted local time string (Brisbane timezone).
  */
 export const toLocalTime = (
   input: string | Date,
-  fmt: string = "dd-MM-yyyy hh:mm a"
+  fmt: string = "dd-MMM-yyyy hh:mm a"
 ): string => {
   const date = typeof input === "string" ? new Date(input) : input;
   const brisbaneTime = toZonedTime(date, TIMEZONE);
@@ -18,12 +16,26 @@ export const toLocalTime = (
 };
 
 /**
+ * Converts ISO string or Date to a Date object in Brisbane timezone.
+ */
+export const toLocalDateObject = (input: string | Date): Date => {
+  const date = typeof input === "string" ? new Date(input) : input;
+  return toZonedTime(date, TIMEZONE);
+};
+
+/**
  * Convert local datetime to UTC for saving
+ *
+ * This function takes a local datetime string input and converts it to UTC (ISO format).
+ * When creating a new Date object in JavaScript, it automatically interprets the string
+ * as being in the local timezone and converts it to UTC internally.
+ *
+ * @param {string} localString - A datetime string in local timezone (e.g. "2025-04-09T18:30")
+ * @returns {string} The datetime in UTC as an ISO string (e.g. "2025-04-09T08:30:00.000Z" for Brisbane UTC+10)
  */
 export const toUtcFromLocalInput = (localString: string) => {
   const local = new Date(localString);
-  const utcDate = addMinutes(local, -BRISBANE_OFFSET_MINUTES);
-  return utcDate.toISOString();
+  return local.toISOString();
 };
 
 /**

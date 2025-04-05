@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import Card from "@/components/common/Card";
+import { Card } from "@/components/common";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import { SETTINGS_API } from "@/constants/api";
 import { SalesDailyRevenue } from "@/types/sales";

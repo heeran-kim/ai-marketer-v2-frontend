@@ -20,9 +20,10 @@ export const BusinessProfileCard = ({ business }: Props) => {
         <Image
           src={`${logo}?t=${new Date().getTime()}` || "/default-logo.png"}
           alt={`${name} Logo`}
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           className="w-full h-full"
+          priority
         />
       </div>
 

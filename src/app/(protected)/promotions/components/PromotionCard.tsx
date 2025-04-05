@@ -5,7 +5,7 @@ import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
 import { ActionDropdown, CategoryChipList } from "@/components/common";
 import { Action } from "@/types/nav";
-import StatusIcon from "./StatusIcon";
+import { StatusIcon } from "@/components/common";
 import { getPlatformIcon } from "@/utils/icon";
 import { useRouter } from "next/navigation";
 
@@ -102,7 +102,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
 
                 {/* Overlay icon at top-right, inside the same 'relative' container */}
                 <div className="absolute top-2 right-2 z-10">
-                  <StatusIcon status={post.status.toLowerCase()} />
+                  <StatusIcon status={post.status.toLowerCase()} size="small" />
                 </div>
 
                 {/* Post details: caption, likes, comments */}

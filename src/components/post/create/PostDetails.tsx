@@ -2,7 +2,7 @@
 "use client";
 
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import Card from "@/components/common/CompactCard";
+import { CompactCard } from "@/components/common";
 import BusinessInfo from "./BusinessInfo";
 import PostSettings from "./PostSettings";
 import AdditionalPrompt from "./AdditionalPrompt";
@@ -13,12 +13,12 @@ export default function PostDetails() {
   const isEditing = mode === PostEditorMode.EDIT;
 
   return (
-    <Card>
+    <CompactCard>
       <div className="space-y-1">
         {!isEditing && <BusinessInfo />}
         <PostSettings />
         {!isEditing && <AdditionalPrompt />}
       </div>
-    </Card>
+    </CompactCard>
   );
 }

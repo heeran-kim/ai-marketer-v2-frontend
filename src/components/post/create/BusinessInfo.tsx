@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/components/common/CompactCard";
+import { CompactCard } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function BusinessInfo() {
@@ -15,7 +15,7 @@ export default function BusinessInfo() {
   };
 
   return (
-    <Card title="Business Information">
+    <CompactCard title="Business Information">
       <div className="flex flex-wrap gap-4">
         <div className="flex-1 min-w-[200px]">
           <label className="text-sm font-medium">🎯 Target Customers</label>
@@ -67,6 +67,6 @@ export default function BusinessInfo() {
           </label>
         </div>
       </div>
-    </Card>
+    </CompactCard>
   );
 }
