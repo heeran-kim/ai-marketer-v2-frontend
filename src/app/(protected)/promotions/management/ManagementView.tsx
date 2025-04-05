@@ -1,10 +1,13 @@
 // src/app/(protected)/promotions/management/ManagementView.tsx
 
 import React, { useState } from "react";
-import PromotionCard from "@/app/(protected)/promotions/management/PromotionCard";
+
+import PromotionCard from "./PromotionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
+
 import { ConfirmModal } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
+import { ErrorFallback } from "@/components/common";
 
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
@@ -22,11 +25,36 @@ const ManagementView = () => {
     null
   );
 
-  const { data, mutate } = useFetchData<{ promotions: Promotion[] }>(
-    PROMOTIONS_API.LIST
-  );
+  const {
+    data: promotions,
+    mutate,
+    error,
+  } = useFetchData<Promotion[]>(PROMOTIONS_API.LIST("management"));
   const router = useRouter();
-  const promotions = data?.promotions || [];
+
+  // Show loading UI
+  if (promotions === undefined) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  // Show error UI if there's an error
+  if (error) {
+    const handleRetry = async () => {
+      await mutate();
+    };
+
+    return (
+      <ErrorFallback
+        message="Failed to load promotion suggestions data. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
+    );
+  }
 
   // Redirects to post creation with promotion context
   const handleCreatePost = (id: string) => {
@@ -59,7 +87,7 @@ const ManagementView = () => {
   };
 
   // Apply filtering based on category, status, and search term
-  const filteredPromotions = promotions.filter((promo) => {
+  const filteredPromotions = promotions.filter((promo: Promotion) => {
     const categoryMatch =
       !selectedCategory ||
       promo.categories.some((cat) => cat.key === selectedCategory);
@@ -98,7 +126,7 @@ const ManagementView = () => {
       />
 
       <div className="space-y-4 mt-2">
-        {filteredPromotions.map((promo) => (
+        {filteredPromotions.map((promo: Promotion) => (
           <PromotionCard
             key={promo.id}
             promotion={promo}

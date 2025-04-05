@@ -14,3 +14,10 @@ export type Promotion = {
   soldCount: number; // Number of units sold
   type: string;
 };
+
+export type PromotionSuggestion = {
+  id: string;
+  title: string;
+  description: string;
+  categories: { key: string; label: string }[];
+};
