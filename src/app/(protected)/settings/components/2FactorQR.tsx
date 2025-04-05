@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useAuth } from '@/components/auth/AuthProvider';
-import { useRouter } from "next/navigation";
 import { ChangeEvent,FormEvent } from "react";
 import { primaryNavItemClass } from "@/components/styles";
 
@@ -12,7 +11,6 @@ export default function TwoFactorAuth() {
   const [twofa,setTwoFA] = useState(false); //stores 2fa status value
   const [buttonDisabled,setButtonDisabled] = useState(true);  //enable button
   const [rmButtonDisabled,setRMButtonDisabled] = useState(true);  //remove button
-  const router = useRouter();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +18,7 @@ export default function TwoFactorAuth() {
     code: "",
 });
 
-  const { handle2FA, logout } = useAuth();
+  const { handle2FA } = useAuth();
 
   const check2FA = async () => {    
     try {
@@ -85,28 +83,29 @@ export default function TwoFactorAuth() {
           setErrors(newErrors);
       }
   };
-          const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-              e.preventDefault();
-          
-              setIsLoading(true);
-              
-              try {
-                  //await login(formData.email, formData.password,'2fa', formData.code);
-                  const response = await handle2FA('check',formData.code);
-                  //console.log(response)
-                  setTwoFA(response.status);
-                  setButtonDisabled(true);
-                  setRMButtonDisabled(false);
-                  // Successful login will redirect via AuthProvider
-              } catch (error: unknown) {
-                  // Handle authentication errors
-                  const errorMessage = "Error - Wrong Code!";
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+  
+      setIsLoading(true);
       
-                  setErrors({ server: errorMessage });
-              } finally {
-                  setIsLoading(false);
-              }
-          };
+      try {
+          //await login(formData.email, formData.password,'2fa', formData.code);
+          const response = await handle2FA('check',formData.code);
+          //console.log(response)
+          setTwoFA(response.status);
+          setButtonDisabled(true);
+          setRMButtonDisabled(false);
+          // Successful login will redirect via AuthProvider
+      } catch (error: unknown) {
+          // Handle authentication errors
+          console.log(error);
+          const errorMessage = "Error - Wrong Code!";
+
+          setErrors({ server: errorMessage });
+      } finally {
+          setIsLoading(false);
+      }
+  };
 
   return (
     <div className="flex flex-col items-center">

@@ -18,10 +18,12 @@ export default function EmailLoginPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
         email: "",
-        password: ""
+        password: "",
+        code: ""
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [requires2FA, setRequires2FA] = useState(false);
 
     useEffect(() => {
         if (authState.status === "authenticated") router.push("/dashboard");
@@ -81,7 +83,10 @@ export default function EmailLoginPage() {
         setIsLoading(true);
         
         try {
-            await login(formData.email, formData.password,'traditional');
+            if(requires2FA)
+                await login(formData.email, formData.password,'2fa',formData.code);
+            else    
+                await login(formData.email, formData.password,'traditional');
             // Successful login will redirect via AuthProvider
         } catch (error: unknown) {
             // Handle authentication errors
@@ -90,12 +95,11 @@ export default function EmailLoginPage() {
                 : "Authentication failed. Please check your credentials.";
             setErrors({ server: errorMessage });
 
-            if(errorMessage==="Requires 2FA. Redirecting you now!")  //Push client to the 2FA Page
+            if(errorMessage==="Requires 2FA Code.")  //Push client to the 2FA Page
             {
-                router.push("/login/2fa")
+                setRequires2FA(true);
             }
         } finally {
-            sessionStorage.setItem("userDetails", JSON.stringify(formData));
             setIsLoading(false);
         }
     };
@@ -103,10 +107,13 @@ export default function EmailLoginPage() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="w-full max-w-md p-8">
+                
+                {requires2FA===false
+                ?
+                <>
                 <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
                     Sign in with Email
                 </h1>
-                
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Email field */}
                     <div>
@@ -156,7 +163,46 @@ export default function EmailLoginPage() {
                         {isLoading ? "Signing in..." : "Sign in"}
                     </button>
                 </form>
-                
+                </>
+                :<>
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                    Please enter the code on your Authenticator App
+                </h1>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* AuthCode field */}
+                    <div>
+                        <input
+                            type="code"
+                            name="code"
+                            placeholder="Code"
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors
+                                ${errors.code ? 'border-red-500 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
+                            value={formData.code}
+                            onChange={handleChange}
+                        />
+                        {errors.code && (
+                            <p className="mt-1 text-sm text-red-600">{errors.code}</p>
+                        )}
+                    </div>
+                    
+                    {/* Server errors */}
+                    {errors.server && (
+                        <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                            {errors.server}
+                        </div>
+                    )}
+                    
+                    {/* Submit button */}
+                    <button 
+                        type="submit" 
+                        className={`${primaryNavItemClass} w-full justify-center py-3`}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? "Authenticating..." : "Authenticate"}
+                    </button>
+                </form>
+                </>
+                }
                 {/* Help links */}
                 <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400 space-y-2">
                     <p>
