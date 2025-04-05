@@ -4,15 +4,15 @@ import React, { forwardRef, useState, useEffect, useRef } from "react";
 import { getPlatformIcon } from "@/utils/icon";
 import { getStatusClass } from "@/components/styles";
 import ActionDropdown from "@/components/common/ActionDropdown";
-import { FaRegCalendarAlt, FaTag } from "react-icons/fa";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import Image from "next/image";
 import { DropboxItem } from "@/types";
 import { Post, PostReview } from "@/types/post";
-import { Promotion } from "@/types/promotion";
 import { toLocalTime } from "@/utils/date";
+import CategoryChipList from "./CategoryChipList";
 
 interface ListCardProps {
-  item: Post | Promotion | PostReview;
+  item: Post | PostReview;
   actions?: DropboxItem[];
 }
 
@@ -64,30 +64,6 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         setStatus(post.status);
       }
 
-      if ((item as Promotion).type === "promotion") {
-        const promo = item as Promotion;
-        setImagePreviewUrl(
-          (promo.posts ?? []).length > 0
-            ? promo.posts[0].image
-            : imagePreviewUrl
-        );
-        setDate(
-          `${toLocalTime(promo.startDate, "yyyy-MM-dd")} ~ ${toLocalTime(
-            promo.endDate,
-            "yyyy-MM-dd"
-          )}`
-        );
-
-        setSocialLinks(
-          promo.posts?.map((post) => ({
-            link: `/posts?id=${post.id}`,
-            platformKey: post.platform.key ?? "unknown",
-          })) ?? []
-        );
-        setDescription(promo.description);
-        setStatus(promo.status);
-      }
-
       if ((item as PostReview).type === "postReview") {
         const review = item as PostReview;
         setImagePreviewUrl(review.image);
@@ -131,7 +107,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             ref.current = node;
           }
         }}
-        className={`relative p-4 bg-white rounded-lg shadow-md border transition hover:shadow-lg flex 
+        className={`relative p-4 bg-white rounded-lg shadow-md border transition hover:shadow-lg flex scroll-mt-24
                 ${
                   isMobileLayout
                     ? "flex-col items-center"
@@ -198,7 +174,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             {status && (
               <span
                 className={`px-2 py-1 text-xs font-semibold rounded-md ${getStatusClass(
-                  status
+                  status.toLowerCase()
                 )}`}
               >
                 {status}
@@ -207,18 +183,10 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           </div>
 
           {item.selectedCategoryLabels?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {item.selectedCategoryLabels.map((category) => (
-                <div
-                  key={category}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium 
-                                    px-2 py-1 rounded-md bg-gray-500 dark:bg-blue-600 
-                                    text-white dark:text-gray-100 w-fit min-w-[60px] m-1"
-                >
-                  <FaTag className="text-sm" />
-                  {category}
-                </div>
-              ))}
+            <div className="mt-1">
+              <CategoryChipList
+                labels={item.selectedCategoryLabels.map((cat) => cat)}
+              />
             </div>
           )}
 
@@ -253,17 +221,11 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             {item.type === "post" && (
               <>
                 <div className="flex items-center space-x-1">
-                  <span>👍 ❤️ </span>
+                  <span>👍❤️ </span>
                   <span>{(item as Post).reactions || 0}</span>
                 </div>
-                <span>{(item as Post).comments || 0} comments</span>
+                <span>💬 {(item as Post).comments || 0}</span>
               </>
-            )}
-            {item.type === "promotion" && (
-              <div className="flex items-center space-x-1">
-                <span>🛒 Sold:</span>
-                <span>{(item as Promotion).soldCount || 0}</span>
-              </div>
             )}
           </div>
         </div>

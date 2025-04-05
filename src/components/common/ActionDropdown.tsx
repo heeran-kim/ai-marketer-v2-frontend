@@ -8,9 +8,13 @@ import { Action } from "@/types/nav";
 
 interface ActionDropdownProps {
   actions: Action[];
+  variant?: "default" | "inline"; // "default" uses absolute positioning, "inline" does not.
 }
 
-export default function ActionDropdown({ actions }: ActionDropdownProps) {
+export default function ActionDropdown({
+  actions,
+  variant = "default",
+}: ActionDropdownProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -32,24 +36,37 @@ export default function ActionDropdown({ actions }: ActionDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Conditional classes for the container and button based on variant
+  const containerClasses =
+    variant === "default"
+      ? "relative text-xs"
+      : "relative text-xs inline-flex items-center";
+
+  const buttonClasses =
+    variant === "default"
+      ? "absolute top-1/2 right-2 p-2 rounded-lg hover:bg-gray-200 transition"
+      : "p-2 rounded-lg hover:bg-gray-200 transition";
+
+  const dropdownClasses =
+    variant === "default"
+      ? "absolute top-10 right-0 min-w-[120px] bg-white shadow-lg border rounded-xl z-50 p-1"
+      : "absolute top-full right-0 mt-2 min-w-[120px] bg-white shadow-lg border rounded-xl z-50 p-1";
+
   return (
-    <div className="relative text-xs">
+    <div className={containerClasses}>
       <button
         ref={buttonRef}
         onClick={(e) => {
           e.stopPropagation();
           setOpen((prev) => !prev);
         }}
-        className="absolute top-1/2 right-2 p-2 rounded-lg hover:bg-gray-200 transition"
+        className={buttonClasses}
       >
         <HiDotsHorizontal className="text-gray-600" size={14} />
       </button>
 
       {open && (
-        <div
-          ref={dropdownRef}
-          className="absolute top-10 right-0 min-w-[120px] bg-white shadow-lg border rounded-xl z-50 p-1"
-        >
+        <div ref={dropdownRef} className={dropdownClasses}>
           {actions.map((action) => (
             <button
               key={action.label}

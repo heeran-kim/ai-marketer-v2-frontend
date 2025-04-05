@@ -10,15 +10,15 @@ export const HEALTH_CHECK_API = `${BASE_URL}/health/`;
 
 // Users API Endpoints
 export const USERS_API = {
-    LOGIN:      `${BASE_URL}/users/login/`,
-    LOGOUT:     `${BASE_URL}/users/logout/`,
-    REGISTER:   `${BASE_URL}/users/register/`,
-    ME:         `${BASE_URL}/users/me/`,
+  LOGIN: `${BASE_URL}/users/login/`,
+  LOGOUT: `${BASE_URL}/users/logout/`,
+  REGISTER: `${BASE_URL}/users/register/`,
+  ME: `${BASE_URL}/users/me/`,
 
-    //Added 2FA Endpoints
-    QR_2FA:     `${BASE_URL}/users/2fa-qr/`,
-    CHECK_2FA:  `${BASE_URL}/users/2fa-check/`,
-    REMOVE_2FA: `${BASE_URL}/users/2fa-remove/`
+  //Added 2FA Endpoints
+  QR_2FA: `${BASE_URL}/users/2fa-qr/`,
+  CHECK_2FA: `${BASE_URL}/users/2fa-check/`,
+  REMOVE_2FA: `${BASE_URL}/users/2fa-remove/`,
 };
 
 // Dashboard API Endpoints
@@ -48,7 +48,8 @@ export const POSTS_API = {
 
 // Promotions API Endpoints
 export const PROMOTIONS_API = {
-  GET_ALL: `${BASE_URL}/promotions/`,
+  LIST: `${BASE_URL}/promotions/`,
+  DETAIL: (id: string) => `${BASE_URL}/promotions/${id}/`,
   CREATE: `${BASE_URL}/promotions/create/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
 };

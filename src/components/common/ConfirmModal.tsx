@@ -121,7 +121,7 @@ export const ConfirmModal = ({
 
           {/* Message body with proper padding */}
           <div className="px-4 py-3 text-center">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
               {localMessage}
             </p>
           </div>

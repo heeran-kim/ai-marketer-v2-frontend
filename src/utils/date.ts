@@ -10,7 +10,7 @@ const BRISBANE_OFFSET_MINUTES = 600;
  */
 export const toLocalTime = (
   input: string | Date,
-  fmt: string = "yyyy-MM-dd hh:mm a"
+  fmt: string = "dd-MM-yyyy hh:mm a"
 ): string => {
   const date = typeof input === "string" ? new Date(input) : input;
   const brisbaneTime = toZonedTime(date, TIMEZONE);
@@ -25,3 +25,22 @@ export const toUtcFromLocalInput = (localString: string) => {
   const utcDate = addMinutes(local, -BRISBANE_OFFSET_MINUTES);
   return utcDate.toISOString();
 };
+
+/**
+ * Format date ranges intelligently based on whether dates are in the same year
+ */
+export function formatDateRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const sameYear = start.getFullYear() === end.getFullYear();
+
+  // If they're in the same year, format start without year and end with year.
+  // If not, format both with year.
+  const startFormat = sameYear ? "dd MMM" : "dd MMM yyyy";
+  const endFormat = "dd MMM yyyy";
+
+  return `${toLocalTime(startDate, startFormat)} – ${toLocalTime(
+    endDate,
+    endFormat
+  )}`;
+}

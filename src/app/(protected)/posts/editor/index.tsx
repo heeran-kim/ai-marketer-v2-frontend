@@ -39,7 +39,8 @@ export const PostEditorEntry = ({
           isOpen={true}
           onClose={() => {
             resetPostEditor();
-            router.push("/posts");
+            // Use router.back() to maintain proper navigation history when closing modals
+            router.back();
           }}
         >
           <PostEditorFlow mutate={mutate} />

@@ -1,7 +1,6 @@
 "use client";
 
 import Card from "@/components/common/CompactCard";
-import { FaQuestionCircle } from "react-icons/fa";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 
 export default function BusinessInfo() {
@@ -66,23 +65,6 @@ export default function BusinessInfo() {
               ? "Use Sales Data for AI captions"
               : "Sales data not available. Provide data in settings."}
           </label>
-
-          <div className="relative inline-block">
-            <div className="group inline-block">
-              <FaQuestionCircle className="text-gray-500 hover:text-gray-700 cursor-pointer" />
-              <div className="absolute right-[-140px] top-full mt-2 w-64 p-2 text-xs bg-white border border-gray-300 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity translate-x-1/4">
-                <p className="font-medium">Sales Data Impact:</p>
-                <p>
-                  <b>Without Sales Data:</b> &quot;Try our delicious steak!
-                  🍽️&quot;
-                </p>
-                <p>
-                  <b>With Sales Data:</b> &quot;🔥 Best Seller! 500+ orders last
-                  week! Try our famous steak! 🍽️&quot;
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </Card>
