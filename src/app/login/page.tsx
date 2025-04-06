@@ -10,6 +10,9 @@
 import Link from 'next/link';
 import { FaGoogle, FaApple, FaFacebook, FaKey, FaEnvelope } from "react-icons/fa";
 import { primaryNavItemClass } from "@/components/styles";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from '@/components/auth/AuthProvider';
 
 // Authentication method button component for social and passkey auth
 interface AuthButtonProps {
@@ -31,6 +34,22 @@ function AuthButton({ icon, label, onClick }: AuthButtonProps) {
 }
 
 export default function LoginPage() {
+    const { authState } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (authState.status === "authenticated") router.push("/dashboard");
+    }, [authState, router]);
+    
+    // Show loading UI
+    if (authState.status !== "unauthenticated") {
+        return (
+            <div className="flex flex-col justify-center items-center h-64">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
+    }
+    
     // Auth provider handlers - would connect to actual auth implementation
     const handleSocialAuth = (provider: string) => {
         console.log(`Authenticating with ${provider}`);
