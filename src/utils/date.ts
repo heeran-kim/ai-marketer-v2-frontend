@@ -43,7 +43,7 @@ export const toUtcFromLocalInput = (localString: string) => {
  */
 export function formatDateRange(startDate: string, endDate: string): string {
   if (!endDate) {
-    return `${toLocalTime(startDate, "dd MMM yyyy")} – Ongoing`;
+    return `${toLocalTime(startDate, "dd MMM yyyy")} – No end date`;
   }
   const start = new Date(startDate);
   const end = new Date(endDate);

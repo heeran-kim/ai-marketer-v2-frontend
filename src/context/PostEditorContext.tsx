@@ -16,7 +16,7 @@ import { Promotion } from "@/types/promotion";
 import { useEffect } from "react";
 import { AI_API, POSTS_API, PROMOTIONS_API } from "@/constants/api";
 import { apiClient, useFetchData } from "@/hooks/dataHooks";
-import { toUtcFromLocalInput } from "@/utils/date";
+import { formatDateRange, toUtcFromLocalInput } from "@/utils/date";
 import { KeyedMutator } from "swr";
 import { PostDto } from "@/types/dto";
 import { useNotification } from "@/context/NotificationContext";
@@ -117,7 +117,10 @@ export const PostEditorProvider = ({
     }
 
     if (promoData) {
-      setAdditionalPrompt(promoData.description);
+      const dateRange = formatDateRange(promoData.startDate, promoData.endDate);
+      setAdditionalPrompt(
+        "Promotion date: " + dateRange + "\n" + promoData.description
+      );
     }
   }, [mode, promoParam, postCreateFormData, promoData]);
 
