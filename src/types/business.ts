@@ -37,7 +37,7 @@ export interface PostsSummary {
 }
 
 export interface PostActivityData {
-  postDates: Record<string, string[]>; // { "2025-03-29": ["facebook", "instagram"] }
+  platformsByDatetime: Record<string, string[]>; // { "2025-03-29T08:00:00Z": ["facebook", "instagram"] }
   lastPostDate: string | null; // ISO string (e.g., "2025-03-29T10:00:00Z")
 }
 

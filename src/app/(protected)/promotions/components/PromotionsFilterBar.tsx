@@ -11,8 +11,8 @@ interface Props {
   setSearchTerm: (value: string) => void;
   selectedCategory: string | null;
   setSelectedCategory: (value: string | null) => void;
-  selectedStatus: string | null;
-  setSelectedStatus: (value: string | null) => void;
+  selectedStatus?: string | null;
+  setSelectedStatus?: (value: string | null) => void;
 }
 
 export const PromotionsFilterBar = ({
@@ -23,7 +23,7 @@ export const PromotionsFilterBar = ({
   setSelectedStatus,
 }: Props) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2 p-4 sm:px-0">
+    <div className="flex flex-col sm:flex-row gap-2">
       <SearchBar
         setSearchTerm={setSearchTerm}
         placeholder="Search promotions..."
@@ -38,12 +38,14 @@ export const PromotionsFilterBar = ({
         options={PROMOTION_CATEGORIES_OPTIONS}
         placeholder="All Categories"
       />
-      <Select
-        value={selectedStatus}
-        onChange={setSelectedStatus}
-        options={PROMOTION_STATUS_OPTIONS}
-        placeholder="All Status"
-      />
+      {selectedStatus !== undefined && setSelectedStatus !== undefined && (
+        <Select
+          value={selectedStatus}
+          onChange={setSelectedStatus}
+          options={PROMOTION_STATUS_OPTIONS}
+          placeholder="All Status"
+        />
+      )}
     </div>
   );
 };

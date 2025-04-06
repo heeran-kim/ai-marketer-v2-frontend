@@ -6,7 +6,7 @@
 
 import { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Modal from "@/components/common/Modal";
+import { Modal } from "@/components/common";
 import { PostsDashboardView } from "@/app/(protected)/posts/dashboard";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { usePostEditorContext } from "@/context/PostEditorContext";
@@ -18,18 +18,17 @@ export const PostEditorEntry = ({
   posts,
   mutate,
   error,
+  isLoading,
 }: {
   posts: Post[];
   mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
+  isLoading: boolean;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
-  const showEditor = useMemo(
-    () => mode === "create" || mode === "edit",
-    [mode]
-  );
+  const showEditor = useMemo(() => mode !== null, [mode]);
   const { resetPostEditor } = usePostEditorContext();
 
   return (
@@ -48,7 +47,12 @@ export const PostEditorEntry = ({
       )}
 
       {/* Render the posts dashboard */}
-      <PostsDashboardView posts={posts} mutate={mutate} error={error} />
+      <PostsDashboardView
+        posts={posts}
+        mutate={mutate}
+        error={error}
+        isLoading={isLoading}
+      />
     </>
   );
 };

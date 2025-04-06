@@ -6,10 +6,11 @@ import EmptyBusinessState from "./components/EmptyBusinessState";
 import { useFetchData } from "@/hooks/dataHooks";
 import { DashboardData } from "@/types/business";
 import { DASHBOARD_API } from "@/constants/api";
+import { ErrorFallback } from "@/components/common";
 
 export default function Dashboard() {
   // Fetches dashboard data
-  const { data, error, mutate } = useFetchData<DashboardData>(
+  const { data, isLoading, error, mutate } = useFetchData<DashboardData>(
     DASHBOARD_API.GET_ALL
   );
 
@@ -24,18 +25,16 @@ export default function Dashboard() {
 
   // Show error UI if there's an error
   if (error) {
-    console.error("Error occurred while loading data:", error);
+    const handleRetry = async () => {
+      await mutate();
+    };
 
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-red-500">
-        <p>Failed to load data. Please try again later.</p>
-        <button
-          onClick={() => mutate()}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorFallback
+        message="Failed to load data. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
     );
   }
 

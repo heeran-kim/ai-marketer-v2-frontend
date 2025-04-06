@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
-import Card from "@/components/common/CompactCard";
+import { CompactCard } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
 import { ImageAnalysisResponse, PostEditorMode } from "@/types/post";
@@ -59,7 +59,7 @@ export const PostImageSelector = () => {
 
   return (
     <>
-      <Card>
+      <CompactCard>
         <DragAndDropUploader
           value={image ? URL.createObjectURL(image) : uploadedImageUrl ?? ""}
           onChange={handleImageChange}
@@ -77,7 +77,7 @@ export const PostImageSelector = () => {
             </button>
           </div>
         )}
-      </Card>
+      </CompactCard>
 
       {detectedItems.length > 0 && (
         <div className="mt-3 p-2 border border-gray-200 rounded-md bg-gray-50 dark:bg-gray-800">

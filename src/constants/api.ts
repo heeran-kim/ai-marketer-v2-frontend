@@ -41,17 +41,23 @@ export const SETTINGS_API = {
 export const POSTS_API = {
   LIST: `${BASE_URL}/posts/`, // GET
   DETAIL: (id: string) => `${BASE_URL}/posts/${id}/`, // GET
-  CREATE: `${BASE_URL}/posts/?create=true`, // POST
+  CREATE: `${BASE_URL}/posts/?create=true`, // GET, POST
   UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`, // PATCH or PUT
   DELETE: (id: string) => `${BASE_URL}/posts/${id}/`, // DELETE
 };
 
 // Promotions API Endpoints
 export const PROMOTIONS_API = {
-  LIST: `${BASE_URL}/promotions/`,
+  LIST: (type: "management" | "suggestions") =>
+    `${BASE_URL}/promotions/?type=${type}`,
   DETAIL: (id: string) => `${BASE_URL}/promotions/${id}/`,
   CREATE: `${BASE_URL}/promotions/create/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
+};
+
+export const SUGGESTIONS_API = {
+  LIST: `${BASE_URL}/suggestions/`,
+  DETAIL: (id: string) => `${BASE_URL}/suggestions/${id}/`,
 };
 
 // AI API Endpoints
