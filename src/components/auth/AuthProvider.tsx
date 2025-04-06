@@ -21,7 +21,7 @@ interface AuthContextType {
     login: (email: string, password: string, method: string, code?:string) => Promise<void>;                  // Login function
     logout: () => Promise<void>;                                                // Logout function
     register: (name: string, email: string, password: string) => Promise<void>; // Register function
-    handle2FA: (email: string, password: string,method:string) => Promise<{status:boolean,qr_code:string}>; //2FA Function
+    handle2FA: (method:string, code?:string) => Promise<{status:boolean,qr_code:string}>; //2FA Function
 }
 
 // Create the auth context with null as initial value
@@ -134,18 +134,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
      * 2FA Function
      * Handles 2FA Requests
      */
-    const handle2FA = async (email: string, password: string,method:string) => {
+    const handle2FA = async (method:string, code:string='') => {
         let response;
         switch(method)
         {
             case 'check':
-                response = await fetchWithAuth(USERS_API.CHECK_2FA, "POST",{credentials: {email, password}});
+                response = await fetchWithAuth(USERS_API.CHECK_2FA, "POST",{code});
                 return {status:response.status,qr_code:response.qr_code};
             case 'enable':
-                response = await fetchWithAuth(USERS_API.QR_2FA, "POST",{credentials: {email, password}});
+                response = await fetchWithAuth(USERS_API.QR_2FA, "POST",{});
                 return {status:response.status,qr_code:response.qr_code};
             case 'remove':
-                response = await fetchWithAuth(USERS_API.REMOVE_2FA, "POST",{credentials: {email, password}});
+                response = await fetchWithAuth(USERS_API.REMOVE_2FA, "POST",{});
                 return {status:response.status,qr_code:response.qr_code};
             default:
                 return {status:false,qr_code:''};
