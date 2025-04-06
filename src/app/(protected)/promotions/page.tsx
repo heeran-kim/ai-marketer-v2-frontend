@@ -1,14 +1,24 @@
 // src/app/(protected)/promotions/page.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ManagementView from "./management/ManagementView";
 import SuggestionsView from "./suggestions/SuggestionsView";
 
 const PromotionsDashboard = () => {
+  const searchParams = useSearchParams();
+  const promotionId = searchParams.get("id");
+
   const [activeView, setActiveView] = useState<"management" | "suggestions">(
     "management"
   );
+
+  useEffect(() => {
+    if (promotionId) {
+      setActiveView("management");
+    }
+  }, [promotionId]);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -37,7 +47,11 @@ const PromotionsDashboard = () => {
       </div>
 
       {/* Content based on active view */}
-      {activeView === "management" ? <ManagementView /> : <SuggestionsView />}
+      {activeView === "management" ? (
+        <ManagementView scrollToId={promotionId} />
+      ) : (
+        <SuggestionsView />
+      )}
     </div>
   );
 };

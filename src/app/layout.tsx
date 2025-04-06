@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import NavbarWrapper from "@/components/layout/NavbarWrapper";
 import Footer from "@/components/layout/Footer";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -18,9 +19,11 @@ export default function RootLayout({
           <BackendHealthProvider>
             <NotificationProvider>
               <NavbarWrapper>
-                <main className="flex-grow bg-gray-50 dark:bg-black">
-                  {children}
-                </main>
+                <Suspense fallback={<p>Loading...</p>}>
+                  <main className="flex-grow bg-gray-50 dark:bg-black">
+                    {children}
+                  </main>
+                </Suspense>
               </NavbarWrapper>
               <Footer />
             </NotificationProvider>

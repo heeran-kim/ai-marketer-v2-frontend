@@ -31,13 +31,13 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         {description}
       </div>
 
-      {/* Statistics and Create post button */}
+      {/* Statistics and Create promotion button */}
       <div className="flex justify-end">
         <button
           className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
           onClick={onCreatePromotion}
         >
-          Create Post
+          Create Promotion
         </button>
       </div>
     </div>

@@ -9,8 +9,11 @@ import { useNotification } from "@/context/NotificationContext";
 import { DateRangeModal, ErrorFallback } from "@/components/common";
 
 import { apiClient, useFetchData } from "@/hooks/dataHooks";
+import { useRouter } from "next/navigation";
 import { PROMOTIONS_API } from "@/constants/api";
 import { PromotionSuggestion } from "@/types/promotion";
+
+import { Promotion } from "@/types/promotion";
 
 const SuggestionsView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +22,8 @@ const SuggestionsView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [createId, setCreateId] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const {
     data: suggestions,
@@ -50,7 +55,7 @@ const SuggestionsView = () => {
     );
   }
 
-  const handleCreate = async (startDate: string, endDate: string) => {
+  const handleCreate = async (startDate: string, endDate: string | null) => {
     const suggestion = suggestions.find(
       (suggestion) => suggestion.id === createId
     );
@@ -61,7 +66,7 @@ const SuggestionsView = () => {
 
     setIsLoading(true);
     try {
-      await apiClient.post(
+      const response = await apiClient.post<Promotion>(
         PROMOTIONS_API.CREATE,
         {
           categoryIds: suggestion.categories.map((cat) => cat.id),
@@ -75,6 +80,7 @@ const SuggestionsView = () => {
       await mutate();
       showNotification("success", "Promotion created successfully!");
       setCreateId(null);
+      router.push(`/promotions?id=${response.id}`);
     } catch (error) {
       console.error("Error creating promotion:", error);
       showNotification(

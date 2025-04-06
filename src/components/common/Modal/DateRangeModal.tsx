@@ -1,40 +1,44 @@
-// DateRangeModal.tsx
+// src/components/common/Modal/DateRangeModal.tsx
 import { useState } from "react";
 import Modal from "./Modal";
 
 interface DateRangeModalProps {
   isOpen: boolean;
+  initialStart?: string;
+  initialEnd?: string;
   onClose: () => void;
-  onSubmit: (startDate: string | null, endDate: string | null) => void;
+  onSubmit: (startDate: string, endDate: string | null) => void;
   title: string;
 }
 
 export const DateRangeModal = ({
   isOpen,
+  initialStart,
+  initialEnd,
   onClose,
   onSubmit,
   title,
 }: DateRangeModalProps) => {
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [startDate, setStartDate] = useState<string>(
+    initialStart ? initialStart : new Date().toISOString().split("T")[0]
+  );
+  const [endDate, setEndDate] = useState<string | null>(
+    initialEnd ? initialEnd : null
+  );
+  const [noEndDate, setNoEndDate] = useState(
+    initialEnd === null ? true : false
+  );
+
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = () => {
-    // If both startDate and endDate are null, allow it
-    if (startDate === null && endDate === null) {
-      onSubmit(null, null);
-      onClose();
-      return;
-    }
-    // Check if both start and end dates are provided
-    if (!startDate || !endDate) {
-      setError("Please enter both start and end dates.");
+    if (!startDate) {
+      setError("Please enter start date.");
       return;
     }
 
-    // Check if end date is later than start date
-    if (new Date(startDate) > new Date(endDate)) {
-      setError("End date must be later than start date.");
+    if (!noEndDate && !endDate) {
+      setError("Please enter an end date or check 'No end date'.");
       return;
     }
 
@@ -55,12 +59,27 @@ export const DateRangeModal = ({
             onChange={(e) => {
               setStartDate(e.target.value);
               setError("");
+              if (endDate && endDate < e.target.value)
+                setEndDate(e.target.value);
             }}
             min={new Date().toISOString().split("T")[0]}
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">End Date</label>
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-medium mb-1">End Date</label>
+            <div className="flex gap-3 items-center">
+              <input
+                type="checkbox"
+                checked={noEndDate}
+                onChange={(e) => {
+                  setNoEndDate(e.target.checked);
+                  if (e.target.checked) setEndDate(null);
+                }}
+              />
+              <label className="text-sm font-medium mb-1">No end date</label>
+            </div>
+          </div>
           <input
             type="date"
             className="w-full p-2 border rounded"
@@ -69,6 +88,7 @@ export const DateRangeModal = ({
               setEndDate(e.target.value);
               setError("");
             }}
+            disabled={noEndDate}
             min={startDate || new Date().toISOString().split("T")[0]}
           />
         </div>

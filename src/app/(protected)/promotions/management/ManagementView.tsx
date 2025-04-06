@@ -1,6 +1,6 @@
 // src/app/(protected)/promotions/management/ManagementView.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import PromotionCard from "./PromotionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
@@ -17,15 +17,22 @@ import { useRouter } from "next/navigation";
 import { PROMOTIONS_API } from "@/constants/api";
 import { Promotion } from "@/types/promotion";
 
-const ManagementView = () => {
+interface ManagementViewProps {
+  scrollToId: string | null;
+}
+
+const ManagementView = ({ scrollToId }: ManagementViewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
+  const promotionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const [editId, setEditId] = useState<string | null>(null);
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const {
     data: promotions,
@@ -33,6 +40,16 @@ const ManagementView = () => {
     error,
   } = useFetchData<Promotion[]>(PROMOTIONS_API.LIST("management"));
   const router = useRouter();
+
+  // Auto-scroll to selected post when navigating from external links
+  useEffect(() => {
+    if (scrollToId && promotions && promotionRefs.current[scrollToId]) {
+      promotionRefs.current[scrollToId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [scrollToId, promotions]);
 
   // Show loading UI
   if (promotions === undefined) {
@@ -63,7 +80,36 @@ const ManagementView = () => {
     router.push(`/posts?mode=create&promotionId=${id}`, { scroll: false });
   };
 
-  const handleDuplicate = async (startDate: string, endDate: string) => {
+  const handleEdit = async (startDate: string, endDate: string | null) => {
+    const promo = promotions.find((promo) => promo.id === editId);
+    if (!promo) {
+      console.error("Something wrong with promotion data");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await apiClient.patch(
+        PROMOTIONS_API.UPDATE(promo.id),
+        {
+          startDate,
+          endDate,
+        },
+        {},
+        false
+      );
+      await mutate();
+      showNotification("success", "The promotion was successfully edited!");
+      setEditId(null);
+    } catch (error) {
+      console.error("Error editing promotion:", error);
+      showNotification("error", "Failed to edit promotion. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDuplicate = async (startDate: string, endDate: string | null) => {
     const promo = promotions.find((promo) => promo.id === duplicateId);
     if (!promo) {
       console.error("Something wrong with promotion data");
@@ -133,13 +179,24 @@ const ManagementView = () => {
 
   return (
     <div>
-      {duplicateId && (
+      {(duplicateId || editId) && (
         <DateRangeModal
           isOpen={true}
+          initialStart={
+            editId
+              ? promotions.find((promo) => promo.id === editId)?.startDate
+              : undefined
+          }
+          initialEnd={
+            editId
+              ? promotions.find((promo) => promo.id === editId)?.endDate
+              : undefined
+          }
           onClose={() => {
             setDuplicateId(null);
+            setEditId(null);
           }}
-          onSubmit={handleDuplicate}
+          onSubmit={duplicateId ? handleDuplicate : handleEdit}
           title="Select Promotion Date Range"
         />
       )}
@@ -169,13 +226,21 @@ const ManagementView = () => {
 
       <div className="space-y-4 mt-2">
         {filteredPromotions.map((promo: Promotion) => (
-          <PromotionCard
+          <div
             key={promo.id}
-            promotion={promo}
-            onCreatePost={() => handleCreatePost(promo.id)}
-            onDuplicate={() => setDuplicateId(promo.id)}
-            onDelete={() => setDeleteId(promo.id)}
-          />
+            ref={(el) => {
+              promotionRefs.current[promo.id] = el;
+            }}
+          >
+            <PromotionCard
+              key={promo.id}
+              promotion={promo}
+              onCreatePost={() => handleCreatePost(promo.id)}
+              onEdit={() => setEditId(promo.id)}
+              onDuplicate={() => setDuplicateId(promo.id)}
+              onDelete={() => setDeleteId(promo.id)}
+            />
+          </div>
         ))}
       </div>
     </div>

@@ -52,6 +52,7 @@ export const PROMOTIONS_API = {
     `${BASE_URL}/promotions/?type=${type}`,
   DETAIL: (id: string) => `${BASE_URL}/promotions/${id}/`,
   CREATE: `${BASE_URL}/promotions/`,
+  UPDATE: (id: string) => `${BASE_URL}/promotions/${id}/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
 };
 
