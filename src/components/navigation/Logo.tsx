@@ -6,7 +6,7 @@ export default function Logo() {
   return (
     <Link href="/" className="flex items-center">
       <Image
-        src="/aka.png"
+        src="/AKA.png"
         alt="Logo"
         width="0" // Set width to 0 to let Next.js handle image size with CSS
         height="0" // Set height to 0 to allow CSS to control the size
