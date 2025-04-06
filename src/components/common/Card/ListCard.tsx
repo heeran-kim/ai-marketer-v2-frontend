@@ -185,6 +185,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                     value={date}
                     onChange={handleDateChange}
                     className="w-full text-xs p-1 border rounded-md focus:ring focus:ring-blue-300"
+                    min={toLocalTime(new Date(), "yyyy-MM-dd'T'HH:mm")}
                   />
                 )}
               </>

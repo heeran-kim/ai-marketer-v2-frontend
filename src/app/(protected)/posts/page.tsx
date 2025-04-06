@@ -1,7 +1,6 @@
 // src/app/(protected)/posts/page.tsx
 "use client";
 
-import { Suspense } from "react";
 import { PostEditorProvider } from "@/context/PostEditorContext";
 import { PostEditorEntry } from "./editor";
 import { useFetchData } from "@/hooks/dataHooks";
@@ -16,15 +15,13 @@ export default function PostsDashboard() {
   const posts = (data?.posts || []).map(mapPostDtoToPost);
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <PostEditorProvider>
-        <PostEditorEntry
-          posts={posts}
-          mutate={mutate}
-          error={error}
-          isLoading={isLoading}
-        />
-      </PostEditorProvider>
-    </Suspense>
+    <PostEditorProvider>
+      <PostEditorEntry
+        posts={posts}
+        mutate={mutate}
+        error={error}
+        isLoading={isLoading}
+      />
+    </PostEditorProvider>
   );
 }

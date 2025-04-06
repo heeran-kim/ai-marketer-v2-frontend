@@ -23,5 +23,6 @@ export {
   ConfirmModalHandler,
   ConfirmModalMode,
 } from "./Modal/ConfirmModalHandler";
+export { DateRangeModal } from "./Modal/DateRangeModal";
 
 export { default as DragAndDropUploader } from "./DragAndDropUploader";

@@ -8,10 +8,12 @@ export default function Modal({
   isOpen,
   onClose,
   children,
+  height = "sm:h-[500px]",
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  height?: string;
 }) {
   // Handle click outside the modal content to trigger close
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -47,7 +49,7 @@ export default function Modal({
     >
       <div
         // Modal content box
-        className="bg-white p-2 w-full sm:w-[430px] h-full sm:h-[500px] max-w-md shadow-lg flex flex-col"
+        className={`bg-white p-2 w-full sm:w-[430px] h-full ${height} max-w-md shadow-lg flex flex-col`}
       >
         {children}
       </div>

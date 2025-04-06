@@ -42,6 +42,9 @@ export const toUtcFromLocalInput = (localString: string) => {
  * Format date ranges intelligently based on whether dates are in the same year
  */
 export function formatDateRange(startDate: string, endDate: string): string {
+  if (!endDate) {
+    return `${toLocalTime(startDate, "dd MMM yyyy")} – No end date`;
+  }
   const start = new Date(startDate);
   const end = new Date(endDate);
   const sameYear = start.getFullYear() === end.getFullYear();
