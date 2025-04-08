@@ -53,10 +53,10 @@ export default function SocialMediaSettings() {
     // Make API call to start OAuth flow
     // TODO: Error handling, set redirect url
     try{
-      const response = await apiClient.post<Record<string,any>>(SETTINGS_API.CONNECT_SOCIAL(provider), {});
+      const response = await apiClient.post<Record<string,string>>(SETTINGS_API.CONNECT_SOCIAL(provider), {});
       window.location.href = response.link;
     }
-    catch(error)
+    catch(error:unknown)
     {
       console.log(error);
     }

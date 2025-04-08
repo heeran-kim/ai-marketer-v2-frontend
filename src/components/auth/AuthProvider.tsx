@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useFetchData } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/index";
-import { USERS_API } from "@/constants/api";
+import { SETTINGS_API, USERS_API } from "@/constants/api";
 import { mutate as globalMutate } from "swr";
 
 // Define specific auth states with type safety using a discriminated union
@@ -22,6 +22,7 @@ interface AuthContextType {
     logout: () => Promise<void>;                                                // Logout function
     register: (name: string, email: string, password: string) => Promise<void>; // Register function
     handle2FA: (method:string, code?:string) => Promise<{status:boolean,qr_code:string}>; //2FA Function
+    handleOAuth: (method:string, provider:string, code:string) => Promise<{message?:string,status:boolean,code?:string}>;
 }
 
 // Create the auth context with null as initial value
@@ -152,6 +153,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const handleOAuth = async (method:string, provider:string, code:string) => {
+      const response = await fetchWithAuth(SETTINGS_API.FINALIZE_OAUTH,method,{provider,code});
+      return {message:response.message,status:response.status,code:response.code};
+    }
+
+
     // Provide auth state and functions to children
     return (
         <AuthContext.Provider value={{
@@ -159,7 +166,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             login,
             logout,
             register,   
-            handle2FA
+            handle2FA,
+            handleOAuth,
         }}>
             {children}
         </AuthContext.Provider>

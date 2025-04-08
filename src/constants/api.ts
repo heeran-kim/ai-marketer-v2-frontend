@@ -30,6 +30,7 @@ export const DASHBOARD_API = {
 export const SETTINGS_API = {
   GENERAL: `${BASE_URL}/businesses/me/`,
   GET_SOCIAL: `${BASE_URL}/social/accounts/`,
+  FINALIZE_OAUTH: `${BASE_URL}/social/finalize_oauth/`,
   CONNECT_SOCIAL: (provider: string) =>
     `${BASE_URL}/social/connect/${provider}/`,
   DISCONNECT_SOCIAL: (provider: string) =>
