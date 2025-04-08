@@ -22,7 +22,7 @@ interface AuthContextType {
     logout: () => Promise<void>;                                                // Logout function
     register: (name: string, email: string, password: string) => Promise<void>; // Register function
     handle2FA: (method:string, code?:string) => Promise<{status:boolean,qr_code:string}>; //2FA Function
-    handleOAuth: (method:string, provider:string, code:string) => Promise<{message?:string,status:boolean,code?:string}>;
+    handleOAuth: (method:string, provider:string, code:string) => Promise<{message:string,status:boolean}>; //Handling OAuth For Social Linking
 }
 
 // Create the auth context with null as initial value
@@ -49,9 +49,7 @@ const fetchWithAuth = async (url: string, method: string, body?: object) => {
       const errorData = await res.json();
       // Extract first error field dynamically
       const firstKey = Object.keys(errorData)[0];
-      const errorMessage = firstKey
-        ? errorData[firstKey].join(" ")
-        : JSON.stringify(errorData);
+      const errorMessage = JSON.stringify(errorData); //Changed this line for better debugging
       throw new Error(errorMessage);
     }
 
@@ -155,7 +153,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const handleOAuth = async (method:string, provider:string, code:string) => {
       const response = await fetchWithAuth(SETTINGS_API.FINALIZE_OAUTH,method,{provider,code});
-      return {message:response.message,status:response.status,code:response.code};
+      return {message:response.message,status:response.status};
     }
 
 

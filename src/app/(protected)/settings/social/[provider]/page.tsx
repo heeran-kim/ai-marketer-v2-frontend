@@ -9,6 +9,7 @@ export default function OAuthCallbackPage() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState('Waiting for response...');
   const [code, setCode] = useState(''); //oauth code
+  const [error,setError] = useState(''); //oauth error
   const {handleOAuth} = useAuth();
 
   const pathname = usePathname();
@@ -26,7 +27,7 @@ export default function OAuthCallbackPage() {
     }
 
     if (code) {
-      setStatus('Authorization code received!');
+      setStatus('Authorization code received! Please Click the button to complete the linking process.');
       setCode(code);
     }
   }, [searchParams])
@@ -36,12 +37,17 @@ export default function OAuthCallbackPage() {
         //const response = await apiClient.post<Record<string,any>>(SETTINGS_API.CONNECT_SOCIAL(provider), {});
         setStatus('Waiting for response...');
         const response = await handleOAuth("POST",subpage,code);
-        console.log(response);
+        //console.log(response);
+        setError(response.message);
         window.location.href = parentPath;
       }
-      catch(error)
+      catch(error:unknown)
       {
-        console.log(error);
+        const errorMessage = error instanceof Error 
+                ? error.message 
+                : "Failed to link account.";
+        //console.log(errorMessage);
+        setError(errorMessage);
       }
   }
 
@@ -50,12 +56,18 @@ export default function OAuthCallbackPage() {
       <h1 className="text-xl font-bold">OAuth Redirect Handler</h1>
       <p>{status}</p>
       <button
-        className={`px-4 py-1.5 text-sm font-medium rounded-md transition flex items-center justify-center min-w-[75px] bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"} ${status !== 'Authorization code received!'? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"}`}
+        className={`px-4 py-1.5 text-sm font-medium rounded-md transition flex items-center justify-center min-w-[75px] bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"} ${status === 'Waiting for response...'? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"}`}
         onClick={confirmLink}
-        disabled={status !== 'Authorization code received!'}
+        disabled={status === 'Waiting for response...'}
       >
         Complete Link
       </button>
+      {error.length>0 &&
+       (
+          <div className={`p-3 border rounded-lg ${error==='Successfully linked!'?'bg-green-100 border-green-300 text-green-700':'bg-red-100 border-red-300 text-red-700'}`}>
+              {error}
+          </div>
+      )}
     </div>
   )
 }
