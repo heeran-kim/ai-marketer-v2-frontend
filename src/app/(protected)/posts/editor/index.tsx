@@ -16,14 +16,14 @@ import type { PostDto } from "@/types/dto";
 
 export const PostEditorEntry = ({
   posts,
-  mutate,
   error,
   isLoading,
+  mutate,
 }: {
   posts: Post[];
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
   isLoading: boolean;
+  mutate: KeyedMutator<{ posts: PostDto[] }>;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -49,9 +49,9 @@ export const PostEditorEntry = ({
       {/* Render the posts dashboard */}
       <PostsDashboardView
         posts={posts}
-        mutate={mutate}
         error={error}
         isLoading={isLoading}
+        mutate={mutate}
       />
     </>
   );

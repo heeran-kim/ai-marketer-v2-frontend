@@ -11,10 +11,11 @@ export default function PostReviewStep() {
     mode,
     selectedPost,
     uploadedImageUrl,
-    image,
+    captionGenerationInfo,
     selectableCategories,
     platformStates,
   } = usePostEditorContext();
+  const { image } = captionGenerationInfo;
   const isEditing = mode === PostEditorMode.EDIT;
 
   const [preparedReviewItems, setPreparedReviewItems] = useState<PostReview[]>(

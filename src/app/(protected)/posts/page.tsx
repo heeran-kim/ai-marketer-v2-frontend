@@ -18,9 +18,9 @@ export default function PostsDashboard() {
     <PostEditorProvider>
       <PostEditorEntry
         posts={posts}
-        mutate={mutate}
         error={error}
         isLoading={isLoading}
+        mutate={mutate}
       />
     </PostEditorProvider>
   );
