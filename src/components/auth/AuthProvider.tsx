@@ -56,19 +56,26 @@ const fetchWithAuth = async (url: string, method: string, body?: object) => {
           throw new Error(errorMessage);
         }
       }
-      catch(error)
+      catch(error:unknown)
       {
-        console.log("Error in message method",error);
+        throw error;
       }
 
       //Else Handle errors through error method
       // Extract first error field dynamically
-      const firstKey = Object.keys(errorData)[0];
-      const errorMessage = firstKey
-      ? errorData[firstKey].join(" ")
-      : JSON.stringify(errorData);
-      
-      throw new Error(errorMessage);
+      try{
+        const firstKey = Object.keys(errorData)[0];
+        const errorMessage = firstKey
+        ? errorData[firstKey].join(" ")
+        : JSON.stringify(errorData);
+        
+        throw new Error(errorMessage);
+      }
+      catch(error:unknown)
+      {
+        throw error;
+      }
+
     }
 
     return res.json();

@@ -56,9 +56,9 @@ export default function OAuthCallbackPage() {
       <h1 className="text-xl font-bold">OAuth Redirect Handler</h1>
       <p>{status}</p>
       <button
-        className={`px-4 py-1.5 text-sm font-medium rounded-md transition flex items-center justify-center min-w-[75px] bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"} ${status === 'Waiting for response...'? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"}`}
+        className={`px-4 py-1.5 text-sm font-medium rounded-md transition flex items-center justify-center min-w-[75px] bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"} ${status !== 'Authorization code received! Please Click the button to complete the linking process.'? "bg-gray-400 text-white cursor-not-allowed" : "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"}`}
         onClick={confirmLink}
-        disabled={status === 'Waiting for response...'}
+        disabled={status !== 'Authorization code received! Please Click the button to complete the linking process.'}
       >
         Complete Link
       </button>
