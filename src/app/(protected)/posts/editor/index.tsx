@@ -11,19 +11,15 @@ import { PostsDashboardView } from "@/app/(protected)/posts/dashboard";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { Post } from "@/types/post";
-import type { KeyedMutator } from "swr";
-import type { PostDto } from "@/types/dto";
 
 export const PostEditorEntry = ({
   posts,
   error,
   isLoading,
-  mutate,
 }: {
   posts: Post[];
   error: unknown;
   isLoading: boolean;
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,17 +38,12 @@ export const PostEditorEntry = ({
             router.back();
           }}
         >
-          <PostEditorFlow mutate={mutate} />
+          <PostEditorFlow />
         </Modal>
       )}
 
       {/* Render the posts dashboard */}
-      <PostsDashboardView
-        posts={posts}
-        error={error}
-        isLoading={isLoading}
-        mutate={mutate}
-      />
+      <PostsDashboardView posts={posts} error={error} isLoading={isLoading} />
     </>
   );
 };

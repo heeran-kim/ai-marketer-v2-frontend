@@ -3,7 +3,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import type { KeyedMutator } from "swr";
 
 import {
   LoadingModal,
@@ -19,13 +18,8 @@ import PostReviewStep from "./create/PostReviewStep";
 
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostEditorMode, StepNames } from "@/types/post";
-import { PostDto } from "@/types/dto";
 
-export const PostEditorFlow = ({
-  mutate,
-}: {
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
-}) => {
+export const PostEditorFlow = () => {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [confirmModalMode, setConfirmModalMode] = useState<ConfirmModalMode>(
@@ -111,8 +105,8 @@ export const PostEditorFlow = ({
     }
 
     if (isLastStep) {
-      if (isCreating) await createPost(mutate);
-      else if (isEditing) await updatePost(mutate);
+      if (isCreating) await createPost();
+      else if (isEditing) await updatePost();
     }
 
     setIsLoading(false);

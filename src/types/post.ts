@@ -2,8 +2,6 @@
 import { PlatformKey } from "@/utils/icon";
 import { Platform } from "./business";
 import { PLATFORM_SCHEDULE_OPTIONS, ScheduleType } from "@/constants/posts";
-import { KeyedMutator } from "swr";
-import { PostDto } from "./dto";
 
 // Represents a refined post model used in the frontend
 export interface Post {
@@ -182,8 +180,8 @@ export interface PostEditorContextType {
   resetPostEditor: () => void; // Function to reset all editor state
 
   fetchCaptionSuggestions: () => void; // Function to fetch AI-generated caption suggestions
-  createPost: (mutate: KeyedMutator<{ posts: PostDto[] }>) => void; // Function to create a new post
-  updatePost: (mutate: KeyedMutator<{ posts: PostDto[] }>) => void; // Function to update an existing post
+  createPost: () => void; // Function to create a new post
+  updatePost: () => void; // Function to update an existing post
 }
 
 // Enum representing the editor mode
