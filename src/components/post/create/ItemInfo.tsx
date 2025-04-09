@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { CompactCard } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
-import { FaPlus, FaMinus, FaSearch } from "react-icons/fa";
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 export default function ItemInfo() {
   const { menuItems, captionGenerationInfo, setCaptionGenerationInfo } =
@@ -42,6 +42,8 @@ export default function ItemInfo() {
     field: "name" | "description",
     value: string
   ) => {
+    setError(null);
+
     const updatedItems = [...captionGenerationInfo.itemInfo];
     updatedItems[index] = { ...updatedItems[index], [field]: value };
 
@@ -58,56 +60,14 @@ export default function ItemInfo() {
 
   // Function to select a suggestion
   const selectSuggestion = (suggestion: string, index: number) => {
-    const updatedItems = [...captionGenerationInfo.itemInfo];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      name: suggestion,
-      description: menuItems[suggestion] || updatedItems[index].description,
-    };
-
-    setCaptionGenerationInfo({
-      ...captionGenerationInfo,
-      itemInfo: updatedItems,
-    });
-
-    setSuggestions({ index: -1, items: [] });
     setError(null);
-  };
-
-  // Function to add a new empty item
-  const addItem = () => {
-    setCaptionGenerationInfo({
-      ...captionGenerationInfo,
-      itemInfo: [
-        ...captionGenerationInfo.itemInfo,
-        { name: "", description: "" },
-      ],
-    });
-  };
-
-  // Function to remove an item at a specific index
-  const removeItem = (index: number) => {
-    const updatedItems = captionGenerationInfo.itemInfo.filter(
-      (_, i) => i !== index
-    );
-    setCaptionGenerationInfo({
-      ...captionGenerationInfo,
-      itemInfo: updatedItems,
-    });
-    setSuggestions({ index: -1, items: [] });
-  };
-
-  // Function to get item description from menuItems
-  const getItemDescription = (index: number) => {
-    const itemName = captionGenerationInfo.itemInfo[index].name
-      .trim()
-      .toLowerCase();
+    const itemName = suggestion;
 
     // Check for exact match first
     if (menuItems[itemName]) {
       const updatedItems = [...captionGenerationInfo.itemInfo];
       updatedItems[index] = {
-        ...updatedItems[index],
+        name: itemName,
         description: menuItems[itemName],
       };
 
@@ -120,33 +80,50 @@ export default function ItemInfo() {
     }
 
     // If description is empty for an existing item
-    if (!captionGenerationInfo.itemInfo[index].description.trim()) {
+    if (!(menuItems[itemName] === undefined)) {
+      const updatedItems = [...captionGenerationInfo.itemInfo];
+      updatedItems[index] = {
+        name: itemName,
+        description: menuItems[itemName],
+      };
+
+      setCaptionGenerationInfo({
+        ...captionGenerationInfo,
+        itemInfo: updatedItems,
+      });
       setError(
-        `Description is missing for "${captionGenerationInfo.itemInfo[index].name}". Please enter it manually.`
+        `Description is missing for "${itemName}".
+        Please enter it manually.`
       );
       return;
     }
 
-    // If no exact match, check for close matches
-    const menuKeys = Object.keys(menuItems);
-    const closeMatches = menuKeys.filter(
-      (item) =>
-        item.toLowerCase().includes(itemName) ||
-        itemName.includes(item.toLowerCase())
-    );
+    setSuggestions({ index: -1, items: [] });
+  };
 
-    if (closeMatches.length > 0) {
-      // If we have close matches, show them as suggestions
-      setSuggestions({
-        index,
-        items: closeMatches,
-      });
-      setError(`No exact match found. Did you mean: ${closeMatches[0]}?`);
-    } else {
-      setError(
-        `No description found for "${captionGenerationInfo.itemInfo[index].name}".`
-      );
-    }
+  // Function to add a new empty item
+  const addItem = () => {
+    setError(null);
+    setCaptionGenerationInfo({
+      ...captionGenerationInfo,
+      itemInfo: [
+        ...captionGenerationInfo.itemInfo,
+        { name: "", description: "" },
+      ],
+    });
+  };
+
+  // Function to remove an item at a specific index
+  const removeItem = (index: number) => {
+    setError(null);
+    const updatedItems = captionGenerationInfo.itemInfo.filter(
+      (_, i) => i !== index
+    );
+    setCaptionGenerationInfo({
+      ...captionGenerationInfo,
+      itemInfo: updatedItems,
+    });
+    setSuggestions({ index: -1, items: [] });
   };
 
   // Close the suggestion dropdown when clicking outside
@@ -199,7 +176,7 @@ export default function ItemInfo() {
             <div className="space-y-3">
               {/* Item Name Field with Autocomplete */}
               <div className="relative">
-                <div className="flex items-center">
+                <div className="flex">
                   <input
                     type="text"
                     className="flex-grow text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 focus:border-blue-300 outline-none"
@@ -220,18 +197,6 @@ export default function ItemInfo() {
                     }}
                     onKeyDown={(e) => handleKeyDown(e)}
                   />
-
-                  {captionGenerationInfo?.itemInfo.length && (
-                    <button
-                      type="button"
-                      className="ml-2 p-2 bg-black hover:bg-gray-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                      onClick={() => getItemDescription(index)}
-                      disabled={!item.name.trim()}
-                      title="Get item description"
-                    >
-                      <FaSearch size={14} />
-                    </button>
-                  )}
                 </div>
 
                 {/* Suggestions Dropdown */}
