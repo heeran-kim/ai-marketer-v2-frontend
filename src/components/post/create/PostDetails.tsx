@@ -13,13 +13,15 @@ export default function PostDetails() {
   const { mode, captionGenerationSettings } = usePostEditorContext();
   const isCaptionGenerating =
     mode === PostEditorMode.CREATE && captionGenerationSettings.method === "ai";
+  const includeItemDescription =
+    captionGenerationSettings.includeItemDescription;
 
   return (
     <CompactCard>
       <div className="space-y-1">
         {isCaptionGenerating && <BusinessInfo />}
         <PostSettings />
-        {isCaptionGenerating && <ItemInfo />}
+        {includeItemDescription && <ItemInfo />}
         {isCaptionGenerating && <AdditionalPrompt />}
       </div>
     </CompactCard>

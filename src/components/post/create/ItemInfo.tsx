@@ -6,12 +6,8 @@ import { usePostEditorContext } from "@/context/PostEditorContext";
 import { FaPlus, FaMinus, FaSearch } from "react-icons/fa";
 
 export default function ItemInfo() {
-  const {
-    menuItems,
-    captionGenerationInfo,
-    setCaptionGenerationInfo,
-    captionGenerationSettings,
-  } = usePostEditorContext();
+  const { menuItems, captionGenerationInfo, setCaptionGenerationInfo } =
+    usePostEditorContext();
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<{
     index: number;
@@ -217,11 +213,15 @@ export default function ItemInfo() {
                         generateSuggestions(item.name, index);
                       }
                     }}
-                    onBlur={() => setSuggestions({ index: -1, items: [] })}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        setSuggestions({ index: -1, items: [] });
+                      }, 200);
+                    }}
                     onKeyDown={(e) => handleKeyDown(e)}
                   />
 
-                  {captionGenerationSettings?.includeItemDescription && (
+                  {captionGenerationInfo?.itemInfo.length && (
                     <button
                       type="button"
                       className="ml-2 p-2 bg-black hover:bg-gray-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -274,8 +274,8 @@ export default function ItemInfo() {
 
       {/* Error message with potential suggestions */}
       {error && (
-        <div className="mb-4 p-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-          {error}
+        <div className="mb-4 p-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md whitespace-pre-line">
+          {`${error}`}
         </div>
       )}
 
