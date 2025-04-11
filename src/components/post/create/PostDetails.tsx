@@ -21,7 +21,7 @@ export default function PostDetails() {
       <div className="space-y-1">
         {isCaptionGenerating && <BusinessInfo />}
         <PostSettings />
-        {includeItemDescription && <ItemInfo />}
+        {includeItemDescription && isCaptionGenerating && <ItemInfo />}
         {isCaptionGenerating && <AdditionalPrompt />}
       </div>
     </CompactCard>

@@ -17,7 +17,7 @@ export const SuggestedCaptions = ({
   return (
     <div
       className={`transition-all duration-300 bg-gray-100 rounded-lg ${
-        isExpanded ? "h-[calc(100%-70px)]" : "h-[40px]"
+        isExpanded ? "h-[calc(100%-60px)]" : "h-[40px]"
       }`}
     >
       <div
