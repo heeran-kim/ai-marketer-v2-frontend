@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useFetchData } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/index";
-import { USERS_API } from "@/constants/api";
+import { SETTINGS_API, USERS_API } from "@/constants/api";
 import { mutate as globalMutate } from "swr";
 
 // Define specific auth states with type safety using a discriminated union
@@ -22,6 +22,7 @@ interface AuthContextType {
     logout: () => Promise<void>;                                                // Logout function
     register: (name: string, email: string, password: string) => Promise<void>; // Register function
     handle2FA: (method:string, code?:string) => Promise<{status:boolean,qr_code:string}>; //2FA Function
+    handleOAuth: (method:string, provider:string, code:string) => Promise<{message:string,status:boolean}>; //Handling OAuth For Social Linking
 }
 
 // Create the auth context with null as initial value
@@ -46,12 +47,35 @@ const fetchWithAuth = async (url: string, method: string, body?: object) => {
 
     if (!res.ok) {
       const errorData = await res.json();
+
+      //Handle errors through message method
+      try{
+        if(errorData.message)
+        {
+          const errorMessage = JSON.stringify(errorData.message);
+          throw new Error(errorMessage);
+        }
+      }
+      catch(error:unknown)
+      {
+        throw error;
+      }
+
+      //Else Handle errors through error method
       // Extract first error field dynamically
-      const firstKey = Object.keys(errorData)[0];
-      const errorMessage = firstKey
+      try{
+        const firstKey = Object.keys(errorData)[0];
+        const errorMessage = firstKey
         ? errorData[firstKey].join(" ")
         : JSON.stringify(errorData);
-      throw new Error(errorMessage);
+        
+        throw new Error(errorMessage);
+      }
+      catch(error:unknown)
+      {
+        throw error;
+      }
+
     }
 
     return res.json();
@@ -152,6 +176,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const handleOAuth = async (method:string, provider:string, code:string) => {
+      const response = await fetchWithAuth(SETTINGS_API.FINALIZE_OAUTH,method,{provider,code});
+      return {message:response.message,status:response.status};
+    }
+
+
     // Provide auth state and functions to children
     return (
         <AuthContext.Provider value={{
@@ -159,7 +189,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             login,
             logout,
             register,   
-            handle2FA
+            handle2FA,
+            handleOAuth,
         }}>
             {children}
         </AuthContext.Provider>
