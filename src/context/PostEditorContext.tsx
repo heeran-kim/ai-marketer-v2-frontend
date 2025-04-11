@@ -30,7 +30,7 @@ import { ScheduleType } from "@/constants/posts";
 
 import { AI_API, POSTS_API, PROMOTIONS_API } from "@/constants/api";
 import { apiClient, useFetchData } from "@/hooks/dataHooks";
-import { CaptionRequestData, PostEditorConfigDto } from "@/types/dto";
+import { PostEditorConfigDto } from "@/types/dto";
 
 import { formatDateRange, toUtcFromLocalInput } from "@/utils/date";
 import { useNotification } from "@/context/NotificationContext";
@@ -193,7 +193,7 @@ export const PostEditorProvider = ({
 
       const itemsRecord = (postCreateFormData.business.items || []).reduce(
         (acc, item) => {
-          acc[item.name.toLowerCase()] = item.description;
+          acc[item.name.toLowerCase()] = `[${item.price}] ${item.description}`;
           return acc;
         },
         {} as Record<string, string>
@@ -319,22 +319,43 @@ export const PostEditorProvider = ({
     setIsLoading(true);
     setLoadingMessage("Generating captions...");
 
-    const requestData: CaptionRequestData = {
-      categories: selectableCategories
-        .filter((cat) => cat.isSelected)
-        .map((cat) => cat.label),
-      itemInfo: captionGenerationInfo.itemInfo,
-      additionalPrompt: captionGenerationInfo.additionalPrompt,
-      includeSalesData: captionGenerationSettings.includeSalesData,
-    };
+    const formData = new FormData();
 
+    // Append categories, business info, item info, additional prompt, etc.
+    formData.append(
+      "categories",
+      JSON.stringify(
+        selectableCategories
+          .filter((cat) => cat.isSelected)
+          .map((cat) => cat.label)
+      )
+    );
+    formData.append(
+      "businessInfo",
+      JSON.stringify({
+        target_customers: captionGenerationInfo.businessInfo.targetCustomers,
+        vibe: captionGenerationInfo.businessInfo.vibe,
+      })
+    );
+    formData.append("itemInfo", JSON.stringify(captionGenerationInfo.itemInfo));
+    formData.append("additionalPrompt", captionGenerationInfo.additionalPrompt);
+    formData.append(
+      "includeSalesData",
+      JSON.stringify(captionGenerationSettings.includeSalesData)
+    );
+
+    // If image analysis is enabled, append detected items
     if (captionGenerationSettings.enableImageAnalysis) {
-      requestData.detectedItems = captionGenerationInfo.detectedItems;
+      formData.append(
+        "detectedItems",
+        JSON.stringify(captionGenerationInfo.detectedItems)
+      );
     }
 
+    // Append image if it's included in the caption
     if (captionGenerationSettings.includeImageInCaption) {
       if (captionGenerationInfo.image) {
-        requestData.image = captionGenerationInfo.image;
+        formData.append("image", captionGenerationInfo.image);
       } else {
         console.error("Image is not available for caption generation.");
       }
@@ -343,9 +364,9 @@ export const PostEditorProvider = ({
     try {
       const res = await apiClient.post<{ captions: string[] }>(
         AI_API.CAPTION_GENERATE,
-        requestData,
+        formData,
         {},
-        false
+        true
       );
 
       if (!res?.captions?.length) {

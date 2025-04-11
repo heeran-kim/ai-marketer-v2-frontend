@@ -77,7 +77,7 @@ export const RESET_CAPTION_GENERATION_SETTINGS: CaptionGenerationSettings = {
   method: "ai",
   enableImageAnalysis: false,
   includeImageInCaption: false,
-  includeItemDescription: true,
+  includeItemDescription: false,
   includeSalesData: false,
 };
 

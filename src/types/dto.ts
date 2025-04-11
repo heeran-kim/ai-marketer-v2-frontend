@@ -26,7 +26,7 @@ export interface PostEditorConfigDto {
   business: {
     targetCustomers: string; // Description of the target customers
     vibe: string; // Business vibe or tone
-    items?: { name: string; description: string }[]; // Optional list of items with name and description
+    items?: { name: string; description: string; price: string }[]; // Optional list of items with name and description
     hasPOSIntegration: boolean; // Indicates if POS integration is available
     hasSalesData: boolean; // Indicates if sales data is available
   };
@@ -36,13 +36,3 @@ export interface PostEditorConfigDto {
     label: string; // Display label for the platform
   }[]; // List of linked platforms
 }
-
-// Type representing data required for generating a caption
-export type CaptionRequestData = {
-  categories: string[]; // Categories relevant to the caption
-  itemInfo: { name: string; description: string }[]; // List of items with name and description
-  additionalPrompt: string; // Additional prompt or context for caption generation
-  includeSalesData: boolean; // Whether to include sales data in the caption
-  detectedItems?: string[]; // Optional list of detected items
-  image?: File; // Optional image file associated with the caption
-};
