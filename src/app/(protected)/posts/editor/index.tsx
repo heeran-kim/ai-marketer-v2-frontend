@@ -11,17 +11,13 @@ import { PostsDashboardView } from "@/app/(protected)/posts/dashboard";
 import { PostEditorFlow } from "@/components/post/PostEditorFlow";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { Post } from "@/types/post";
-import type { KeyedMutator } from "swr";
-import type { PostDto } from "@/types/dto";
 
 export const PostEditorEntry = ({
   posts,
-  mutate,
   error,
   isLoading,
 }: {
   posts: Post[];
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
   isLoading: boolean;
 }) => {
@@ -42,17 +38,12 @@ export const PostEditorEntry = ({
             router.back();
           }}
         >
-          <PostEditorFlow mutate={mutate} />
+          <PostEditorFlow />
         </Modal>
       )}
 
       {/* Render the posts dashboard */}
-      <PostsDashboardView
-        posts={posts}
-        mutate={mutate}
-        error={error}
-        isLoading={isLoading}
-      />
+      <PostsDashboardView posts={posts} error={error} isLoading={isLoading} />
     </>
   );
 };

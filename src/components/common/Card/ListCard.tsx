@@ -46,42 +46,43 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
     const [status, setStatus] = useState<string>("");
 
     useEffect(() => {
+      if (item.type !== "post") return;
+
+      const post = item as Post;
+      setImagePreviewUrl(post.image);
+
+      let tempDate = "";
+      if (post.status === "Published" && post.postedAt)
+        tempDate = post.postedAt;
+      else if (post.status === "Scheduled" && post.scheduledAt)
+        tempDate = post.scheduledAt;
+      else if (post.status === "Failed" && post.createdAt)
+        tempDate = post.createdAt;
+      setDate(toLocalTime(tempDate));
+
+      setSocialLink({
+        link: post.link ?? "Link not available yet",
+        platformKey: post.platform.key,
+      });
+      setDescription(post.caption);
+      setStatus(post.status);
+    }, [item]);
+
+    useEffect(() => {
       if (isInitialized.current) return;
+      if (item.type !== "postReview") return;
 
-      if ((item as Post).type === "post") {
-        const post = item as Post;
-        setImagePreviewUrl(post.image);
-
-        let tempDate = "";
-        if (post.status === "Published" && post.postedAt)
-          tempDate = post.postedAt;
-        else if (post.status === "Scheduled" && post.scheduledAt)
-          tempDate = post.scheduledAt;
-        else if (post.status === "Failed" && post.createdAt)
-          tempDate = post.createdAt;
-        setDate(toLocalTime(tempDate));
-
-        setSocialLink({
-          link: post.link ?? "Link not available yet",
-          platformKey: post.platform.key,
-        });
-        setDescription(post.caption);
-        setStatus(post.status);
+      const review = item as PostReview;
+      const scheduleDate =
+        platformSchedule[review.platform]?.scheduleDate ?? null;
+      setImagePreviewUrl(review.image);
+      if (scheduleDate) {
+        setDate(toLocalTime(scheduleDate, "yyyy-MM-dd'T'HH:mm"));
+      } else {
+        setDate(toLocalTime(new Date(), "yyyy-MM-dd'T'HH:mm"));
       }
-
-      if ((item as PostReview).type === "postReview") {
-        const review = item as PostReview;
-        const scheduleDate =
-          platformSchedule[review.platform]?.scheduleDate ?? null;
-        setImagePreviewUrl(review.image);
-        if (scheduleDate) {
-          setDate(toLocalTime(scheduleDate, "yyyy-MM-dd'T'HH:mm"));
-        } else {
-          setDate(toLocalTime(new Date(), "yyyy-MM-dd'T'HH:mm"));
-        }
-        setSocialLink({ link: "", platformKey: review.platform });
-        setDescription(review.caption);
-      }
+      setSocialLink({ link: "", platformKey: review.platform });
+      setDescription(review.caption);
 
       isInitialized.current = true;
     }, [item, platformSchedule]);

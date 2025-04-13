@@ -18,7 +18,7 @@ export default function PostSettings() {
   };
 
   return (
-    <CompactCard title="📌 Select Purpose">
+    <CompactCard title="Select Purpose">
       <div className="space-y-3">
         <div>
           <div className="flex flex-wrap gap-2">

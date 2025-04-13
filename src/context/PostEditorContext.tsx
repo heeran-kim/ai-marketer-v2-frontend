@@ -1,30 +1,88 @@
 // src/context/PostEditornContext.tsx
-import { createContext, useContext, useState } from "react";
+import {
+  useReducer,
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { mutate } from "swr";
+
 import {
-  PostEditorConfig,
   PostEditorContextType,
-  CustomisedBusinessInfo,
   PlatformState,
   SelectableCategory,
   PostEditorMode,
   Post,
   PlatformScheduleMap,
+  CaptionGenerationSettings,
+  RESET_CAPTION_GENERATION_SETTINGS,
+  CaptionGenerationInfo,
+  RESET_CAPTION_GENERATION_INFO,
+  StepState,
+  StepNames,
+  StepAction,
 } from "@/types/post";
 import { Promotion } from "@/types/promotion";
-import { useEffect } from "react";
+import { ScheduleType } from "@/constants/posts";
+
 import { AI_API, POSTS_API, PROMOTIONS_API } from "@/constants/api";
 import { apiClient, useFetchData } from "@/hooks/dataHooks";
+import { PostEditorConfigDto } from "@/types/dto";
+
 import { formatDateRange, toUtcFromLocalInput } from "@/utils/date";
-import { KeyedMutator } from "swr";
-import { PostDto } from "@/types/dto";
 import { useNotification } from "@/context/NotificationContext";
-import { ScheduleType } from "@/constants/posts";
 
 const PostEditorContext = createContext<PostEditorContextType | undefined>(
   undefined
 );
+
+const stepReducer = (state: StepState, action: StepAction): StepState => {
+  switch (action.type) {
+    case "NEXT": {
+      let nextStepNumber = Math.min(state.stepNumber + 1, StepNames.length - 1);
+
+      // Skip CAPTION_OPTIONS_SELECTION if method is "manual"
+      if (
+        action.payload?.captionGenerationSettings?.method === "manual" &&
+        StepNames[nextStepNumber] === "CAPTION_OPTIONS_SELECTION"
+      ) {
+        nextStepNumber++;
+      }
+
+      return {
+        stepNumber: nextStepNumber,
+        stepName: StepNames[nextStepNumber],
+      };
+    }
+    case "BACK": {
+      let prevStepNumber = Math.max(state.stepNumber - 1, 1);
+
+      // Skip CAPTION_OPTIONS_SELECTION if method is "manual"
+      if (
+        action.payload?.captionGenerationSettings?.method === "manual" &&
+        StepNames[prevStepNumber] === "CAPTION_OPTIONS_SELECTION"
+      ) {
+        prevStepNumber--;
+      }
+
+      return {
+        stepNumber: prevStepNumber,
+        stepName: StepNames[prevStepNumber],
+      };
+    }
+    case "INIT_FOR_CREATE":
+      return { stepNumber: 1, stepName: StepNames[1] }; // Start at CAPTION_METHOD_SELECTION
+    case "INIT_FOR_EDIT":
+      return { stepNumber: 3, stepName: StepNames[3] }; // Start at IMAGE_SELECTION
+    case "RESET":
+      return { stepNumber: 0, stepName: StepNames[0] }; // Reset to RESET step
+    default:
+      return state;
+  }
+};
 
 export const PostEditorProvider = ({
   children,
@@ -33,40 +91,46 @@ export const PostEditorProvider = ({
 }) => {
   const router = useRouter();
 
-  const [step, setStep] = useState(0);
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const promoParam = searchParams.get("promotionId");
+
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { showNotification } = useNotification();
 
-  const searchParams = useSearchParams();
-  const modeParam = searchParams.get("mode");
-  const promoParam = searchParams.get("promotionId");
+  const [stepState, dispatch] = useReducer(stepReducer, {
+    stepNumber: 0,
+    stepName: StepNames[0],
+  });
 
   const [mode, setMode] = useState<PostEditorMode | null>(null);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
-  const [image, setImage] = useState<File | null>(null);
-  const [detectedItems, setDetectedItems] = useState<string[]>([]);
-  const [hasSalesData, setHasSalesData] = useState<boolean>(false);
-  const [customisedBusinessInfo, setCustomisedBusinessInfo] =
-    useState<CustomisedBusinessInfo>({
-      targetCustomers: "",
-      vibe: "",
-      isUsingSalesData: false,
-    });
+
+  const [captionGenerationInfo, setCaptionGenerationInfo] =
+    useState<CaptionGenerationInfo>(RESET_CAPTION_GENERATION_INFO);
+  const [menuItems, setMenuItems] = useState<Record<string, string>>({});
+
   const [selectableCategories, setSelectableCategories] = useState<
     SelectableCategory[]
   >([]);
-  const [additionalPrompt, setAdditionalPrompt] = useState("");
   const [platformStates, setPlatformStates] = useState<PlatformState[]>([]);
   const [platformSchedule, setPlatformSchedule] = useState<PlatformScheduleMap>(
     {}
   );
   const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
+  const [captionGenerationSettings, setCaptionGenerationSettings] =
+    useState<CaptionGenerationSettings>(RESET_CAPTION_GENERATION_SETTINGS);
 
+  // For Edit Mode
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+
+  // Fetch data for post creation form for Create mode
   const { data: postCreateFormData, isLoading: isLoadingPostCreateForm } =
-    useFetchData<PostEditorConfig>(POSTS_API.CREATE);
+    useFetchData<PostEditorConfigDto>(POSTS_API.CREATE);
+
+  // Fetch data for selected promotion for Create mode
   const { data: promoData, isLoading: isLoadingPromotion } =
     useFetchData<Promotion>(
       promoParam ? PROMOTIONS_API.DETAIL(promoParam) : null
@@ -74,9 +138,9 @@ export const PostEditorProvider = ({
 
   useEffect(() => {
     if (!mode) return;
-    if (step !== 2) return;
+    if (stepState.stepName !== "POST_DETAILS") return;
     setIsLoading(isLoadingPostCreateForm || isLoadingPromotion);
-  }, [mode, step, isLoadingPostCreateForm, isLoadingPromotion]);
+  }, [mode, isLoadingPostCreateForm, isLoadingPromotion, stepState.stepName]);
 
   useEffect(() => {
     if (mode !== PostEditorMode.CREATE) return;
@@ -84,11 +148,13 @@ export const PostEditorProvider = ({
     if (promoParam && !promoData) return;
 
     if (postCreateFormData.business) {
-      setCustomisedBusinessInfo({
-        targetCustomers: postCreateFormData.business.targetCustomers,
-        vibe: postCreateFormData.business.vibe,
-        isUsingSalesData: postCreateFormData.business.hasSalesData ?? false,
-      });
+      setCaptionGenerationInfo((prev) => ({
+        ...prev,
+        businessInfo: {
+          targetCustomers: postCreateFormData.business.targetCustomers,
+          vibe: postCreateFormData.business.vibe,
+        },
+      }));
     }
 
     if (postCreateFormData.selectableCategories) {
@@ -116,11 +182,32 @@ export const PostEditorProvider = ({
       setPlatformSchedule(platformSchedule);
     }
 
+    if (postCreateFormData.business.hasPOSIntegration) {
+      setCaptionGenerationSettings({
+        ...captionGenerationSettings,
+        includeItemDescription: postCreateFormData.business.items?.length
+          ? true
+          : false,
+        includeSalesData: postCreateFormData.business.hasSalesData,
+      });
+
+      const itemsRecord = (postCreateFormData.business.items || []).reduce(
+        (acc, item) => {
+          acc[item.name.toLowerCase()] = `[${item.price}] ${item.description}`;
+          return acc;
+        },
+        {} as Record<string, string>
+      );
+      setMenuItems(itemsRecord);
+    }
+
     if (promoData) {
       const dateRange = formatDateRange(promoData.startDate, promoData.endDate);
-      setAdditionalPrompt(
-        "Promotion date: " + dateRange + "\n" + promoData.description
-      );
+      setCaptionGenerationInfo((prev) => ({
+        ...prev,
+        additionalPrompt:
+          "Promotion date: " + dateRange + "\n" + promoData.description,
+      }));
     }
   }, [mode, promoParam, postCreateFormData, promoData]);
 
@@ -167,7 +254,8 @@ export const PostEditorProvider = ({
 
   useEffect(() => {
     if (!mode) return;
-    setStep(1);
+    if (mode === PostEditorMode.CREATE) dispatch({ type: "INIT_FOR_CREATE" });
+    else if (mode === PostEditorMode.EDIT) dispatch({ type: "INIT_FOR_EDIT" });
   }, [mode]);
 
   const setPlatformCaption = (platformKey: string, newCaption: string) => {
@@ -215,21 +303,13 @@ export const PostEditorProvider = ({
   };
 
   const resetPostEditor = () => {
-    setStep(0);
+    dispatch({ type: "RESET" });
+    setCaptionGenerationSettings(RESET_CAPTION_GENERATION_SETTINGS);
     setMode(null);
     setSelectedPost(null);
     setUploadedImageUrl(null);
-    setImage(null);
-    setDetectedItems([]);
-    setHasSalesData(false);
-    setCustomisedBusinessInfo({
-      targetCustomers: "",
-      vibe: "",
-      isUsingSalesData: false,
-    });
+    setCaptionGenerationInfo(RESET_CAPTION_GENERATION_INFO);
     setSelectableCategories([]);
-    setAdditionalPrompt("");
-    setPlatformStates([]);
     setCaptionSuggestions([]);
     setLoadingMessage("Loading...");
     setErrorMessage(null);
@@ -239,18 +319,54 @@ export const PostEditorProvider = ({
     setIsLoading(true);
     setLoadingMessage("Generating captions...");
 
+    const formData = new FormData();
+
+    // Append categories, business info, item info, additional prompt, etc.
+    formData.append(
+      "categories",
+      JSON.stringify(
+        selectableCategories
+          .filter((cat) => cat.isSelected)
+          .map((cat) => cat.label)
+      )
+    );
+    formData.append(
+      "businessInfo",
+      JSON.stringify({
+        target_customers: captionGenerationInfo.businessInfo.targetCustomers,
+        vibe: captionGenerationInfo.businessInfo.vibe,
+      })
+    );
+    formData.append("itemInfo", JSON.stringify(captionGenerationInfo.itemInfo));
+    formData.append("additionalPrompt", captionGenerationInfo.additionalPrompt);
+    formData.append(
+      "includeSalesData",
+      JSON.stringify(captionGenerationSettings.includeSalesData)
+    );
+
+    // If image analysis is enabled, append detected items
+    if (captionGenerationSettings.enableImageAnalysis) {
+      formData.append(
+        "detectedItems",
+        JSON.stringify(captionGenerationInfo.detectedItems)
+      );
+    }
+
+    // Append image if it's included in the caption
+    if (captionGenerationSettings.includeImageInCaption) {
+      if (captionGenerationInfo.image) {
+        formData.append("image", captionGenerationInfo.image);
+      } else {
+        console.error("Image is not available for caption generation.");
+      }
+    }
+
     try {
       const res = await apiClient.post<{ captions: string[] }>(
         AI_API.CAPTION_GENERATE,
-        {
-          imgItems: detectedItems,
-          businessInfo: customisedBusinessInfo,
-          postCategories: selectableCategories,
-          platformStates: platformStates,
-          customText: additionalPrompt,
-        },
+        formData,
         {},
-        false // isFormData flag
+        true
       );
 
       if (!res?.captions?.length) {
@@ -272,11 +388,16 @@ export const PostEditorProvider = ({
     }
   };
 
-  const createPost = async (mutate: KeyedMutator<{ posts: PostDto[] }>) => {
+  const createPost = async () => {
     setIsLoading(true);
     setLoadingMessage("Creating posts...");
 
     try {
+      // Derive selected category IDs from selectableCategories
+      const selectedCategories = selectableCategories
+        .filter((cat) => cat.isSelected)
+        .map((cat) => cat.id);
+
       // Filter platforms based on scheduleType, skipping those marked as "dontPost"
       const platformsToPost = platformStates.filter(
         (platform) =>
@@ -292,8 +413,8 @@ export const PostEditorProvider = ({
         formData.append("platform", platform.key);
 
         // Add image
-        if (image) {
-          formData.append("image", image);
+        if (captionGenerationInfo.image) {
+          formData.append("image", captionGenerationInfo.image);
         } else {
           showNotification(
             "error",
@@ -305,9 +426,6 @@ export const PostEditorProvider = ({
         formData.append("caption", platform.caption);
 
         // Add categories as an array
-        const selectedCategories = selectableCategories
-          .filter((cat) => cat.isSelected)
-          .map((cat) => cat.id);
         formData.append("categories", JSON.stringify(selectedCategories));
 
         // Add scheduled time if available and it's a scheduled post
@@ -329,8 +447,8 @@ export const PostEditorProvider = ({
       // Show success notification
       showNotification("success", "Posts created successfully!");
 
-      // Refresh the data and redirect
-      await mutate();
+      // Trigger global SWR revalidation
+      await mutate(POSTS_API.LIST);
       resetPostEditor();
       router.back();
     } catch (error) {
@@ -341,7 +459,7 @@ export const PostEditorProvider = ({
     }
   };
 
-  const updatePost = async (mutate: KeyedMutator<{ posts: PostDto[] }>) => {
+  const updatePost = async () => {
     if (!selectedPost) return;
     setIsLoading(true);
     setLoadingMessage("Updating post...");
@@ -352,7 +470,7 @@ export const PostEditorProvider = ({
       // Add caption
       formData.append("caption", platformStates[0]?.caption || "");
 
-      // Add categories as an array
+      // Derive selected category labels from selectableCategories
       const selectedCategories = selectableCategories
         .filter((cat) => cat.isSelected)
         .map((cat) => cat.label);
@@ -372,8 +490,8 @@ export const PostEditorProvider = ({
       }
 
       // Add image if a new one was uploaded
-      if (image) {
-        formData.append("image", image);
+      if (captionGenerationInfo.image) {
+        formData.append("image", captionGenerationInfo.image);
       }
 
       // Use the PATCH endpoint to update the post
@@ -387,8 +505,8 @@ export const PostEditorProvider = ({
       // Show success notification
       showNotification("success", "Post updated successfully!");
 
-      // Refresh the data and redirect
-      await mutate();
+      // Trigger global SWR revalidation
+      await mutate(POSTS_API.LIST);
       resetPostEditor();
       router.back();
     } catch (error) {
@@ -408,24 +526,16 @@ export const PostEditorProvider = ({
         setLoadingMessage,
         errorMessage,
         setErrorMessage,
-        step,
-        setStep,
+        stepState,
+        dispatch,
         mode,
         selectedPost,
         setSelectedPost,
         uploadedImageUrl,
         setUploadedImageUrl,
-        image,
-        setImage,
-        detectedItems,
-        setDetectedItems,
-        hasSalesData,
-        customisedBusinessInfo,
-        setCustomisedBusinessInfo,
-        selectableCategories,
-        setSelectableCategories,
-        additionalPrompt,
-        setAdditionalPrompt,
+        menuItems,
+        captionGenerationInfo,
+        setCaptionGenerationInfo,
         platformStates,
         setPlatformStates,
         platformSchedule,
@@ -435,6 +545,10 @@ export const PostEditorProvider = ({
         updateCaptionSuggestion,
         updatePlatformScheduleType,
         updatePlatformScheduleDate,
+        captionGenerationSettings,
+        setCaptionGenerationSettings,
+        selectableCategories,
+        setSelectableCategories,
         resetPostEditor,
         fetchCaptionSuggestions,
         createPost,

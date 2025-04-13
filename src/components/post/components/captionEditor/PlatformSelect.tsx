@@ -15,7 +15,7 @@ export const PlatformSelect = ({
   const { platformStates, setPlatformCaption } = usePostEditorContext();
 
   return (
-    <div className="p-3 w-full h-[70px]">
+    <div className="p-3 w-full h-[60px]">
       <div className="flex justify-between items-center gap-3">
         {PLATFORM_OPTIONS.map((platform) => {
           const platformState = platformStates?.find((p) => p.key === platform);

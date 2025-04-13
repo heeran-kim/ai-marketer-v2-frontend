@@ -1,19 +1,38 @@
-// Raw post data received from backend
+// Importing the SelectableCategory type from the post module
+import { SelectableCategory } from "./post";
+
+// Interface representing raw post data received from the backend
 export interface PostDto {
-  id: string;
-  business: string;
-  platform: string;
-  categories: string[];
-  caption: string;
-  image: string;
-  link: string;
-  createdAt: string;
-  postedAt: string;
-  scheduledAt: string;
-  status: string;
-  reactions: number;
-  comments: number;
-  reposts: number;
-  shares: number;
-  type: string;
+  id: string; // Unique identifier for the post
+  business: string; // Business associated with the post
+  platform: string; // Platform where the post is published
+  categories: string[]; // Categories assigned to the post
+  caption: string; // Caption text of the post
+  image: string; // URL or path to the post's image
+  link: string; // Link associated with the post
+  createdAt: string; // Timestamp when the post was created
+  postedAt: string; // Timestamp when the post was published
+  scheduledAt: string; // Timestamp when the post is scheduled to be published
+  status: string; // Current status of the post (e.g., published, scheduled, or failed)
+  reactions: number; // Number of reactions (likes, etc.) on the post
+  comments: number; // Number of comments on the post
+  reposts: number; // Number of reposts or shares
+  shares: number; // Number of shares of the post
+  type: string; // Type (e.g., post)
+}
+
+// Interface representing configuration data required for the post editor
+export interface PostEditorConfigDto {
+  business: {
+    targetCustomers: string; // Description of the target customers
+    vibe: string; // Business vibe or tone
+    items?: { name: string; description: string; price: string }[]; // Optional list of items with name and description
+    hasPOSIntegration: boolean; // Indicates if POS integration is available
+    hasSalesData: boolean; // Indicates if sales data is available
+  };
+  selectableCategories: SelectableCategory[]; // List of categories that can be selected
+  linkedPlatforms: {
+    key: string; // Unique key for the platform
+    label: string; // Display label for the platform
+  }[]; // List of linked platforms
 }

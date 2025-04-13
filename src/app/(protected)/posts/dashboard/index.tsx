@@ -15,22 +15,20 @@ import { DropboxItem } from "@/types/index";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostsFilterBar } from "./PostsFilterBar";
 import { PostList } from "./PostList";
-import type { KeyedMutator } from "swr";
-import type { PostDto } from "@/types/dto";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
 import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
 import { ErrorFallback } from "@/components/common";
+import { mutate } from "swr";
+import { POSTS_API } from "@/constants/api";
 
 const ITEMS_PER_PAGE = 5;
 
 export const PostsDashboardView = ({
   posts,
-  mutate,
   error,
   isLoading,
 }: {
   posts: Post[];
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
   isLoading: boolean;
 }) => {
@@ -107,7 +105,8 @@ export const PostsDashboardView = ({
   // Show error UI if there's an error
   if (error) {
     const handleRetry = async () => {
-      await mutate();
+      // Trigger global SWR revalidation
+      await mutate(POSTS_API.LIST);
     };
 
     return (
@@ -141,7 +140,6 @@ export const PostsDashboardView = ({
         onClose={() => setSelectedPostId(undefined)}
         onSuccess={(message) => showNotification("success", message)}
         onError={(message) => showNotification("error", message)}
-        onDeleteComplete={() => mutate()} // This will refresh the posts data
         posts={posts}
       />
 
