@@ -323,7 +323,15 @@ export const PostEditorProvider = ({
         }
 
         // Send the request to create the post
-        await apiClient.post(POSTS_API.LIST, formData, {}, true);
+        try{
+        const response = await apiClient.post(POSTS_API.LIST, formData, {}, true);
+        console.log(response);
+        }
+        catch (error) {
+          console.error("Error creating post:", error);
+          showNotification("error", "Failed to create post. Please try again.");
+          return;
+        }
       }
 
       // Show success notification
