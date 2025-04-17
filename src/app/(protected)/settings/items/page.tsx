@@ -57,11 +57,13 @@ export default function MenuItemsPage() {
 
   // Fetch menu items
   const { data, error, mutate, isLoading } = useFetchData<{
+    squareConnected: boolean;
     items: SquareItem[];
     categories: SquareCategory[];
   }>(SETTINGS_API.SQUARE_ITEMS);
 
   useEffect(() => {
+    if (!data?.squareConnected) return;
     if (data) {
       // Process the data to match items with their category names
       const processedItems = data.items.map((item) => {
@@ -196,6 +198,17 @@ export default function MenuItemsPage() {
         onRetry={handleRetry}
         isProcessing={isLoading}
       />
+    );
+  }
+
+  if (!data.squareConnected) {
+    return (
+      <Card showButton={false}>
+        <p className="text-gray-500 whitespace-pre-line text-sm text-center">
+          {`Square is not connected.
+          Please connect Square to manage menu items.`}
+        </p>
+      </Card>
     );
   }
 

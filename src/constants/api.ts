@@ -36,6 +36,7 @@ export const SETTINGS_API = {
   DISCONNECT_SOCIAL: (provider: string) =>
     `${BASE_URL}/social/disconnect/${provider}/`,
   SALES: `${BASE_URL}/sales/`,
+  SALES_REFRESH: `${BASE_URL}/sales/refresh/`,
 
   SQUARE: `${BASE_URL}/businesses/square/`,
   SQUARE_CONNECT: `${BASE_URL}/businesses/square/connect/`,

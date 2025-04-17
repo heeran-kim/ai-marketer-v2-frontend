@@ -211,6 +211,22 @@ export const actionIcons: Record<string, JSX.Element> = {
       />
     </svg>
   ),
+  refresh: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4.5 4.5v5.25H9.75M19.5 19.5v-5.25H14.25M19.5 9A7.5 7.5 0 0012 4.5c-2.9 0-5.47 1.64-6.75 4.05M4.5 15a7.5 7.5 0 006.75 4.95c2.9 0 5.47-1.64 6.75-4.05"
+      />
+    </svg>
+  ),
 };
 
 export const squareIcon: JSX.Element = (
