@@ -36,6 +36,11 @@ export const SETTINGS_API = {
   DISCONNECT_SOCIAL: (provider: string) =>
     `${BASE_URL}/social/disconnect/${provider}/`,
   SALES: `${BASE_URL}/sales/`,
+
+  SQUARE: `${BASE_URL}/businesses/square/`,
+  SQUARE_CONNECT: `${BASE_URL}/businesses/square/connect/`,
+  SQUARE_CALLBACK: `${BASE_URL}/businesses/square/callback/`,
+  SQUARE_DISCONNECT: `${BASE_URL}/businesses/square/disconnect/`,
 };
 
 // Posts API Endpoints
