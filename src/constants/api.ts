@@ -41,6 +41,9 @@ export const SETTINGS_API = {
   SQUARE_CONNECT: `${BASE_URL}/businesses/square/connect/`,
   SQUARE_CALLBACK: `${BASE_URL}/businesses/square/callback/`,
   SQUARE_DISCONNECT: `${BASE_URL}/businesses/square/disconnect/`,
+  SQUARE_ITEMS: `${BASE_URL}/businesses/square/items/`,
+  SQUARE_ITEM_UPDATE: (id: string) =>
+    `${BASE_URL}/businesses/square/items/${id}/`,
 };
 
 // Posts API Endpoints

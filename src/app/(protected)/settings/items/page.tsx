@@ -1,268 +1,422 @@
-// src/app/(protected)/settings/items/page.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { Card } from "@/components/common";
-import DragAndDropUploader from "@/components/common/DragAndDropUploader";
-import { SETTINGS_API } from "@/constants/api";
-import { SalesDailyRevenue } from "@/types/sales";
-import { useNotification } from "@/context/NotificationContext";
-import { Line } from "react-chartjs-2";
+import { useState, useEffect } from "react";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  TimeScale,
-} from "chart.js";
-import "chartjs-adapter-date-fns";
+  Card,
+  CategoryChipList,
+  ErrorFallback,
+  Modal,
+} from "@/components/common";
+import { useFetchData, apiClient } from "@/hooks/dataHooks";
+import { SETTINGS_API } from "@/constants/api";
+import { useNotification } from "@/context/NotificationContext";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  TimeScale
-);
+// Define types for menu items from Square
+interface SquareItemVariation {
+  id: string;
+  name: string;
+  priceMoney?: {
+    amount: number;
+    currency: string;
+  };
+}
 
-export default function SalesDataUpload() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [salesFile, setSalesFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState("");
+interface SquareItem {
+  id: string;
+  name: string;
+  description?: string;
+  variations: SquareItemVariation[];
+  categories?: string[];
+  category_names?: string[];
+  category_name?: string;
+}
+
+interface SquareCategory {
+  id: string;
+  name: string;
+}
+
+interface MenuItemsState {
+  items: SquareItem[];
+  categories: SquareCategory[];
+}
+
+export default function MenuItemsPage() {
+  const [menuItems, setMenuItems] = useState<MenuItemsState>({
+    items: [],
+    categories: [],
+  });
+
+  const [editingItem, setEditingItem] = useState<SquareItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [isSaving, setIsSaving] = useState(false);
+
   const { showNotification } = useNotification();
-  const { data, isLoading, mutate } = useFetchData<SalesDailyRevenue>(
-    SETTINGS_API.SALES
-  );
+
+  // Fetch menu items
+  const { data, error, mutate, isLoading } = useFetchData<{
+    items: SquareItem[];
+    categories: SquareCategory[];
+  }>(SETTINGS_API.SQUARE_ITEMS);
 
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    if (data) {
+      // Process the data to match items with their category names
+      const processedItems = data.items.map((item) => {
+        const categoryIds = item.categories || [];
+        const categoryNames = categoryIds.map((id) => {
+          const category = data.categories.find((cat) => cat.id === id);
+          return category?.name || "Uncategorized";
+        });
+        if (categoryNames.length === 0) {
+          categoryNames.push("Uncategorized");
+        }
 
-    checkIsMobile();
+        return {
+          ...item,
+          category_names: categoryNames,
+          category_name: categoryNames[0] || "Uncategorized",
+        };
+      });
 
-    const handleResize = () => {
-      checkIsMobile();
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const formattedChartData = useMemo(() => {
-    if (!data || !data.labels || data.labels.length === 0) {
-      return {
-        datasets: [
-          {
-            label: "Sales",
-            data: [],
-            borderColor: "rgb(94, 53, 177)",
-            backgroundColor: "rgba(94, 53, 177, 0.3)",
-            fill: true,
-          },
-        ],
-      };
-    }
-
-    const chartData = data.labels.map((label, index) => {
-      const parts = label.split("-");
-      const date = new Date(
-        parseInt(parts[2]),
-        parseInt(parts[1]) - 1,
-        parseInt(parts[0])
-      );
-
-      return {
-        x: date.toISOString(),
-        y: data.datasets[0].data[index],
-      };
-    });
-
-    const today = new Date();
-
-    const hasToday = chartData.some((point) => {
-      const pointDate = new Date(point.x);
-      return pointDate.toDateString() === today.toDateString();
-    });
-
-    if (!hasToday) {
-      chartData.push({
-        x: today.toISOString(),
-        y: null as unknown as number,
+      setMenuItems({
+        items: processedItems,
+        categories: data.categories,
       });
     }
-
-    return {
-      datasets: [
-        {
-          label: "Sales",
-          data: chartData,
-          borderColor: "rgb(94, 53, 177)",
-          backgroundColor: "rgba(94, 53, 177, 0.3)",
-          fill: true,
-        },
-      ],
-    };
   }, [data]);
 
-  const chartOptions = useMemo(() => {
-    const today = new Date();
-    const displayDays = isMobile ? 7 : 30;
+  // Filter items based on search and category
+  const filteredItems = menuItems.items.filter((item) => {
+    const matchesSearch =
+      filter === "" ||
+      item.name.toLowerCase().includes(filter.toLowerCase()) ||
+      item.description?.toLowerCase().includes(filter.toLowerCase());
 
-    let minDate;
+    const matchesCategory =
+      categoryFilter === "all" ||
+      (categoryFilter === "Uncategorized" &&
+        (!item.category_names ||
+          item.category_names.includes("Uncategorized"))) ||
+      (item.category_names && item.category_names.includes(categoryFilter));
 
-    if (data && data.labels && data.labels.length > 0) {
-      const firstLabelParts = data.labels[0].split("-");
-      const firstDataDate = new Date(
-        parseInt(firstLabelParts[2]),
-        parseInt(firstLabelParts[1]) - 1,
-        parseInt(firstLabelParts[0])
-      );
+    return matchesSearch && matchesCategory;
+  });
 
-      const limitDate = new Date();
-      limitDate.setDate(today.getDate() - displayDays);
-
-      minDate = firstDataDate > limitDate ? firstDataDate : limitDate;
-    } else {
-      minDate = new Date();
-      minDate.setDate(today.getDate() - displayDays);
+  // Group items by category for display
+  const itemsByCategory = filteredItems.reduce((acc, item) => {
+    const category = item.category_name || "Uncategorized";
+    if (!acc[category]) {
+      acc[category] = [];
     }
+    acc[category].push(item);
+    return acc;
+  }, {} as Record<string, SquareItem[]>);
 
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          type: "time" as const,
-          time: {
-            unit: "day" as const,
-            displayFormats: {
-              day: isMobile ? "d" : "d MMM",
-            },
-            tooltipFormat: "PP",
-          },
-          min: minDate.toISOString(),
-          max: today.toISOString(),
-          title: {
-            display: !isMobile,
-            text: "Date",
-          },
-        },
-        y: {
-          ticks: {
-            callback: function (value: string | number) {
-              const numericValue =
-                typeof value === "number" ? value : parseFloat(value);
-              return numericValue >= 1000
-                ? numericValue / 1000 + "k"
-                : numericValue;
-            },
-            font: {
-              size: 11,
-            },
-          },
-        },
-      },
-      plugins: {
-        legend: {
-          position: "top" as const,
-          display: !isMobile,
-        },
-        title: {
-          display: true,
-          text: isMobile ? "Last 7 Days" : "Last 30 Days Sales Data",
-        },
-      },
-    };
-  }, [data, isMobile]);
-
-  const handleFileChange = (file: File | null) => {
-    setSalesFile(file);
-    setError("");
+  const handleEditItem = (item: SquareItem) => {
+    setEditingItem({ ...item });
+    setIsModalOpen(true);
   };
 
-  const handleSaveFile = async () => {
-    if (!salesFile) {
-      setError("Please upload a file first");
-      return;
-    }
+  const handleSaveItem = async () => {
+    if (!editingItem) return;
 
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", salesFile);
+    setIsSaving(true);
+
     try {
-      await apiClient.post(SETTINGS_API.SALES, formData, {}, true);
-      await mutate();
-      setSalesFile(null);
-      showNotification("success", "File Uploaded successfully!");
-    } catch (err) {
-      if (err instanceof Error) {
-        try {
-          const parsed = JSON.parse(err.message);
-          setError(
-            parsed?.data?.error || parsed?.statusText || "Upload failed"
-          );
-        } catch {
-          setError(err.message);
-        }
-      } else {
-        setError("Unknown error occurred");
-      }
+      // Call API to update the item
+      await apiClient.patch(SETTINGS_API.SQUARE_ITEM_UPDATE(editingItem.id), {
+        name: editingItem.name,
+        description: editingItem.description,
+        variations: editingItem.variations.map((v) => ({
+          id: v.id,
+          name: v.name,
+          price_money: v.priceMoney,
+        })),
+      });
+
+      // Update local state
+      setMenuItems((prev) => ({
+        ...prev,
+        items: prev.items.map((item) =>
+          item.id === editingItem.id ? { ...item, ...editingItem } : item
+        ),
+      }));
+
+      // Close modal and show success message
+      setIsModalOpen(false);
+      showNotification("success", "Menu item updated successfully!");
+
+      // Refresh data from server
+      mutate();
+    } catch (error) {
+      console.error("Error updating menu item:", error);
+      showNotification(
+        "error",
+        "Failed to update menu item. Please try again."
+      );
     } finally {
-      setIsUploading(false);
+      setIsSaving(false);
     }
   };
+
+  // Format currency (e.g., 1500 -> $15.00)
+  const formatCurrency = (priceData?: {
+    amount?: number;
+    currency?: string;
+  }) => {
+    if (!priceData || priceData.amount === undefined) return "N/A";
+
+    const amount = priceData.amount;
+    const currency = priceData.currency || "AUD";
+
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency,
+    }).format(amount / 100);
+  };
+
+  if (data === undefined) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    const handleRetry = async () => {
+      await mutate();
+    };
+    return (
+      <ErrorFallback
+        message="Failed to load menu items. Please try again later."
+        onRetry={handleRetry}
+        isProcessing={isLoading}
+      />
+    );
+  }
 
   return (
-    <div className="max-w-xs sm:max-w-3xl mx-auto space-y-6">
-      <Card
-        title="Recent Sales Data"
-        description={`Displaying sales data from ${
-          isMobile
-            ? "the last 7 days"
-            : "the earliest available data (up to 30 days)"
-        }`}
-        showButton={false}
-      >
-        <div className="h-64 w-full">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <p>Loading chart data...</p>
+    <>
+      {isModalOpen && editingItem && (
+        <Modal isOpen={true} onClose={() => setIsModalOpen(false)}>
+          <div className="p-6 flex-1 overflow-auto">
+            <h2 className="text-xl font-semibold mb-4">Edit Menu Item</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                  value={editingItem.name}
+                  onChange={(e) =>
+                    setEditingItem({ ...editingItem, name: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <textarea
+                  className="w-full p-2 border rounded-md focus:ring focus:ring-blue-300 min-h-[100px]"
+                  value={editingItem.description || ""}
+                  onChange={(e) =>
+                    setEditingItem({
+                      ...editingItem,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Variations
+                </label>
+                {editingItem.variations.map((variation, index) => (
+                  <div
+                    key={variation.id}
+                    className="flex items-center space-x-3 mb-2"
+                  >
+                    <input
+                      type="text"
+                      className="flex-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+                      value={variation.name || ""}
+                      placeholder="Variation name"
+                      onChange={(e) => {
+                        const updatedVariations = [...editingItem.variations];
+                        updatedVariations[index] = {
+                          ...variation,
+                          name: e.target.value,
+                        };
+                        setEditingItem({
+                          ...editingItem,
+                          variations: updatedVariations,
+                        });
+                      }}
+                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-2">$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        className="w-24 p-2 pl-7 border rounded-md focus:ring focus:ring-blue-300"
+                        value={
+                          variation.priceMoney?.amount
+                            ? variation.priceMoney.amount / 100
+                            : 0
+                        }
+                        onChange={(e) => {
+                          const priceInCents = Math.round(
+                            parseFloat(e.target.value) * 100
+                          );
+                          const updatedVariations = [...editingItem.variations];
+                          updatedVariations[index] = {
+                            ...variation,
+                            priceMoney: {
+                              amount: priceInCents,
+                              currency: variation.priceMoney?.currency || "AUD",
+                            },
+                          };
+                          setEditingItem({
+                            ...editingItem,
+                            variations: updatedVariations,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ) : data && data.labels.length > 0 ? (
-            <Line options={chartOptions} data={formattedChartData} />
-          ) : (
-            <div className="flex justify-center items-center h-full text-gray-500">
-              <p>
-                No sales data available. Upload a file to see your sales chart.
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 border rounded-md hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveItem}
+                disabled={isSaving}
+                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search items..."
+              className="w-full p-2 border rounded-md"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+          </div>
+          <div className="w-full md:w-64">
+            <select
+              className="w-full p-2 border rounded-md"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {menuItems.categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+              <option value="Uncategorized">Uncategorized</option>
+            </select>
+          </div>
+        </div>
+
+        {Object.entries(itemsByCategory).length === 0 ? (
+          <Card showButton={false}>
+            <div className="text-center py-8">
+              <p className="text-gray-500">
+                No menu items found. Try adjusting your filters.
               </p>
             </div>
-          )}
-        </div>
-      </Card>
+          </Card>
+        ) : (
+          Object.entries(itemsByCategory).map(([category, items]) => (
+            <div key={category} className="mb-8">
+              <h2 className="text-lg font-medium mb-3 px-1">{category}</h2>
+              <div className="space-y-4">
+                {items.map((item) => (
+                  <Card
+                    key={item.id}
+                    title={item.name}
+                    description={item.description}
+                    showButton
+                    buttonText="Edit"
+                    onClick={() => handleEditItem(item)}
+                  >
+                    {item.category_names && item.category_names.length > 0 && (
+                      <div className="mb-3">
+                        <CategoryChipList labels={item.category_names} />
+                      </div>
+                    )}
 
-      <Card
-        title="Upload Sales Data"
-        description="Upload CSV file with Date and Total Amount columns"
-        restriction="Supported format: CSV"
-        buttonText={isUploading ? "Uploading..." : "Upload File"}
-        onClick={handleSaveFile}
-        buttonDisabled={isUploading || !salesFile}
-      >
-        <DragAndDropUploader onChange={handleFileChange} fileType="data" />
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-      </Card>
-    </div>
+                    <div className="mt-3 border-t pt-3">
+                      <h4 className="text-xs uppercase text-gray-500 mb-2">
+                        Variations
+                      </h4>
+                      <div className="space-y-2">
+                        {item.variations.map((variation) => (
+                          <div
+                            key={variation.id}
+                            className="flex justify-between items-center"
+                          >
+                            <span className="text-sm">
+                              {variation.name ? variation.name : "Default"}
+                            </span>
+                            <span className="text-sm font-medium">
+                              {formatCurrency(variation.priceMoney)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+
+        {menuItems.items.length === 0 && !isLoading && (
+          <Card>
+            <div className="text-center py-8">
+              <h2 className="text-xl font-medium mb-2">No Menu Items Found</h2>
+              <p className="text-gray-600 mb-6">
+                You haven&apos;t imported any menu items from Square yet.
+              </p>
+              <a
+                href="https://squareup.com/dashboard/items/library"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+              >
+                Manage Items in Square
+              </a>
+            </div>
+          </Card>
+        )}
+      </div>
+    </>
   );
 }
