@@ -22,7 +22,7 @@ import {
   TimeScale,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
-import { actionIcons } from "@/utils/icon";
+import { actionIcons, spinner } from "@/utils/icon";
 
 ChartJS.register(
   CategoryScale,
@@ -258,8 +258,12 @@ export default function SalesDataUpload() {
         showButton={false}
         actionSlot={
           data?.squareConnected && (
-            <button onClick={handleRefresh} disabled={isProcessing}>
-              {actionIcons.refresh}
+            <button
+              onClick={handleRefresh}
+              disabled={isProcessing}
+              className="relative"
+            >
+              {isProcessing ? spinner : actionIcons.refresh}
             </button>
           )
         }

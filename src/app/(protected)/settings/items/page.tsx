@@ -328,7 +328,7 @@ export default function MenuItemsPage() {
           </div>
         </Modal>
       )}
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6 text-sm">
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1">
             <input
@@ -356,7 +356,8 @@ export default function MenuItemsPage() {
           </div>
         </div>
 
-        {Object.entries(itemsByCategory).length === 0 ? (
+        {menuItems.items.length > 0 &&
+        Object.entries(itemsByCategory).length === 0 ? (
           <Card showButton={false}>
             <div className="text-center py-8">
               <p className="text-gray-500">
@@ -412,17 +413,17 @@ export default function MenuItemsPage() {
         )}
 
         {menuItems.items.length === 0 && !isLoading && (
-          <Card>
-            <div className="text-center py-8">
-              <h2 className="text-xl font-medium mb-2">No Menu Items Found</h2>
-              <p className="text-gray-600 mb-6">
-                You haven&apos;t imported any menu items from Square yet.
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`No Menu Items Found.
+                You haven't imported any menu items from Square yet.`}
               </p>
               <a
                 href="https://squareup.com/dashboard/items/library"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition"
               >
                 Manage Items in Square
               </a>
