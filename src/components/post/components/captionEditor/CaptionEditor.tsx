@@ -10,17 +10,18 @@ import { PostEditorMode } from "@/types/post";
 import { PlatformCaption } from "./PlatformCaption";
 
 export default function CaptionEditor() {
-  const { mode } = usePostEditorContext();
-  const isCreating = mode === PostEditorMode.CREATE;
+  const { mode, captionGenerationSettings } = usePostEditorContext();
+  const enableAI =
+    mode === PostEditorMode.CREATE && captionGenerationSettings.method === "ai";
 
   const [activeSegment, setActiveSegment] = useState<
     "suggestedCaptions" | "platformCaption"
-  >(isCreating ? "suggestedCaptions" : "platformCaption");
+  >(enableAI ? "suggestedCaptions" : "platformCaption");
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-full">
-        {isCreating && (
+        {enableAI && (
           <SuggestedCaptions
             isExpanded={activeSegment === "suggestedCaptions"}
             setActiveSegment={setActiveSegment}
