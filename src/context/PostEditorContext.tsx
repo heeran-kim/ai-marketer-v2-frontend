@@ -107,6 +107,8 @@ export const PostEditorProvider = ({
 
   const [mode, setMode] = useState<PostEditorMode | null>(null);
 
+  const [selectedAspectRatio, setAspectRatio] = useState("4/5");
+
   const [captionGenerationInfo, setCaptionGenerationInfo] =
     useState<CaptionGenerationInfo>(RESET_CAPTION_GENERATION_INFO);
   const [menuItems, setMenuItems] = useState<Record<string, string>>({});
@@ -217,6 +219,7 @@ export const PostEditorProvider = ({
     if (!postCreateFormData) return;
 
     setUploadedImageUrl(selectedPost.image);
+    setAspectRatio(selectedPost.aspectRatio);
 
     setPlatformStates([
       {
@@ -440,6 +443,10 @@ export const PostEditorProvider = ({
           formData.append("promotion", promoData.id);
         }
 
+        if(selectedAspectRatio){
+          formData.append("aspect_ratio", selectedAspectRatio);
+        }
+
         // Send the request to create the post
         try{
         const response = await apiClient.post(POSTS_API.LIST, formData, {}, true);
@@ -561,6 +568,8 @@ export const PostEditorProvider = ({
         fetchCaptionSuggestions,
         createPost,
         updatePost,
+        selectedAspectRatio,
+        setAspectRatio,
       }}
     >
       {children}
