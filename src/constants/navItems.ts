@@ -59,16 +59,24 @@ export const NAV_ITEMS: NavItem[] = [
         href: "/settings/general",
       },
       {
-        name: "Upload Sales Data",
-        href: "/settings/sales",
-      },
-      {
         name: "Link Social Accounts",
         href: "/settings/social",
       },
       {
         name: "Account Settings",
         href: "/settings/account",
+      },
+      {
+        name: "Link Square Account",
+        href: "/settings/square",
+      },
+      {
+        name: "Manage Sales Data",
+        href: "/settings/sales",
+      },
+      {
+        name: "Manage Menu Items",
+        href: "/settings/items",
       },
     ],
   },

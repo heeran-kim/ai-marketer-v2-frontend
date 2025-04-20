@@ -22,6 +22,7 @@ import {
   TimeScale,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
+import { actionIcons, spinner } from "@/utils/icon";
 
 ChartJS.register(
   CategoryScale,
@@ -38,7 +39,7 @@ ChartJS.register(
 export default function SalesDataUpload() {
   const [isMobile, setIsMobile] = useState(false);
   const [salesFile, setSalesFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
   const { showNotification } = useNotification();
   const { data, isLoading, mutate } = useFetchData<SalesDailyRevenue>(
@@ -59,6 +60,23 @@ export default function SalesDataUpload() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleRefresh = async () => {
+    if (data?.squareConnected) {
+      setIsProcessing(true);
+      try {
+        // Fetch data from Square and update the database
+        await apiClient.post(SETTINGS_API.SALES_REFRESH, {});
+        await mutate();
+        showNotification("success", "Sales data refreshed from Square.");
+      } catch (err) {
+        console.error("Error refreshing data from Square:", err);
+        showNotification("error", "Failed to refresh data from Square.");
+      } finally {
+        setIsProcessing(false);
+      }
+    }
+  };
 
   const formattedChartData = useMemo(() => {
     if (!data || !data.labels || data.labels.length === 0) {
@@ -117,26 +135,30 @@ export default function SalesDataUpload() {
   }, [data]);
 
   const chartOptions = useMemo(() => {
+    if (!data || !data.labels || data.labels.length == 0) return;
+
     const today = new Date();
     const displayDays = isMobile ? 7 : 30;
 
     let minDate;
 
-    if (data && data.labels && data.labels.length > 0) {
-      const firstLabelParts = data.labels[0].split("-");
-      const firstDataDate = new Date(
-        parseInt(firstLabelParts[2]),
-        parseInt(firstLabelParts[1]) - 1,
-        parseInt(firstLabelParts[0])
-      );
+    const firstLabelParts = data.labels[0].split("-");
+    const firstDataDate = new Date(
+      parseInt(firstLabelParts[2]),
+      parseInt(firstLabelParts[1]) - 1,
+      parseInt(firstLabelParts[0])
+    );
 
-      const limitDate = new Date();
-      limitDate.setDate(today.getDate() - displayDays);
+    const limitDate = new Date();
+    limitDate.setDate(today.getDate() - displayDays);
 
-      minDate = firstDataDate > limitDate ? firstDataDate : limitDate;
-    } else {
-      minDate = new Date();
-      minDate.setDate(today.getDate() - displayDays);
+    minDate = firstDataDate > limitDate ? firstDataDate : limitDate;
+
+    // Ensure that the chart will always show at least 7 days
+    const minRequiredDate = new Date(today);
+    minRequiredDate.setDate(today.getDate() - 7);
+    if (minDate > minRequiredDate) {
+      minDate = minRequiredDate;
     }
 
     return {
@@ -198,7 +220,7 @@ export default function SalesDataUpload() {
       return;
     }
 
-    setIsUploading(true);
+    setIsProcessing(true);
     const formData = new FormData();
     formData.append("file", salesFile);
     try {
@@ -220,7 +242,7 @@ export default function SalesDataUpload() {
         setError("Unknown error occurred");
       }
     } finally {
-      setIsUploading(false);
+      setIsProcessing(false);
     }
   };
 
@@ -234,8 +256,19 @@ export default function SalesDataUpload() {
             : "the earliest available data (up to 30 days)"
         }`}
         showButton={false}
+        actionSlot={
+          data?.squareConnected && (
+            <button
+              onClick={handleRefresh}
+              disabled={isProcessing}
+              className="relative"
+            >
+              {isProcessing ? spinner : actionIcons.refresh}
+            </button>
+          )
+        }
       >
-        <div className="h-64 w-full">
+        <div className="h-64 w-full text-sm">
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
               <p>Loading chart data...</p>
@@ -244,8 +277,10 @@ export default function SalesDataUpload() {
             <Line options={chartOptions} data={formattedChartData} />
           ) : (
             <div className="flex justify-center items-center h-full text-gray-500">
-              <p>
-                No sales data available. Upload a file to see your sales chart.
+              <p className="whitespace-pre-line text-center">
+                {`No sales data available.
+                Please connect Square or upload a file
+                to see your sales chart.`}
               </p>
             </div>
           )}
@@ -256,9 +291,9 @@ export default function SalesDataUpload() {
         title="Upload Sales Data"
         description="Upload CSV file with Date and Total Amount columns"
         restriction="Supported format: CSV"
-        buttonText={isUploading ? "Uploading..." : "Upload File"}
+        buttonText={isProcessing ? "Uploading..." : "Upload File"}
         onClick={handleSaveFile}
-        buttonDisabled={isUploading || !salesFile}
+        buttonDisabled={isProcessing || !salesFile}
       >
         <DragAndDropUploader onChange={handleFileChange} fileType="data" />
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}

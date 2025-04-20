@@ -13,6 +13,7 @@ interface CardProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   buttonDisabled?: boolean;
   buttonLoading?: boolean;
+  actionSlot?: ReactNode;
 }
 
 export default function Card({
@@ -26,21 +27,25 @@ export default function Card({
   onClick,
   buttonDisabled = false,
   buttonLoading = false,
+  actionSlot,
 }: CardProps) {
   return (
     <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-600 rounded-lg shadow-md space-y-4">
       <div className="p-6">
-        <div className="space-y-2">
-          {title && (
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-              {title}
-            </h2>
-          )}
-          {description && (
-            <div className="text-gray-600 text-sm dark:text-gray-400">
-              {description}
-            </div>
-          )}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            {title && (
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                {title}
+              </h2>
+            )}
+            {description && (
+              <div className="text-gray-600 text-sm dark:text-gray-400">
+                {description}
+              </div>
+            )}
+          </div>
+          {actionSlot && <div>{actionSlot}</div>}
         </div>
 
         <div className="mt-4">{children}</div>
