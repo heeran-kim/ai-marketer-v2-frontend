@@ -154,7 +154,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             alt="Thumbnail"
             width={200}
             height={200}
-            className={`aspect-[${(item as Post).aspectRatio}] mx-auto object-cover ${
+            className={`w-[200px] h-${(item as Post).aspectRatio === "1/1"?"[200px]":"auto"} aspect-[${(item as Post).aspectRatio}] mx-auto object-cover ${
               isMobileLayout ? "rounded-t-lg" : "rounded-l-lg"
             }`} // Added aspect ratio for better image handling. But need to update it to get saved aspect ratio from db. Should we?
             priority // Added priority to optimize LCP
