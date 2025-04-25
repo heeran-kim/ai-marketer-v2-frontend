@@ -223,6 +223,7 @@ export default function SalesDataUpload() {
     setIsProcessing(true);
     const formData = new FormData();
     formData.append("file", salesFile);
+    setError("");
     try {
       await apiClient.post(SETTINGS_API.SALES, formData, {}, true);
       await mutate();
