@@ -154,9 +154,13 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
             alt="Thumbnail"
             width={200}
             height={200}
-            className={`w-[200px] h-${(item as Post).aspectRatio === "1/1"?"[200px]":"auto"} aspect-[${(item as Post).aspectRatio}] mx-auto object-cover ${
-              isMobileLayout ? "rounded-t-lg" : "rounded-l-lg"
-            }`} // Added aspect ratio for better image handling. But need to update it to get saved aspect ratio from db. Should we?
+            className={`w-[200px] ${
+              (item as Post).aspectRatio === "1/1"
+                ? "h-[200px] aspect-[1/1]"
+                : (item as Post).aspectRatio === "4/5"
+                ? "h-auto aspect-[4/5]"
+                : "h-auto aspect-[1/1]" // fallback
+            } mx-auto object-cover `}// Added aspect ratio for better image handling. But need to update it to get saved aspect ratio from db. Should we?
             priority // Added priority to optimize LCP
           />
         </div>

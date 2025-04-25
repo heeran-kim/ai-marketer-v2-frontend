@@ -89,6 +89,7 @@ export default function DragAndDropUploader({
     noDragEventsBubbling: true, // Prevents drag events from bubbling up to parent elements
   });
 
+
   return (
     <div
       {...getRootProps()}
@@ -97,7 +98,7 @@ export default function DragAndDropUploader({
                   fileType === "logo"
                     ? "w-24 h-24 rounded-full aspect-square border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900"
                     : fileType === "image"
-                    ? `max-w-xs aspect-[${aspectRatio}] border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800`
+                    ? `max-w-xs aspect-[${aspectRatio}] border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800`          
                     : "w-full p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
     >
@@ -118,12 +119,12 @@ export default function DragAndDropUploader({
               alt="Uploaded Preview"
               width={200}
               height={200}
-              className={`aspect-[${aspectRatio}] w-full h-full object-cover border border-gray-300
-                                        ${
-                                          fileType === "logo"
-                                            ? "rounded-full"
-                                            : "aspect-[4/5]"
-                                        }`}
+              className={`aspect-[${aspectRatio}]  w-full h-full object-cover border border-gray-300
+                ${
+                  fileType === "logo"
+                    ? "rounded-full"
+                    : "rounded-md"
+                }`}
             />
             <button
               onClick={handleRemove}
