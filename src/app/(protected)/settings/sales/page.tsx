@@ -289,9 +289,9 @@ export default function SalesDataUpload() {
 
       <Card
         title="Upload Sales Data"
-        description="Upload CSV file with Date and Total Amount columns"
-        restriction="Supported format: CSV"
-        buttonText={isProcessing ? "Uploading..." : "Upload File"}
+        description="Upload CSV file with product-level sales data"
+        restriction="Required columns: Date, Product Name, Price, Quantity"
+        buttonText={isProcessing ? "Uploading..." : "Upload"}
         onClick={handleSaveFile}
         buttonDisabled={isProcessing || !salesFile}
       >
