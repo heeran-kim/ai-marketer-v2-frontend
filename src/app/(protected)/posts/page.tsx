@@ -7,8 +7,7 @@ import { useFetchData } from "@/hooks/dataHooks";
 import { POSTS_API } from "@/constants/api";
 import { PostDto } from "@/types/dto";
 import { mapPostDtoToPost } from "@/utils/transformers";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+
 
 export default function PostsDashboard() {
 

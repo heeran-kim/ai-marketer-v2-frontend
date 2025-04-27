@@ -120,7 +120,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       }
     };
 
-      const [comments, setComments] = useState<string[]>([
+      const [comments] = useState<string[]>([
         "Great post!",
         "I really enjoyed reading this.",
         "Thanks for sharing this information.",
