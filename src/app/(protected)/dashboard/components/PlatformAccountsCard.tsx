@@ -9,7 +9,6 @@ interface Props {
 
 export const PlatformAccountsCard = ({ platforms }: Props) => {
   const router = useRouter();
-  if (!platforms || platforms.length === 0) return null;
 
   return (
     <div
