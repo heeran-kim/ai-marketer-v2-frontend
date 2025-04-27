@@ -6,7 +6,12 @@ import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Card } from "@/components/common";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import { SETTINGS_API } from "@/constants/api";
-import { SalesDailyRevenue } from "@/types/sales";
+import {
+  SalesDailyRevenue,
+  ChartData,
+  SalesDataResponse,
+  ProductPerformance,
+} from "@/types/sales";
 import { useNotification } from "@/context/NotificationContext";
 import { Line } from "react-chartjs-2";
 import {
@@ -36,13 +41,17 @@ ChartJS.register(
   TimeScale
 );
 
+// Tab type definition
+type ChartTab = "overall" | "top" | "bottom";
+
 export default function SalesDataUpload() {
   const [isMobile, setIsMobile] = useState(false);
   const [salesFile, setSalesFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<ChartTab>("overall");
   const { showNotification } = useNotification();
-  const { data, isLoading, mutate } = useFetchData<SalesDailyRevenue>(
+  const { data, isLoading, mutate } = useFetchData<SalesDataResponse>(
     SETTINGS_API.SALES
   );
 
@@ -62,7 +71,7 @@ export default function SalesDataUpload() {
   }, []);
 
   const handleRefresh = async () => {
-    if (data?.squareConnected) {
+    if (data?.overallSales?.squareConnected) {
       setIsProcessing(true);
       try {
         // Fetch data from Square and update the database
@@ -78,87 +87,37 @@ export default function SalesDataUpload() {
     }
   };
 
-  const formattedChartData = useMemo(() => {
-    if (!data || !data.labels || data.labels.length === 0) {
+  const formatChartData = (chartData: SalesDailyRevenue | ChartData | null) => {
+    if (!chartData || !chartData.labels || chartData.labels.length === 0) {
       return {
-        datasets: [
-          {
-            label: "Sales",
-            data: [],
-            borderColor: "rgb(94, 53, 177)",
-            backgroundColor: "rgba(94, 53, 177, 0.3)",
-            fill: true,
-          },
-        ],
+        datasets: [],
       };
     }
 
-    const chartData = data.labels.map((label, index) => {
-      const parts = label.split("-");
-      const date = new Date(
-        parseInt(parts[2]),
-        parseInt(parts[1]) - 1,
-        parseInt(parts[0])
-      );
+    const slicedLabels = isMobile
+      ? chartData.labels.slice(-7)
+      : chartData.labels;
 
+    const slicedDatasets = chartData.datasets.map((dataset) => {
+      const slicedData = isMobile ? dataset.data.slice(-7) : dataset.data;
       return {
-        x: date.toISOString(),
-        y: data.datasets[0].data[index],
+        ...dataset,
+        data: slicedData,
       };
     });
-
-    const today = new Date();
-
-    const hasToday = chartData.some((point) => {
-      const pointDate = new Date(point.x);
-      return pointDate.toDateString() === today.toDateString();
-    });
-
-    if (!hasToday) {
-      chartData.push({
-        x: today.toISOString(),
-        y: null as unknown as number,
-      });
-    }
 
     return {
-      datasets: [
-        {
-          label: "Sales",
-          data: chartData,
-          borderColor: "rgb(94, 53, 177)",
-          backgroundColor: "rgba(94, 53, 177, 0.3)",
-          fill: true,
-        },
-      ],
+      labels: slicedLabels,
+      datasets: slicedDatasets,
     };
-  }, [data]);
+  };
 
   const chartOptions = useMemo(() => {
-    if (!data || !data.labels || data.labels.length == 0) return;
-
-    const today = new Date();
-    const displayDays = isMobile ? 7 : 30;
-
-    let minDate;
-
-    const firstLabelParts = data.labels[0].split("-");
-    const firstDataDate = new Date(
-      parseInt(firstLabelParts[2]),
-      parseInt(firstLabelParts[1]) - 1,
-      parseInt(firstLabelParts[0])
-    );
-
-    const limitDate = new Date();
-    limitDate.setDate(today.getDate() - displayDays);
-
-    minDate = firstDataDate > limitDate ? firstDataDate : limitDate;
-
-    // Ensure that the chart will always show at least 7 days
-    const minRequiredDate = new Date(today);
-    minRequiredDate.setDate(today.getDate() - 7);
-    if (minDate > minRequiredDate) {
-      minDate = minRequiredDate;
+    let chartTitle = "Sales Overview";
+    if (activeTab === "top") {
+      chartTitle = "Top 3 Best-Selling Products";
+    } else if (activeTab === "bottom") {
+      chartTitle = "Bottom 3 Least-Selling Products";
     }
 
     return {
@@ -166,18 +125,13 @@ export default function SalesDataUpload() {
       maintainAspectRatio: false,
       scales: {
         x: {
-          type: "time" as const,
-          time: {
-            unit: "day" as const,
-            displayFormats: {
-              day: isMobile ? "d" : "d MMM",
+          ticks: {
+            font: {
+              size: isMobile ? 10 : 12,
             },
-            tooltipFormat: "PP",
           },
-          min: minDate.toISOString(),
-          max: today.toISOString(),
           title: {
-            display: !isMobile,
+            display: true,
             text: "Date",
           },
         },
@@ -194,20 +148,97 @@ export default function SalesDataUpload() {
               size: 11,
             },
           },
+          title: {
+            display: true,
+            text: "Revenue ($)",
+          },
         },
       },
       plugins: {
         legend: {
           position: "top" as const,
-          display: !isMobile,
+          display: !isMobile && activeTab !== "overall",
         },
         title: {
           display: true,
-          text: isMobile ? "Last 7 Days" : "Last 30 Days Sales Data",
+          text: chartTitle,
         },
       },
     };
-  }, [data, isMobile]);
+  }, [activeTab, isMobile]);
+
+  const getActiveChartData = () => {
+    if (!data) return null;
+
+    switch (activeTab) {
+      case "top":
+        return data.topProducts?.chart;
+      case "bottom":
+        return data.bottomProducts?.chart;
+      case "overall":
+      default:
+        return data.overallSales;
+    }
+  };
+
+  const renderProductList = (products: ProductPerformance[] | undefined) => {
+    if (!products || products.length === 0) return null;
+
+    return (
+      <div className="mt-6 mb-4 pt-4 border-t border-gray-200">
+        <h3 className="text-sm font-medium mb-3 text-gray-700">
+          {activeTab === "top"
+            ? "Top 3 Best-Selling Products (Last 30 days)"
+            : "Bottom 3 Least-Selling Products (Last 30 days)"}
+        </h3>
+        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+          <table className="min-w-full divide-y divide-gray-200 text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Product
+                </th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Revenue
+                </th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Units
+                </th>
+                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Avg. Price
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {products.map((product, index) => (
+                <tr
+                  key={index}
+                  className={
+                    index % 2 === 0
+                      ? "bg-white"
+                      : "bg-gray-50 hover:bg-gray-100"
+                  }
+                >
+                  <td className="px-4 py-2 whitespace-nowrap font-medium text-gray-900">
+                    {product.productName || "Unknown"}
+                  </td>
+                  <td className="px-4 py-2 text-right whitespace-nowrap text-gray-700">
+                    ${Number(product.totalRevenue).toFixed(2)}
+                  </td>
+                  <td className="px-4 py-2 text-right whitespace-nowrap text-gray-700">
+                    {product.totalUnits}
+                  </td>
+                  <td className="px-4 py-2 text-right whitespace-nowrap text-gray-700">
+                    ${Number(product.averagePrice).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
 
   const handleFileChange = (file: File | null) => {
     setSalesFile(file);
@@ -223,6 +254,7 @@ export default function SalesDataUpload() {
     setIsProcessing(true);
     const formData = new FormData();
     formData.append("file", salesFile);
+    setError("");
     try {
       await apiClient.post(SETTINGS_API.SALES, formData, {}, true);
       await mutate();
@@ -249,49 +281,100 @@ export default function SalesDataUpload() {
   return (
     <div className="max-w-xs sm:max-w-3xl mx-auto space-y-6">
       <Card
-        title="Recent Sales Data"
-        description={`Displaying sales data from ${
-          isMobile
-            ? "the last 7 days"
-            : "the earliest available data (up to 30 days)"
+        title="Sales Data Analysis"
+        description={`View your sales performance and ${
+          activeTab === "overall"
+            ? "overall revenue trends"
+            : activeTab === "top"
+            ? "top 3 best-selling products"
+            : "3 lowest-performing products"
         }`}
         showButton={false}
         actionSlot={
-          data?.squareConnected && (
+          data?.overallSales?.squareConnected && (
             <button
               onClick={handleRefresh}
               disabled={isProcessing}
               className="relative"
+              title="Refresh data from Square"
             >
               {isProcessing ? spinner : actionIcons.refresh}
             </button>
           )
         }
       >
-        <div className="h-64 w-full text-sm">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <p>Loading chart data...</p>
-            </div>
-          ) : data && data.labels.length > 0 ? (
-            <Line options={chartOptions} data={formattedChartData} />
-          ) : (
-            <div className="flex justify-center items-center h-full text-gray-500">
-              <p className="whitespace-pre-line text-center">
-                {`No sales data available.
+        {/* Tab navigation */}
+        <div className="flex border-b border-gray-200 mb-4">
+          <button
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === "overall"
+                ? "border-b-2 border-purple-500 text-purple-600"
+                : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+            onClick={() => setActiveTab("overall")}
+          >
+            Overall
+          </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === "top"
+                ? "border-b-2 border-purple-500 text-purple-600"
+                : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+            onClick={() => setActiveTab("top")}
+          >
+            Top Products
+          </button>
+          <button
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === "bottom"
+                ? "border-b-2 border-purple-500 text-purple-600"
+                : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+            onClick={() => setActiveTab("bottom")}
+          >
+            Bottom Products
+          </button>
+        </div>
+
+        <div className="w-full text-sm">
+          <div className="h-64">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-full">
+                <p>Loading chart data...</p>
+              </div>
+            ) : data ? (
+              <Line
+                options={chartOptions}
+                data={formatChartData(getActiveChartData())}
+              />
+            ) : (
+              <div className="flex justify-center items-center h-full text-gray-500">
+                <p className="whitespace-pre-line text-center">
+                  {`No sales data available.
                 Please connect Square or upload a file
                 to see your sales chart.`}
-              </p>
-            </div>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {data && !isLoading && (
+            <>
+              {activeTab === "top" &&
+                renderProductList(data.topProducts?.summary)}
+              {activeTab === "bottom" &&
+                renderProductList(data.bottomProducts?.summary)}
+            </>
           )}
         </div>
       </Card>
 
       <Card
         title="Upload Sales Data"
-        description="Upload CSV file with Date and Total Amount columns"
-        restriction="Supported format: CSV"
-        buttonText={isProcessing ? "Uploading..." : "Upload File"}
+        description="Upload CSV file with product-level sales data"
+        restriction="Required columns: Date, Product Name, Price, Quantity"
+        buttonText={isProcessing ? "Uploading..." : "Upload"}
         onClick={handleSaveFile}
         buttonDisabled={isProcessing || !salesFile}
       >
