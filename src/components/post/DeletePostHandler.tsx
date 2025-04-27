@@ -55,10 +55,11 @@ export const DeletePostHandler = ({
       onSuccess("Post deleted successfully!");
       // Trigger global SWR revalidation
       await mutate(POSTS_API.LIST);
-    } catch (error) {
-      console.error("Error deleting post:", error);
+    } catch (error: any) {
+      const parsed = JSON.parse(error.message); // parse the string into an object
+      //console.error("Error deleting post:", parsed.data?.message);
       if (onError) {
-        onError("Failed to delete post. Please try again.");
+        onError(`Failed to delete post. ${parsed.data?.message}.`);
       }
     } finally {
       setIsLoading(false);

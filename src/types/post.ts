@@ -14,6 +14,7 @@ export interface Post {
   image: string; // URL of the attached image
   aspectRatio: string; // Aspect ratio of the image (e.g., "4/5")
   link: string; // Link to the post on the platform
+  postId: string
   createdAt: string; // ISO timestamp of when the post was created
   postedAt: string; // ISO timestamp of when the post was published
   scheduledAt: string; // ISO timestamp of when the post is scheduled

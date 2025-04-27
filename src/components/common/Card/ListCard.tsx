@@ -11,6 +11,7 @@ import { Post, PostReview } from "@/types/post";
 import { toLocalTime } from "@/utils/date";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PLATFORM_SCHEDULE_OPTIONS, ScheduleType } from "@/constants/posts";
+import CommentModal from "@/components/post/CommentModal";
 
 interface ListCardProps {
   item: Post | PostReview;
@@ -119,6 +120,19 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       }
     };
 
+      const [comments, setComments] = useState<string[]>([
+        "Great post!",
+        "I really enjoyed reading this.",
+        "Thanks for sharing this information.",
+      ]);
+
+    const [commentsOpen,setCommentsOpen] = useState(false);
+
+    const handleCommentModal = () => {
+      setCommentsOpen(!commentsOpen);
+      //window.location.href = `/posts?mode=comments&postId=${(item as Post).postId}`;  // Replace with the desired URL
+    };
+
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newDate = e.target.value;
       setDate(newDate);
@@ -138,6 +152,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         className={`relative bg-white rounded-lg shadow-md border
                 ${isMobileLayout ? "flex flex-col m-4" : "flex flex-row h-72"}`}
       >
+        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} />
         {actions && (
           <div className="absolute top-2 right-2 z-10">
             <ActionDropdown actions={actions} />
@@ -252,7 +267,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                   <span>👍❤️ </span>
                   <span>{(item as Post).reactions || 0}</span>
                 </div>
-                <span>💬 {(item as Post).comments || 0}</span>
+                <button onClick={handleCommentModal}>💬 {(item as Post).comments || 0}</button>
               </>
             )}
           </div>
