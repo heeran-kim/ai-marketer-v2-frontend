@@ -96,9 +96,9 @@ export default function EmailLoginPage() {
             setErrors({ server: errorMessage });
 
             if(errorMessage==="Requires 2FA Code.")  //Push client to the 2FA Page
-            {
                 setRequires2FA(true);
-            }
+            else
+                router.push("/dashboard");
         } finally {
             setIsLoading(false);
         }

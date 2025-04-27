@@ -150,7 +150,7 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
-
+      {isLoading&&'Loading...'}
       <PostList
         posts={slicedPosts}
         actionsBuilder={(post) => {
