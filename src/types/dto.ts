@@ -27,8 +27,8 @@ export interface PostEditorConfigDto {
   business: {
     targetCustomers: string; // Description of the target customers
     vibe: string; // Business vibe or tone
-    items?: { name: string; description: string; price: string }[]; // Optional list of items with name and description
-    hasPOSIntegration: boolean; // Indicates if POS integration is available
+    items?: Record<string, string>; // Optional list of items with name and description
+    squareConnected: boolean; // Indicates if POS integration is available
     hasSalesData: boolean; // Indicates if sales data is available
   };
   selectableCategories: SelectableCategory[]; // List of categories that can be selected
@@ -36,4 +36,9 @@ export interface PostEditorConfigDto {
     key: string; // Unique key for the platform
     label: string; // Display label for the platform
   }[]; // List of linked platforms
+}
+
+export interface SquareStatusDto {
+  squareConnected: boolean; // Indicates if the Square account is linked
+  businessName: string | null; // Name of the linked business
 }

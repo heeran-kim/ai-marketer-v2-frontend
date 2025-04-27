@@ -184,23 +184,17 @@ export const PostEditorProvider = ({
       setPlatformSchedule(platformSchedule);
     }
 
-    if (postCreateFormData.business.hasPOSIntegration) {
+    if (postCreateFormData.business.squareConnected) {
       setCaptionGenerationSettings({
         ...captionGenerationSettings,
-        includeItemDescription: postCreateFormData.business.items?.length
+        includeItemDescription: postCreateFormData.business.items
           ? true
           : false,
         includeSalesData: postCreateFormData.business.hasSalesData,
       });
-
-      const itemsRecord = (postCreateFormData.business.items || []).reduce(
-        (acc, item) => {
-          acc[item.name.toLowerCase()] = `[${item.price}] ${item.description}`;
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-      setMenuItems(itemsRecord);
+      if (postCreateFormData.business.items) {
+        setMenuItems(postCreateFormData.business.items);
+      }
     }
 
     if (promoData) {
