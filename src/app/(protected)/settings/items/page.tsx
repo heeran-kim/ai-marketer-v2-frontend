@@ -229,6 +229,7 @@ export default function MenuItemsPage() {
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, name: e.target.value })
                   }
+                  disabled={true}
                 />
               </div>
 

@@ -142,7 +142,7 @@ export default function DragAndDropUploader({
           </div>
         ) : (
           <div className="flex items-center justify-between w-full">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[calc(100%-2rem)]">
               {uploadedFile?.name || "Uploaded File"}
             </p>
             <button

@@ -72,7 +72,7 @@ export default function Select({
       {isOpen && (
         <ul
           className="
-                    absolute left-0 mt-2 w-full border rounded-md shadow-lg z-10 overflow-hidden
+                    absolute left-0 mt-2 w-full border rounded-md shadow-lg z-50 overflow-hidden
                     dark:bg-black dark:border-gray-700 dark:text-white dark:shadow-gray-900
                     bg-white border-gray-300 text-gray-900 shadow-gray-200
                     animate-fade-in"
