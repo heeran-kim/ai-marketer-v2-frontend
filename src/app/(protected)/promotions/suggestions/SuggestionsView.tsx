@@ -6,14 +6,14 @@ import SuggestionCard from "./SuggestionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 
 import { useNotification } from "@/context/NotificationContext";
-import { DateRangeModal, ErrorFallback } from "@/components/common";
+import { DateRangeModal, ErrorFallback, Card } from "@/components/common";
 
 import { apiClient, useFetchData } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { PROMOTIONS_API } from "@/constants/api";
-import { PromotionSuggestion } from "@/types/promotion";
 
-import { Promotion } from "@/types/promotion";
+import { Promotion, PromotionSuggestion } from "@/types/promotion";
+import { PromotionSuggestionsDto } from "@/types/dto";
 
 const SuggestionsView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,14 +25,12 @@ const SuggestionsView = () => {
 
   const router = useRouter();
 
-  const {
-    data: suggestions,
-    mutate,
-    error,
-  } = useFetchData<PromotionSuggestion[]>(PROMOTIONS_API.LIST("suggestions"));
+  const { data, mutate, error } = useFetchData<PromotionSuggestionsDto>(
+    PROMOTIONS_API.LIST("suggestions")
+  );
 
   // Show loading UI
-  if (suggestions === undefined) {
+  if (data === undefined) {
     return (
       <div className="flex flex-col justify-center items-center h-64">
         <p className="text-gray-500">Loading...</p>
@@ -54,6 +52,8 @@ const SuggestionsView = () => {
       />
     );
   }
+
+  const { hasSalesData, suggestions } = data;
 
   const handleCreate = async (startDate: string, endDate: string | null) => {
     const suggestion = suggestions.find(
@@ -126,7 +126,56 @@ const SuggestionsView = () => {
       />
 
       <div className="space-y-4 mt-2">
-        {filteredSuggestions.map((suggestion: PromotionSuggestion) => (
+        {!hasSalesData && (
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`No sales data available.
+                Please connect Square or upload a file first
+                to generate promotion suggestions.`}
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition flex items-center"
+                  onClick={() => router.push("/settings/square")}
+                >
+                  Connect Square
+                </button>
+                <button
+                  className="px-4 py-2 bg-white text-black border border-black rounded-md hover:bg-gray-100 transition flex items-center"
+                  onClick={() => router.push("/settings/sales")}
+                >
+                  Upload CSV File
+                </button>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {hasSalesData && suggestions.length === 0 && (
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`You haven't generated any suggestions yet.\nLet AI analyse your data and suggest promotions.`}
+              </p>
+              <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition">
+                Generate Suggestions
+              </button>
+            </div>
+          </Card>
+        )}
+
+        {suggestions.length > 0 && filteredSuggestions?.length === 0 && (
+          <Card showButton={false}>
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-sm">
+                No promotion suggestions found. Try adjusting your filters.
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {filteredSuggestions?.map((suggestion: PromotionSuggestion) => (
           <SuggestionCard
             key={suggestion.id}
             suggestion={suggestion}

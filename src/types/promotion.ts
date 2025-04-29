@@ -20,4 +20,5 @@ export type PromotionSuggestion = {
   title: string;
   description: string;
   categories: { id: string; key: string; label: string }[];
+  hasSalesData: boolean;
 };
