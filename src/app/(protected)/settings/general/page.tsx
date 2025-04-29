@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, DragAndDropUploader, ErrorFallback } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { Business, EMPTY_BUSINESS } from "@/types/business";
+import { Business } from "@/types/business";
 import { INDUSTRY_OPTIONS } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
 
@@ -16,8 +16,7 @@ export default function GeneralSettings() {
     isLoading,
     mutate,
   } = useFetchData<Business>(SETTINGS_API.GENERAL);
-  const [editedBusiness, setEditedBusiness] =
-    useState<Business>(EMPTY_BUSINESS);
+  const [editedBusiness, setEditedBusiness] = useState<Business | null>(null);
   const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const isPredefinedCategory = INDUSTRY_OPTIONS.includes(
@@ -116,6 +115,7 @@ export default function GeneralSettings() {
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
         if (businessData) mutate({ ...businessData, logo: previewUrl }, false);
         showNotification("success", "Logo updated successfully!");
+        await mutate();
       } catch (error) {
         console.error("Error updating logo:", error);
         setEditedBusiness((prev) => ({
@@ -188,6 +188,7 @@ export default function GeneralSettings() {
           fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
         } updated successfully!`
       );
+      await mutate();
     } catch (error) {
       console.error(`Error updating ${fieldName}:`, error);
       showNotification(
@@ -225,6 +226,18 @@ export default function GeneralSettings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {businessData &&
+        Object.values(businessData).every((value) => value === null) && (
+          <div className="p-3 bg-red-100 border border-red-300 text-red-700 text-sm rounded-lg">
+            <strong>Business information is not set!</strong>
+            <br />
+            You must complete the business setup before accessing other
+            features.
+            <br />
+            After setting up, you will be able to use all available features.
+          </div>
+        )}
+
       {/* Business Name */}
       <Card
         id="name"
@@ -263,7 +276,7 @@ export default function GeneralSettings() {
       >
         <div className="space-y-1">
           <DragAndDropUploader
-            value={editedBusiness?.logo || ""}
+            value={editedBusiness?.logo || undefined}
             onChange={handleLogoChange}
             fileType="logo"
           />
