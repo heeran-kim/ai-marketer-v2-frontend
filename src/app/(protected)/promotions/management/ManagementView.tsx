@@ -7,6 +7,7 @@ import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 
 import { useNotification } from "@/context/NotificationContext";
 import {
+  Card,
   ConfirmModal,
   DateRangeModal,
   ErrorFallback,
@@ -200,7 +201,6 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
           title="Select Promotion Date Range"
         />
       )}
-
       {deleteId && (
         <ConfirmModal
           isOpen={true}
@@ -225,6 +225,16 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
       />
 
       <div className="space-y-4 mt-2">
+        {filteredPromotions.length === 0 && (
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`No promotions yet.\nCheck out the Suggestions Tab to get AI-powered ideas\nand create your first promotion!`}
+              </p>
+            </div>
+          </Card>
+        )}
+
         {filteredPromotions.map((promo: Promotion) => (
           <div
             key={promo.id}

@@ -156,11 +156,8 @@ const SuggestionsView = () => {
           <Card showButton={false}>
             <div className="text-center py-8 text-sm">
               <p className="text-gray-600 mb-6 whitespace-pre-line">
-                {`You haven't generated any suggestions yet.\nLet AI analyse your data and suggest promotions.`}
+                {`You haven't generated any suggestions yet.\nClick the 'Generate Suggestions' button above \nto let AI analyse your data and suggest promotions.`}
               </p>
-              <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition">
-                Generate Suggestions
-              </button>
             </div>
           </Card>
         )}

@@ -64,11 +64,7 @@ export const PROMOTIONS_API = {
   CREATE: `${BASE_URL}/promotions/`,
   UPDATE: (id: string) => `${BASE_URL}/promotions/${id}/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
-};
-
-export const SUGGESTIONS_API = {
-  LIST: `${BASE_URL}/suggestions/`,
-  DETAIL: (id: string) => `${BASE_URL}/suggestions/${id}/`,
+  GENERATE: `${BASE_URL}/promotions/generate`,
 };
 
 // AI API Endpoints

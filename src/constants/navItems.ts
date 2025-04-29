@@ -14,9 +14,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/posts",
     header: {
       title: "Posts",
-      createAction: (router) => ({
-        onClick: () => router.push("/posts?mode=create", { scroll: false }),
-      }),
     },
     subPages: [
       {
@@ -51,7 +48,6 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/settings",
     header: {
       title: "Settings",
-      description: "",
     },
     subPages: [
       {
