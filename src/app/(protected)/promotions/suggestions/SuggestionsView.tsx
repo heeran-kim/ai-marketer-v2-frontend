@@ -1,5 +1,4 @@
 // src/app/(protected)/promotions/sugesstions/SuggestionsView.tsx
-
 import React, { useState } from "react";
 
 import SuggestionCard from "./SuggestionCard";
@@ -22,11 +21,12 @@ const SuggestionsView = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [createId, setCreateId] = useState<string | null>(null);
+  const showDismissed = false;
 
   const router = useRouter();
 
   const { data, mutate, error } = useFetchData<PromotionSuggestionsDto>(
-    PROMOTIONS_API.LIST("suggestions")
+    PROMOTIONS_API.LIST("suggestions", showDismissed)
   );
 
   // Show loading UI
@@ -73,6 +73,7 @@ const SuggestionsView = () => {
           description: suggestion.title + ": " + suggestion.description,
           startDate,
           endDate,
+          suggestionId: suggestion.id,
         },
         {},
         false
@@ -90,6 +91,11 @@ const SuggestionsView = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDismiss = async () => {
+    await mutate();
+    showNotification("success", "Suggestion dismissed successfully.");
   };
 
   // Apply filtering based on category and search term
@@ -173,11 +179,19 @@ const SuggestionsView = () => {
         )}
 
         {filteredSuggestions?.map((suggestion: PromotionSuggestion) => (
-          <SuggestionCard
+          <div
             key={suggestion.id}
-            suggestion={suggestion}
-            onCreatePromotion={() => setCreateId(suggestion.id)}
-          />
+            className={suggestion.isDismissed ? "opacity-60" : ""}
+          >
+            {suggestion.isDismissed && (
+              <div className="text-xs text-gray-500 mb-1 italic">Dismissed</div>
+            )}
+            <SuggestionCard
+              suggestion={suggestion}
+              onCreatePromotion={() => setCreateId(suggestion.id)}
+              onDismiss={handleDismiss}
+            />
+          </div>
         ))}
       </div>
     </div>

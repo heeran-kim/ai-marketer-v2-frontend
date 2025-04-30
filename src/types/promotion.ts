@@ -21,4 +21,5 @@ export type PromotionSuggestion = {
   description: string;
   categories: { id: string; key: string; label: string }[];
   hasSalesData: boolean;
+  isDismissed: boolean;
 };
