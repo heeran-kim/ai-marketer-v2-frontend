@@ -218,7 +218,7 @@ export default function EmailLoginPage() {
                     </p>
                     <p>
                         <Link 
-                            href="/forgot-password" 
+                            href="/password/forget" 
                             className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
                         >
                             Forgot your password?

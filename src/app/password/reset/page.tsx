@@ -1,0 +1,162 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
+import { primaryNavItemClass } from "@/components/styles";
+
+export default function ResetPasswordPage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [errors, setErrors] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    
+    // Get uid and token from URL
+    const uid = searchParams.get("uid");
+    const token = searchParams.get("token");
+    
+    useEffect(() => {
+        // Redirect if no uid or token
+        if (!uid || !token) {
+            router.push("/password/forgot");
+        }
+    }, [uid, token, router]);
+    
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setErrors(null);
+        
+        // Validation
+        if (password.length < 6) {
+            setErrors("Password must be at least 6 characters");
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            setErrors("Passwords don't match");
+            return;
+        }
+        
+        setIsLoading(true);
+        
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const response = await fetch(`${apiUrl}/api/users/password/reset/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ 
+                    uid, 
+                    token, 
+                    new_password: password 
+                }),
+                credentials: "include",
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.detail || data.non_field_errors || data.message || "Failed to reset password");
+            }
+            
+            setIsSuccess(true);
+        } catch (error: any) {
+            setErrors(error.message || "An error occurred");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    // If no uid or token, show loading while redirecting
+    if (!uid || !token) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <p>Redirecting...</p>
+            </div>
+        );
+    }
+    
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="w-full max-w-md p-8">
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                    Reset Your Password
+                </h1>
+                
+                {isSuccess ? (
+                    <div className="text-center">
+                        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg">
+                            Password reset successful!
+                        </div>
+                        <p className="mb-6 text-gray-600 dark:text-gray-400">
+                            Your password has been updated. You can now log in with your new password.
+                        </p>
+                        <Link 
+                            href="/login/email"
+                            className={`${primaryNavItemClass} inline-flex justify-center py-3 px-4`}
+                        >
+                            Go to Login
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        <p className="mb-6 text-gray-600 dark:text-gray-400 text-center">
+                            Please enter your new password.
+                        </p>
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <input
+                                    type="password"
+                                    placeholder="New password"
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300 dark:border-gray-600"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            
+                            <div>
+                                <input
+                                    type="password"
+                                    placeholder="Confirm new password"
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300 dark:border-gray-600"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                />
+                            </div>
+                            
+                            {errors && (
+                                <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                                    {errors}
+                                </div>
+                            )}
+                            
+                            <button 
+                                type="submit" 
+                                className={`${primaryNavItemClass} w-full justify-center py-3`}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Updating..." : "Reset Password"}
+                            </button>
+                        </form>
+                    </>
+                )}
+                
+                <div className="mt-6 text-center">
+                    <Link 
+                        href="/login" 
+                        className="inline-flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+                    >
+                        <FaArrowLeft className="mr-2" size={14} />
+                        Back to Login
+                    </Link>
+                </div>
+            </div>
+        </div>
+    );
+}
