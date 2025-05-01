@@ -13,7 +13,7 @@ export interface HeaderProps {
   actionButton?: {
     label: string;
     onClick: () => void;
-    isLoading?: boolean;
+    isDisabled?: boolean;
   };
 }
 

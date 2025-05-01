@@ -24,7 +24,7 @@ export class CircuitBreaker {
     this.options = {
       failureThreshold: 3,
       resetTimeout: 30000, // 30 seconds
-      timeoutDuration: 20000, // 20 seconds
+      timeoutDuration: 5000, // 5 seconds
       ...options,
     };
   }

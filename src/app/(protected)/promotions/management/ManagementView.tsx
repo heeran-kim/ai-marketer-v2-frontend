@@ -5,23 +5,20 @@ import PromotionCard from "./PromotionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 
 import { useNotification } from "@/context/NotificationContext";
-import {
-  Card,
-  ConfirmModal,
-  DateRangeModal,
-  ErrorFallback,
-} from "@/components/common";
+import { Card, ConfirmModal, DateRangeModal } from "@/components/common";
 
-import { useFetchData, apiClient } from "@/hooks/dataHooks";
+import { apiClient } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { PROMOTIONS_API } from "@/constants/api";
 import { Promotion } from "@/types/promotion";
+import { mutate } from "swr";
 
 interface ManagementViewProps {
+  promotions: Promotion[];
   scrollToId: string | null;
 }
 
-const ManagementView = ({ scrollToId }: ManagementViewProps) => {
+const ManagementView = ({ promotions, scrollToId }: ManagementViewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
   const promotionRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -34,11 +31,6 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const {
-    data: promotions,
-    mutate,
-    error,
-  } = useFetchData<Promotion[]>(PROMOTIONS_API.LIST("management", false));
   const router = useRouter();
 
   // Auto-scroll to selected post when navigating from external links
@@ -50,30 +42,6 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
       });
     }
   }, [scrollToId, promotions]);
-
-  // Show loading UI
-  if (promotions === undefined) {
-    return (
-      <div className="flex flex-col justify-center items-center h-64">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
-  }
-
-  // Show error UI if there's an error
-  if (error) {
-    const handleRetry = async () => {
-      await mutate();
-    };
-
-    return (
-      <ErrorFallback
-        message="Failed to load promotion data. Please try again later."
-        onRetry={handleRetry}
-        isProcessing={isLoading}
-      />
-    );
-  }
 
   // Redirects to post creation with promotion context
   const handleCreatePost = (id: string) => {
@@ -102,7 +70,7 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
         {},
         false
       );
-      await mutate();
+      await mutate(PROMOTIONS_API.LIST);
       showNotification("success", "The promotion was successfully edited!");
       setEditId(null);
     } catch (error) {
@@ -133,7 +101,7 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
         {},
         false
       );
-      await mutate();
+      await mutate(PROMOTIONS_API.LIST);
       showNotification("success", "The promotion was successfully duplicated!");
       setDuplicateId(null);
     } catch (error) {
@@ -153,7 +121,7 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
     setIsLoading(true);
     try {
       await apiClient.delete(PROMOTIONS_API.DELETE(deleteId));
-      await mutate();
+      await mutate(PROMOTIONS_API.LIST);
       showNotification("success", "Promotion deleted successfully!");
     } catch (error) {
       console.error("Error deleting promotion:", error);

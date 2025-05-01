@@ -5,55 +5,32 @@ import SuggestionCard from "./SuggestionCard";
 import { PromotionsFilterBar } from "../components/PromotionsFilterBar";
 
 import { useNotification } from "@/context/NotificationContext";
-import { DateRangeModal, ErrorFallback, Card } from "@/components/common";
+import { DateRangeModal, LoadingModal, Card } from "@/components/common";
 
-import { apiClient, useFetchData } from "@/hooks/dataHooks";
+import { apiClient } from "@/hooks/dataHooks";
 import { useRouter } from "next/navigation";
 import { PROMOTIONS_API } from "@/constants/api";
 
 import { Promotion, PromotionSuggestion } from "@/types/promotion";
-import { PromotionSuggestionsDto } from "@/types/dto";
+import { mutate } from "swr";
 
-const SuggestionsView = () => {
+interface SuggestionsViewProps {
+  hasSalesData: boolean;
+  suggestions: PromotionSuggestion[];
+}
+
+const SuggestionsView = ({
+  hasSalesData,
+  suggestions,
+}: SuggestionsViewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [createId, setCreateId] = useState<string | null>(null);
-  const showDismissed = false;
 
   const router = useRouter();
-
-  const { data, mutate, error } = useFetchData<PromotionSuggestionsDto>(
-    PROMOTIONS_API.LIST("suggestions", showDismissed)
-  );
-
-  // Show loading UI
-  if (data === undefined) {
-    return (
-      <div className="flex flex-col justify-center items-center h-64">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    );
-  }
-
-  // Show error UI if there's an error
-  if (error) {
-    const handleRetry = async () => {
-      await mutate();
-    };
-
-    return (
-      <ErrorFallback
-        message="Failed to load promotion suggestions data. Please try again later."
-        onRetry={handleRetry}
-        isProcessing={isLoading}
-      />
-    );
-  }
-
-  const { hasSalesData, suggestions } = data;
 
   const handleCreate = async (startDate: string, endDate: string | null) => {
     const suggestion = suggestions.find(
@@ -78,7 +55,7 @@ const SuggestionsView = () => {
         {},
         false
       );
-      await mutate();
+      await mutate(PROMOTIONS_API.LIST);
       showNotification("success", "Promotion created successfully!");
       setCreateId(null);
       router.push(`/promotions?id=${response.id}`);
@@ -94,7 +71,7 @@ const SuggestionsView = () => {
   };
 
   const handleDismiss = async () => {
-    await mutate();
+    await mutate(PROMOTIONS_API.LIST);
     showNotification("success", "Suggestion dismissed successfully.");
   };
 
@@ -114,6 +91,8 @@ const SuggestionsView = () => {
 
   return (
     <div>
+      <LoadingModal isOpen={isLoading} message="Generating promotion..." />
+
       {createId && (
         <DateRangeModal
           isOpen={true}
