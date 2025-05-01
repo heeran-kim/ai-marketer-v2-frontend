@@ -10,8 +10,11 @@ export interface Action {
 
 export interface HeaderProps {
   title: string;
-  description?: string;
-  moreActions?: (router: AppRouterInstance) => Action[] | null;
+  actionButton?: {
+    label: string;
+    onClick: () => void;
+    isLoading?: boolean;
+  };
 }
 
 export interface SubPage {
