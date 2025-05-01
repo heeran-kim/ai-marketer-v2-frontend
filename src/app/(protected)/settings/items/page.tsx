@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CategoryChipList,
@@ -10,6 +10,7 @@ import {
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { SETTINGS_API } from "@/constants/api";
 import { useNotification } from "@/context/NotificationContext";
+import { useSearchParams } from "next/navigation";
 
 // Define types for menu items from Square
 interface SquareItemVariation {
@@ -52,6 +53,13 @@ export default function MenuItemsPage() {
   const [filter, setFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [isSaving, setIsSaving] = useState(false);
+  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(
+    null
+  );
+
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const searchParams = useSearchParams();
+  const productParam = searchParams.get("product");
 
   const { showNotification } = useNotification();
 
@@ -89,6 +97,69 @@ export default function MenuItemsPage() {
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!data?.squareConnected) return;
+    if (data) {
+      // Process the data to match items with their category names
+      const processedItems = data.items.map((item) => {
+        const categoryIds = item.categories || [];
+        const categoryNames = categoryIds.map((id) => {
+          const category = data.categories.find((cat) => cat.id === id);
+          return category?.name || "Uncategorized";
+        });
+        if (categoryNames.length === 0) {
+          categoryNames.push("Uncategorized");
+        }
+
+        return {
+          ...item,
+          category_names: categoryNames,
+          category_name: categoryNames[0] || "Uncategorized",
+        };
+      });
+
+      setMenuItems({
+        items: processedItems,
+        categories: data.categories,
+      });
+
+      // If product param exists, find the matching item and scroll to it
+      if (productParam) {
+        // Delay to ensure DOM is updated
+        setTimeout(() => {
+          // Find the item that matches the product name (case-insensitive)
+          const foundItem = processedItems.find(
+            (item) => item.name.toLowerCase() === productParam.toLowerCase()
+          );
+
+          if (foundItem) {
+            setHighlightedItemId(foundItem.id);
+            setFilter(productParam); // Set the filter to show only this product
+          }
+        }, 100);
+      }
+    }
+  }, [data, productParam]);
+
+  useEffect(() => {
+    if (highlightedItemId && itemRefs.current[highlightedItemId]) {
+      // Wait for the DOM to update, then scroll
+      setTimeout(() => {
+        itemRefs.current[highlightedItemId]?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 300);
+
+      // Clear the highlight after a few seconds
+      const timer = setTimeout(() => {
+        setHighlightedItemId(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedItemId]);
 
   // Filter items based on search and category
   const filteredItems = menuItems.items.filter((item) => {

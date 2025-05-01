@@ -7,6 +7,7 @@ export { default as Select } from "./Select";
 export { default as StatusIcon } from "./StatusIcon";
 export { ErrorFallback } from "./ErrorFallback";
 export { default as CategoryChipList } from "./CategoryChipList";
+export { default as ProductChipList } from "./ProductChipList";
 
 export { default as ActionDropdown } from "./Card/ActionDropdown";
 export { default as Card } from "./Card/Card";
