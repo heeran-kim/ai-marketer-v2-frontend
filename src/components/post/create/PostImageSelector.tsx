@@ -1,73 +1,111 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import DragAndDropUploader from "@/components/common/DragAndDropUploader";
 import { CompactCard } from "@/components/common";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { apiClient } from "@/hooks/dataHooks";
-import { ImageAnalysisResponse, PostEditorMode } from "@/types/post";
+import { ImageAnalysisResponse } from "@/types/post";
 import { AI_API } from "@/constants/api";
 
 export const PostImageSelector = () => {
   const {
-    mode,
     uploadedImageUrl,
-    image,
-    setImage,
-    detectedItems,
-    setDetectedItems,
+    captionGenerationInfo,
+    setCaptionGenerationInfo,
+    captionGenerationSettings,
   } = usePostEditorContext();
-  const isEditing = mode === PostEditorMode.EDIT;
+
   const [isLoading, setIsLoading] = useState(false);
+  const captionInfoRef = useRef(captionGenerationInfo);
+
+  useEffect(() => {
+    captionInfoRef.current = captionGenerationInfo;
+  }, [captionGenerationInfo]);
+
+  useEffect(() => {
+    setCaptionGenerationInfo({
+      ...captionInfoRef.current,
+      detectedItems: [],
+    });
+  }, [captionGenerationSettings, setCaptionGenerationInfo]);
 
   const handleImageChange = (file: File | null) => {
-    setImage(file);
-    setDetectedItems([]);
+    setCaptionGenerationInfo({
+      ...captionGenerationInfo,
+      image: file,
+      detectedItems: [],
+    });
   };
 
   const handleAnalyseImage = async () => {
-    if (!image) {
+    if (!captionGenerationInfo.image) {
       alert("Please upload an image first!");
       return;
     }
 
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", captionGenerationInfo.image);
 
     setIsLoading(true);
 
-    const res = await apiClient.post<ImageAnalysisResponse>(
-      AI_API.IMG_ANALYSIS,
-      formData,
-      {},
-      true // isFormData flag
-    );
+    try {
+      const res = await apiClient.post<ImageAnalysisResponse>(
+        AI_API.IMG_ANALYSIS,
+        formData,
+        {},
+        true // isFormData flag
+      );
 
-    if (!res?.detectedItems) {
-      console.error("❌ No detected items returned from analysis.");
-      setDetectedItems([]);
-    } else {
-      setDetectedItems(res.detectedItems);
+      setCaptionGenerationInfo({
+        ...captionGenerationInfo,
+        detectedItems: res?.detectedItems || [],
+      });
+    } catch (error) {
+      console.error("Error analyzing image:", error);
+      setCaptionGenerationInfo({
+        ...captionGenerationInfo,
+        detectedItems: [],
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const removeDetectedItem = (index: number) => {
-    setDetectedItems(detectedItems.filter((_, i) => i !== index));
+    setCaptionGenerationInfo({
+      ...captionGenerationInfo,
+      detectedItems: captionGenerationInfo.detectedItems.filter(
+        (_, i) => i !== index
+      ),
+    });
+  };
+
+  const addDetectedItem = () => {
+    const newItem = prompt("Enter a new item to add:");
+    if (newItem && newItem.trim()) {
+      setCaptionGenerationInfo({
+        ...captionGenerationInfo,
+        detectedItems: [...captionGenerationInfo.detectedItems, newItem.trim()],
+      });
+    }
   };
 
   return (
     <>
       <CompactCard>
         <DragAndDropUploader
-          value={image ? URL.createObjectURL(image) : uploadedImageUrl ?? ""}
+          value={
+            captionGenerationInfo.image
+              ? URL.createObjectURL(captionGenerationInfo.image)
+              : uploadedImageUrl ?? ""
+          }
           onChange={handleImageChange}
           fileType="image"
         />
 
-        {image && !isEditing && (
-          <div className="mt-2">
+        {captionGenerationSettings.enableImageAnalysis &&
+          captionGenerationInfo.image && (
             <button
               onClick={handleAnalyseImage}
               className="w-full text-sm bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition"
@@ -75,15 +113,22 @@ export const PostImageSelector = () => {
             >
               {isLoading ? "Analysing..." : "Analyse Image"}
             </button>
-          </div>
-        )}
+          )}
       </CompactCard>
 
-      {detectedItems.length > 0 && (
-        <div className="mt-3 p-2 border border-gray-200 rounded-md bg-gray-50 dark:bg-gray-800">
-          <p className="text-sm font-medium mb-2">Detected Items:</p>
+      {captionGenerationInfo.detectedItems.length > 0 && (
+        <div className="mt-3 p-4 border border-gray-200 rounded-md bg-gray-50 dark:bg-gray-800">
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-sm font-medium">Detected Items:</p>
+            <button
+              onClick={addDetectedItem}
+              className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-md transition"
+            >
+              + Add Item
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
-            {detectedItems.map((item, index) => (
+            {captionGenerationInfo.detectedItems.map((item, index) => (
               <div
                 key={index}
                 className="relative px-3 py-1 bg-gray-200 text-sm rounded-md group"

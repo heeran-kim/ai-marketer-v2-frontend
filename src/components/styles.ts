@@ -72,3 +72,39 @@ export const PLATFORM_CHART_COLORS: Record<string, string> = {
   threads: "rgba(0, 0, 0, 0.6)",
   default: "rgba(200, 200, 200, 0.6)",
 };
+
+export const platformButtonStyles = {
+  base: "rounded-lg transition-all duration-200 px-4 py-2.5 flex flex-1 justify-center items-center gap-2 text-sm font-medium",
+
+  states: {
+    disabled:
+      "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed bg-[repeating-linear-gradient(45deg,transparent,transparent_5px,rgba(0,0,0,0.05)_5px,rgba(0,0,0,0.05)_10px)]",
+
+    selected: "bg-gray-200 text-white border shadow-sm",
+
+    over: "bg-gray-100 border border-gray-300 text-gray-800 shadow-sm",
+
+    default:
+      "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300",
+  },
+
+  getClassNames: (
+    isLinked: boolean,
+    isSelected: boolean,
+    isOver: boolean
+  ): string => {
+    if (!isLinked) {
+      return `${platformButtonStyles.base} ${platformButtonStyles.states.disabled}`;
+    }
+
+    if (isSelected) {
+      return `${platformButtonStyles.base} ${platformButtonStyles.states.selected}`;
+    }
+
+    if (isOver) {
+      return `${platformButtonStyles.base} ${platformButtonStyles.states.over}`;
+    }
+
+    return `${platformButtonStyles.base} ${platformButtonStyles.states.default}`;
+  },
+};

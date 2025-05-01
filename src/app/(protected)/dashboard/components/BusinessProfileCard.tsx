@@ -16,16 +16,18 @@ export const BusinessProfileCard = ({ business }: Props) => {
       className="relative bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-md transition h-36 sm:h-40"
     >
       {/* Background logo */}
-      <div className="absolute inset-0 opacity-10 dark:opacity-20">
-        <Image
-          src={`${logo}?t=${new Date().getTime()}` || "/default-logo.png"}
-          alt={`${name} Logo`}
-          fill
-          style={{ objectFit: "cover" }}
-          className="w-full h-full"
-          priority
-        />
-      </div>
+      {!logo?.endsWith("default_logo.png") && (
+        <div className="absolute inset-0 opacity-10 dark:opacity-20">
+          <Image
+            src={`${logo}?t=${new Date().getTime()}`}
+            alt={`${name} Logo`}
+            fill
+            style={{ objectFit: "cover" }}
+            className="w-full h-full"
+            priority
+          />
+        </div>
+      )}
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-center px-6">

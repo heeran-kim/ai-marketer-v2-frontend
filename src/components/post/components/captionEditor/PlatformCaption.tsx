@@ -15,7 +15,10 @@ export const PlatformCaption = ({
   isExpanded,
   setActiveSegment,
 }: PlatformCaptionProps) => {
-  const { mode, platformStates } = usePostEditorContext();
+  const { mode, platformStates, captionGenerationSettings } =
+    usePostEditorContext();
+  const enableAI =
+    mode === PostEditorMode.CREATE && captionGenerationSettings.method === "ai";
   const [activePlatform, setActivePlatform] = useState<
     PlatformKey | undefined
   >();
@@ -26,9 +29,8 @@ export const PlatformCaption = ({
       setActivePlatform(undefined);
       return;
     }
-    // If in 'EDIT' mode, set the first platform as the default active platform
-    if (mode === PostEditorMode.EDIT) setActivePlatform(platformStates[0].key);
-  }, [isExpanded, mode, platformStates]);
+    if (!enableAI) setActivePlatform(platformStates[0].key);
+  }, [enableAI, isExpanded, mode]);
 
   // Set the segment to 'platformCaption' when activePlatform is selected
   useEffect(() => {
