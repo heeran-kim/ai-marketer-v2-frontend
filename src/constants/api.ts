@@ -67,7 +67,7 @@ export const PROMOTIONS_API = {
   UPDATE: (id: string) => `${BASE_URL}/promotions/${id}/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
   GENERATE: `${BASE_URL}/promotions/generate/`,
-  DISMISS: (id: string) => `${BASE_URL}/promotions/dismiss/${id}/`,
+  DISMISS: (id: string) => `${BASE_URL}/promotions/${id}/dismiss/`,
 };
 
 // AI API Endpoints

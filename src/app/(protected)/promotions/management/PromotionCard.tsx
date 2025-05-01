@@ -32,6 +32,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
     soldCount,
     posts,
     categories,
+    productNames,
   } = promotion;
 
   // Format dates
@@ -72,6 +73,20 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
         {categories.length > 0 && (
           <div className="mb-3">
             <CategoryChipList labels={categories.map((cat) => cat.label)} />
+          </div>
+        )}
+
+        {/* Product names */}
+        {productNames && productNames.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {productNames.map((product, index) => (
+              <span
+                key={index}
+                className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+              >
+                {product}
+              </span>
+            ))}
           </div>
         )}
 

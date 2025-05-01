@@ -1,5 +1,4 @@
 // src/app/(protected)/promotions/management/ManagementView.tsx
-
 import React, { useState, useEffect, useRef } from "react";
 
 import PromotionCard from "./PromotionCard";
@@ -39,7 +38,7 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
     data: promotions,
     mutate,
     error,
-  } = useFetchData<Promotion[]>(PROMOTIONS_API.LIST("management"));
+  } = useFetchData<Promotion[]>(PROMOTIONS_API.LIST("management", false));
   const router = useRouter();
 
   // Auto-scroll to selected post when navigating from external links
@@ -78,7 +77,11 @@ const ManagementView = ({ scrollToId }: ManagementViewProps) => {
 
   // Redirects to post creation with promotion context
   const handleCreatePost = (id: string) => {
-    router.push(`/posts?mode=create&promotionId=${id}`, { scroll: false });
+    const params = new URLSearchParams();
+    params.append("mode", "create");
+    params.append("promotionId", id);
+
+    router.push(`/posts?${params.toString()}`, { scroll: false });
   };
 
   const handleEdit = async (startDate: string, endDate: string | null) => {

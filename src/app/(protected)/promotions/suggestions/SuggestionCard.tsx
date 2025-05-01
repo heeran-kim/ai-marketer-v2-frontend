@@ -19,7 +19,8 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
   onCreatePromotion,
   onDismiss,
 }) => {
-  const { title, description, categories, dataPeriod } = suggestion;
+  const { title, description, categories, dataPeriod, isDismissed } =
+    suggestion;
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +61,8 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         <ConfirmModal
           isOpen={true}
           title="Dismiss Suggestion"
-          message="Are you sure you want to dismiss this suggestion? This will remove it from your suggestions list."
+          message={`Are you sure you want to dismiss this suggestion?
+            This will remove it from your suggestions list.`}
           confirmButtonText={isSubmitting ? "Dismissing..." : "Dismiss"}
           cancelButtonText="Cancel"
           type="warning"
@@ -68,9 +70,6 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
           onClose={() => setIsConfirmOpen(false)}
         >
           <div className="mt-2">
-            <label className="block text-sm font-medium mb-1">
-              Feedback (Optional)
-            </label>
             <textarea
               className="w-full p-2 border rounded-md text-sm"
               placeholder="Tell us why you're dismissing this suggestion..."
@@ -86,13 +85,15 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         {/* Title with dismiss button */}
         <div className="flex justify-between items-start mb-3">
           <div className="dark:text-white font-medium mb-3">{title}</div>
-          <button
-            onClick={() => setIsConfirmOpen(true)}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-            title="Dismiss suggestion"
-          >
-            <FaThumbsDown size={16} />
-          </button>
+          {!isDismissed && (
+            <button
+              onClick={() => setIsConfirmOpen(true)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+              title="Dismiss suggestion"
+            >
+              <FaThumbsDown size={16} />
+            </button>
+          )}
         </div>
 
         {/* Category chips */}
@@ -108,18 +109,18 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         </div>
 
         {/* Data period indicator and Create promotion button */}
-        <div className="flex justify-end">
+        <div className="flex justify-between items-end">
           {dateRangeText && (
-            <div className="text-xs text-gray-500 mb-3 italic">
-              {dateRangeText}
-            </div>
+            <div className="text-xs text-gray-500 italic">{dateRangeText}</div>
           )}
-          <button
-            className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
-            onClick={onCreatePromotion}
-          >
-            Create Promotion
-          </button>
+          {!isDismissed && (
+            <button
+              className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
+              onClick={onCreatePromotion}
+            >
+              Create Promotion
+            </button>
+          )}
         </div>
       </div>
     </>

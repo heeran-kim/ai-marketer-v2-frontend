@@ -12,6 +12,7 @@ export type Promotion = {
   endDate: string; // ex: "2024-04-10T23:59:59Z" (ISO timestamp)
   status: string; // ex: "upcoming", "ongoing"
   soldCount: number; // Number of units sold
+  productNames: string[]; // List of product names included in the promotion
   type: string;
 };
 
@@ -22,4 +23,5 @@ export type PromotionSuggestion = {
   categories: { id: string; key: string; label: string }[];
   hasSalesData: boolean;
   isDismissed: boolean;
+  dataPeriod: { startDate: string; endDate: string };
 };
