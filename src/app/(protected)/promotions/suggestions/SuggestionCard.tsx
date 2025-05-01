@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { PromotionSuggestion } from "@/types/promotion";
 import { CategoryChipList, ConfirmModal } from "@/components/common";
-import { FaThumbsDown } from "react-icons/fa";
+import { FaThumbsDown, FaTag } from "react-icons/fa";
 import { apiClient } from "@/hooks/dataHooks";
 import { PROMOTIONS_API } from "@/constants/api";
 import { useNotification } from "@/context/NotificationContext";
@@ -19,8 +19,14 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
   onCreatePromotion,
   onDismiss,
 }) => {
-  const { title, description, categories, dataPeriod, isDismissed } =
-    suggestion;
+  const {
+    title,
+    description,
+    categories,
+    dataPeriod,
+    isDismissed,
+    productNames,
+  } = suggestion;
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,7 +90,7 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
       <div className="bg-white border rounded-lg shadow-sm p-4">
         {/* Title with dismiss button */}
         <div className="flex justify-between items-start mb-3">
-          <div className="dark:text-white font-medium mb-3">{title}</div>
+          <div className="dark:text-white font-medium mb-2">{title}</div>
           {!isDismissed && (
             <button
               onClick={() => setIsConfirmOpen(true)}
@@ -100,6 +106,27 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         {categories.length > 0 && (
           <div className="mb-3">
             <CategoryChipList labels={categories.map((cat) => cat.label)} />
+          </div>
+        )}
+
+        {/* Product names */}
+        {productNames && productNames.length > 0 && (
+          <div className="mb-3">
+            <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
+              <FaTag size={12} />
+              <span className="font-medium">Target Products:</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {productNames.map((product, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center"
+                >
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-1"></span>
+                  {product}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 

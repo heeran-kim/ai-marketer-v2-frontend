@@ -11,6 +11,7 @@ export default function Header({ title, actionButton }: HeaderProps) {
           {actionButton && (
             <div className="relative text-sm">
               <button
+                title={actionButton.title}
                 onClick={actionButton.onClick}
                 disabled={actionButton.isDisabled}
                 className={`absolute top-1/2 right-1 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 transition 

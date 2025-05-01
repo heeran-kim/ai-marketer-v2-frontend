@@ -76,11 +76,20 @@ const PromotionsDashboard = () => {
   }
 
   const handleGenerateSuggestions = async () => {
+    if (!suggestionData.hasSalesData) {
+      showNotification(
+        "error",
+        "No sales data available to generate suggestions."
+      );
+      return;
+    }
+
     setIsGenerating(true);
     try {
-      await apiClient.post(PROMOTIONS_API.GENERATE, {});
+      await apiClient.post(PROMOTIONS_API.GENERATE, {}, { timeout: 60000 });
       showNotification("success", "Suggestions generated successfully!");
       await mutateSuggestions();
+      setActiveView("suggestions");
     } catch (error) {
       console.error(error);
       showNotification(
@@ -94,13 +103,19 @@ const PromotionsDashboard = () => {
 
   return (
     <>
-      <LoadingModal isOpen={isGenerating} message="Generating suggestions..." />
+      <LoadingModal
+        isOpen={isGenerating}
+        message={`Generating AI-powered promotion suggestions.\nThis may take a moment...`}
+      />
       <Header
         title="Promotions"
         actionButton={{
-          label: "Generate Suggestions",
+          label: isGenerating ? "Generating..." : "Generate Suggestions",
           onClick: handleGenerateSuggestions,
           isDisabled: isGenerating || !suggestionData.hasSalesData,
+          title: !suggestionData.hasSalesData
+            ? "Need to upload sales data"
+            : undefined,
         }}
       />
       <div className="max-w-6xl mx-auto p-6">

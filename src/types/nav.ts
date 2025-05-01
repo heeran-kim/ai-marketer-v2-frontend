@@ -14,6 +14,7 @@ export interface HeaderProps {
     label: string;
     onClick: () => void;
     isDisabled?: boolean;
+    title?: string;
   };
 }
 

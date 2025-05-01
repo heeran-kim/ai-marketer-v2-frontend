@@ -5,6 +5,7 @@ import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
 import { CategoryChipList } from "@/components/common";
 import { StatusIcon } from "@/components/common";
+import { FaTag } from "react-icons/fa";
 import { getPlatformIcon, actionIcons } from "@/utils/icon";
 import { useRouter } from "next/navigation";
 
@@ -78,15 +79,22 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
 
         {/* Product names */}
         {productNames && productNames.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-1">
-            {productNames.map((product, index) => (
-              <span
-                key={index}
-                className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
-              >
-                {product}
-              </span>
-            ))}
+          <div className="mb-3">
+            <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
+              <FaTag size={12} />
+              <span className="font-medium">Target Products:</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {productNames.map((product, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center"
+                >
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+                  {product}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 

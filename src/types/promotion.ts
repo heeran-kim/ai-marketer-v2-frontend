@@ -24,4 +24,5 @@ export type PromotionSuggestion = {
   hasSalesData: boolean;
   isDismissed: boolean;
   dataPeriod: { startDate: string; endDate: string };
+  productNames: string[]; // List of product names included in the promotion
 };
