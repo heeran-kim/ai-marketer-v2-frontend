@@ -4,6 +4,7 @@ import ProductChip from "./ProductChip";
 import { useFetchData } from "@/hooks/dataHooks";
 import { SETTINGS_API } from "@/constants/api";
 import { FaTag } from "react-icons/fa";
+import { ProductCategory } from "@/types/promotion";
 
 interface SquareVariation {
   id: string;
@@ -33,22 +34,25 @@ interface SquareItemsResponse {
   categories: SquareCategory[];
 }
 
+interface ProductItem {
+  name: string;
+  category?: ProductCategory;
+}
+
 interface ProductChipListProps {
-  productNames: string[];
+  products: ProductItem[];
   maxVisible?: number;
   showTooltip?: boolean;
 }
 
 const ProductChipList: React.FC<ProductChipListProps> = ({
-  productNames,
+  products,
   maxVisible = 5,
   showTooltip = true,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const visibleProducts = expanded
-    ? productNames
-    : productNames.slice(0, maxVisible);
-  const remainingCount = productNames.length - maxVisible;
+  const visibleProducts = expanded ? products : products.slice(0, maxVisible);
+  const remainingCount = products.length - maxVisible;
 
   // Fetch square items data with correct type
   const { data } = useFetchData<SquareItemsResponse>(SETTINGS_API.SQUARE_ITEMS);
@@ -116,9 +120,10 @@ const ProductChipList: React.FC<ProductChipListProps> = ({
         {visibleProducts.map((product, index) => (
           <ProductChip
             key={index}
-            productName={product}
-            price={productPriceMap[product.toLowerCase()]}
+            productName={product.name}
+            price={productPriceMap[product.name.toLowerCase()]}
             showTooltip={showTooltip}
+            category={product.category || "average"}
           />
         ))}
 
@@ -131,7 +136,7 @@ const ProductChipList: React.FC<ProductChipListProps> = ({
           </span>
         )}
 
-        {expanded && productNames.length > maxVisible && (
+        {expanded && products.length > maxVisible && (
           <span
             className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full cursor-pointer hover:bg-gray-300"
             onClick={() => setExpanded(false)}
@@ -144,4 +149,28 @@ const ProductChipList: React.FC<ProductChipListProps> = ({
   );
 };
 
-export default ProductChipList;
+// For backward compatibility with the original API that just takes productNames
+interface LegacyProductChipListProps {
+  productNames: string[];
+  maxVisible?: number;
+  showTooltip?: boolean;
+}
+
+// Backward compatibility wrapper that converts string[] to ProductItem[]
+const BackwardCompatibleProductChipList: React.FC<
+  LegacyProductChipListProps
+> = ({ productNames, maxVisible, showTooltip }) => {
+  // Convert string array to ProductItem array
+  const products = productNames.map((name) => ({ name }));
+
+  return (
+    <ProductChipList
+      products={products}
+      maxVisible={maxVisible}
+      showTooltip={showTooltip}
+    />
+  );
+};
+
+export { ProductChipList, BackwardCompatibleProductChipList };
+export default BackwardCompatibleProductChipList;

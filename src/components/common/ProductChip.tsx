@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaInfoCircle } from "react-icons/fa";
+import { ProductCategory } from "@/types/promotion";
 
 interface ProductChipProps {
   productName: string;
   onClick?: () => void;
   price?: string;
   showTooltip?: boolean;
+  category?: ProductCategory;
 }
 
 const ProductChip: React.FC<ProductChipProps> = ({
@@ -15,6 +17,7 @@ const ProductChip: React.FC<ProductChipProps> = ({
   onClick,
   price,
   showTooltip = true,
+  category = "average",
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
@@ -38,18 +41,47 @@ const ProductChip: React.FC<ProductChipProps> = ({
       : text;
   };
 
+  // Color schemes based on category
+  const colorScheme = {
+    top_10_percent: {
+      bg: "bg-green-100",
+      text: "text-green-800",
+      hover: "hover:bg-green-200",
+      indicator: "bg-green-500",
+      icon: "text-green-500",
+    },
+    bottom_10_percent: {
+      bg: "bg-red-100",
+      text: "text-red-800",
+      hover: "hover:bg-red-200",
+      indicator: "bg-red-500",
+      icon: "text-red-500",
+    },
+    average: {
+      bg: "bg-blue-100",
+      text: "text-blue-800",
+      hover: "hover:bg-blue-200",
+      indicator: "bg-blue-500",
+      icon: "text-blue-500",
+    },
+  };
+
+  const colors = colorScheme[category];
+
   return (
     <div className="relative">
       <span
-        className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center cursor-pointer hover:bg-blue-200 transition-colors"
+        className={`px-2 py-0.5 ${colors.bg} ${colors.text} text-xs rounded-full flex items-center cursor-pointer ${colors.hover} transition-colors`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleClick}
       >
-        <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+        <span
+          className={`w-2 h-2 ${colors.indicator} rounded-full mr-1`}
+        ></span>
         {truncateText(productName, 20)}
         {showTooltip && price && (
-          <FaInfoCircle className="ml-1 text-blue-500" size={10} />
+          <FaInfoCircle className={`ml-1 ${colors.icon}`} size={10} />
         )}
       </span>
 
@@ -69,6 +101,21 @@ const ProductChip: React.FC<ProductChipProps> = ({
                           border-l-4 border-r-4 border-t-4 
                           border-l-transparent border-r-transparent border-t-gray-800"
           ></div>
+
+          {category !== "average" && (
+            <div
+              className={`font-semibold mb-1 text-center ${
+                category === "top_10_percent"
+                  ? "text-green-300"
+                  : "text-red-300"
+              }`}
+            >
+              {category === "top_10_percent"
+                ? "Top Performer"
+                : "Low Performer"}
+            </div>
+          )}
+
           {hasMultipleVariations ? (
             <div>
               <div className="font-semibold mb-1 text-center border-b border-gray-600 pb-1">

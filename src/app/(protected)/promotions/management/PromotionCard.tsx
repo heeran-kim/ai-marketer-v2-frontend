@@ -1,9 +1,13 @@
-// src/components/PromotionCard.tsx
+// src/app/(protected)/promotions/management/PromotionCard.tsx
 import React from "react";
 import { Promotion } from "@/types/promotion";
 import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
-import { CategoryChipList, ProductChipList } from "@/components/common";
+import {
+  CategoryChipList,
+  ProductChipList,
+  NewProductChipList,
+} from "@/components/common";
 import { StatusIcon } from "@/components/common";
 import { getPlatformIcon, actionIcons } from "@/utils/icon";
 import { useRouter } from "next/navigation";
@@ -32,11 +36,15 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
     soldCount,
     posts,
     categories,
-    productNames,
+    products, // Products with category info
+    productNames, // For backward compatibility
   } = promotion;
 
   // Format dates
   const dateRange = formatDateRange(startDate, endDate);
+
+  // Check if we have the new products array with category info
+  const hasProductCategoryInfo = products && products.length > 0;
 
   return (
     <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
@@ -76,12 +84,16 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
           </div>
         )}
 
-        {/* Product names */}
-        {productNames && productNames.length > 0 && (
+        {/* Product names with category indication */}
+        {hasProductCategoryInfo ? (
+          <div className="mb-3">
+            <NewProductChipList products={products} />
+          </div>
+        ) : productNames && productNames.length > 0 ? (
           <div className="mb-3">
             <ProductChipList productNames={productNames} />
           </div>
-        )}
+        ) : null}
 
         {/* Description */}
         <div className="text-sm text-gray-700 mb-3 whitespace-pre-line">

@@ -5,6 +5,7 @@ import {
   CategoryChipList,
   ConfirmModal,
   ProductChipList,
+  NewProductChipList,
 } from "@/components/common";
 import { FaThumbsDown } from "react-icons/fa";
 import { apiClient } from "@/hooks/dataHooks";
@@ -29,6 +30,7 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
     categories,
     dataPeriod,
     isDismissed,
+    products,
     productNames,
   } = suggestion;
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -64,6 +66,8 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         dataPeriod.endDate
       )}`
     : "";
+
+  const hasProductCategoryInfo = products && products.length > 0;
 
   return (
     <>
@@ -113,12 +117,16 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
           </div>
         )}
 
-        {/* Product names */}
-        {productNames && productNames.length > 0 && (
+        {/* Product names with category indication */}
+        {hasProductCategoryInfo ? (
+          <div className="mb-3">
+            <NewProductChipList products={products} />
+          </div>
+        ) : productNames && productNames.length > 0 ? (
           <div className="mb-3">
             <ProductChipList productNames={productNames} />
           </div>
-        )}
+        ) : null}
 
         {/* Description */}
         <div className="text-sm text-gray-700 mb-3 whitespace-pre-line">
