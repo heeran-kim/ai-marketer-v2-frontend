@@ -1,7 +1,6 @@
 // src/components/common/ProductChip.tsx
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaInfoCircle } from "react-icons/fa";
 import { ProductCategory } from "@/types/promotion";
 
 interface ProductChipProps {
@@ -80,9 +79,6 @@ const ProductChip: React.FC<ProductChipProps> = ({
           className={`w-2 h-2 ${colors.indicator} rounded-full mr-1`}
         ></span>
         {truncateText(productName, 20)}
-        {showTooltip && price && (
-          <FaInfoCircle className={`ml-1 ${colors.icon}`} size={10} />
-        )}
       </span>
 
       {/* Tooltip that shows on hover */}

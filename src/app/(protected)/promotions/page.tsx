@@ -113,9 +113,11 @@ const PromotionsDashboard = () => {
           label: isGenerating ? "Generating..." : "Generate Suggestions",
           onClick: handleGenerateSuggestions,
           isDisabled: isGenerating || !suggestionData.hasSalesData,
-          title: !suggestionData.hasSalesData
-            ? "Need to upload sales data"
-            : undefined,
+          tooltipContent: !suggestionData.hasSalesData
+            ? "You need to upload sales data first."
+            : `Our AI reviews your sales trends to find patterns and opportunities.
+            It then suggests promotions for both high and low-performing products,
+            based on your sales history and business context.`,
         }}
       />
       <div className="max-w-6xl mx-auto p-6">

@@ -6,12 +6,24 @@ import {
   ConfirmModal,
   ProductChipList,
   NewProductChipList,
+  InfoTooltip,
 } from "@/components/common";
 import { FaThumbsDown } from "react-icons/fa";
 import { apiClient } from "@/hooks/dataHooks";
 import { PROMOTIONS_API } from "@/constants/api";
 import { useNotification } from "@/context/NotificationContext";
 import { formatLocalDateRange } from "@/utils/date";
+import { PromotionCategoryKey } from "@/constants/promotions";
+
+const CATEGORY_DESCRIPTIONS: Record<PromotionCategoryKey, string> = {
+  discount:
+    "Offers price reductions to drive immediate sales and attract price-sensitive customers.",
+  bundle:
+    "Combines multiple products for a better value, increasing average order size.",
+  trend: "Promotions based on current market trends and popular items.",
+  menu: "Focuses on introducing or highlighting menu items.",
+  social: "Designed specifically for social media engagement and reach.",
+};
 
 interface SuggestionCardProps {
   suggestion: PromotionSuggestion;
@@ -110,23 +122,32 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
           )}
         </div>
 
-        {/* Category chips */}
+        {/* Category chips with tooltip */}
         {categories.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <CategoryChipList labels={categories.map((cat) => cat.label)} />
+            <InfoTooltip
+              content={
+                "Categories indicate the type of promotion strategy.\n\n" +
+                categories
+                  .map(
+                    (cat) =>
+                      `${cat.label}: ${CATEGORY_DESCRIPTIONS[cat.key] || ""}`
+                  )
+                  .join("\n")
+              }
+            />
           </div>
         )}
 
         {/* Product names with category indication */}
-        {hasProductCategoryInfo ? (
-          <div className="mb-3">
+        <div className="mb-3">
+          {hasProductCategoryInfo ? (
             <NewProductChipList products={products} />
-          </div>
-        ) : productNames && productNames.length > 0 ? (
-          <div className="mb-3">
+          ) : productNames && productNames.length > 0 ? (
             <ProductChipList productNames={productNames} />
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
         {/* Description */}
         <div className="text-sm text-gray-700 mb-3 whitespace-pre-line">

@@ -5,6 +5,7 @@ export { default as ScrollToTop } from "./ScrollToTop";
 export { default as SearchBar } from "./SearchBar";
 export { default as Select } from "./Select";
 export { default as StatusIcon } from "./StatusIcon";
+export { default as InfoTooltip } from "./InfoTooltip";
 export { ErrorFallback } from "./ErrorFallback";
 export { default as CategoryChipList } from "./CategoryChipList";
 export {

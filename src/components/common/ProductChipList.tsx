@@ -5,6 +5,7 @@ import { useFetchData } from "@/hooks/dataHooks";
 import { SETTINGS_API } from "@/constants/api";
 import { FaTag } from "react-icons/fa";
 import { ProductCategory } from "@/types/promotion";
+import InfoTooltip from "./InfoTooltip";
 
 interface SquareVariation {
   id: string;
@@ -116,7 +117,7 @@ const ProductChipList: React.FC<ProductChipListProps> = ({
         <FaTag size={12} />
         <span className="font-medium">Target Products:</span>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         {visibleProducts.map((product, index) => (
           <ProductChip
             key={index}
@@ -144,6 +145,16 @@ const ProductChipList: React.FC<ProductChipListProps> = ({
             Show less
           </span>
         )}
+
+        <InfoTooltip
+          content={`Performance:
+                        - Green = Top 10% performer
+                        - Red = Bottom 10% performer
+                        - Blue = Average performer
+                        Based on recent sales data.`}
+          position="right"
+          width="w-64"
+        />
       </div>
     </div>
   );
