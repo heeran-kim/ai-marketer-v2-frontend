@@ -59,3 +59,22 @@ export function formatDateRange(startDate: string, endDate: string): string {
     endFormat
   )}`;
 }
+
+/**
+ * Format date ranges for local input dates
+ */
+export function formatLocalDateRange(
+  startDate: string,
+  endDate: string
+): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const sameYear = start.getFullYear() === end.getFullYear();
+
+  // If they're in the same year, format start without year and end with year.
+  // If not, format both with year.
+  const startFormat = sameYear ? "dd MMM" : "dd MMM yyyy";
+  const endFormat = "dd MMM yyyy";
+
+  return `${format(start, startFormat)} – ${format(end, endFormat)}`;
+}

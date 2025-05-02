@@ -10,9 +10,12 @@ export interface Action {
 
 export interface HeaderProps {
   title: string;
-  description?: string;
-  createAction?: (router: AppRouterInstance) => { onClick: () => void } | null;
-  moreActions?: (router: AppRouterInstance) => Action[] | null;
+  actionButton?: {
+    label: string;
+    onClick: () => void;
+    isDisabled?: boolean;
+    tooltipContent?: string;
+  };
 }
 
 export interface SubPage {

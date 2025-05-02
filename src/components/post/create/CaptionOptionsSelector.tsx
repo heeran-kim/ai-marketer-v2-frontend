@@ -5,6 +5,13 @@ export const CaptionOptionsSelector = () => {
   const { captionGenerationSettings, setCaptionGenerationSettings } =
     usePostEditorContext();
 
+  const settings = captionGenerationSettings || {
+    enableImageAnalysis: false,
+    includeImageInCaption: false,
+    includeItemDescription: false,
+    includeSalesData: false,
+  };
+
   const handleOptionChange = (
     option: keyof typeof captionGenerationSettings
   ) => {
@@ -33,7 +40,7 @@ export const CaptionOptionsSelector = () => {
             <input
               type="checkbox"
               id="use-rekognition"
-              checked={captionGenerationSettings.enableImageAnalysis}
+              checked={settings.enableImageAnalysis}
               onChange={() => handleOptionChange("enableImageAnalysis")}
               className="mr-4 mt-1"
             />
@@ -64,7 +71,7 @@ export const CaptionOptionsSelector = () => {
             <input
               type="checkbox"
               id="use-openai-vision"
-              checked={captionGenerationSettings.includeImageInCaption}
+              checked={settings.includeImageInCaption}
               onChange={() => handleOptionChange("includeImageInCaption")}
               className="mr-4 mt-1"
             />
@@ -93,7 +100,7 @@ export const CaptionOptionsSelector = () => {
             <input
               type="checkbox"
               id="include-pos-descriptions"
-              checked={captionGenerationSettings.includeItemDescription}
+              checked={settings.includeItemDescription}
               onChange={() => handleOptionChange("includeItemDescription")}
               className="mr-4 mt-1"
             />
@@ -123,7 +130,7 @@ export const CaptionOptionsSelector = () => {
             <input
               type="checkbox"
               id="include-sales-data"
-              checked={captionGenerationSettings.includeSalesData}
+              checked={settings.includeSalesData}
               onChange={() => handleOptionChange("includeSalesData")}
               className="mr-4 mt-1"
             />

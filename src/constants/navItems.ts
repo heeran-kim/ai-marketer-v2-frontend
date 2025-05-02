@@ -14,20 +14,7 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/posts",
     header: {
       title: "Posts",
-      createAction: (router) => ({
-        onClick: () => router.push("/posts?mode=create", { scroll: false }),
-      }),
     },
-    subPages: [
-      {
-        href: "/posts/create",
-        header: {
-          title: "Create Post",
-          description:
-            "Start by uploading an image. Then, adjust the post settings to generate the perfect caption!",
-        },
-      },
-    ],
   },
   {
     name: "Promotions",
@@ -35,23 +22,12 @@ export const NAV_ITEMS: NavItem[] = [
     header: {
       title: "Promotions",
     },
-    subPages: [
-      {
-        href: "/promotions/new",
-        header: {
-          title: "Create Promotion",
-          description:
-            "Leverage machine learning to generate high-impact promotions.",
-        },
-      },
-    ],
   },
   {
     name: "Settings",
     href: "/settings",
     header: {
       title: "Settings",
-      description: "",
     },
     subPages: [
       {

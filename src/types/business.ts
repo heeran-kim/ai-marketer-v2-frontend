@@ -2,23 +2,13 @@
 
 // Represents a business or brand
 export interface Business {
-  name: string; // Business name
+  name: string | null; // Business name
   logo: string | null; // URL of the business logo
-  category?: string; // Business category (ex: "restaurant", "cafe")
-  targetCustomers?: string; // Target customer (ex: "young professionals", "students")
-  vibe?: string; // Business branding or mood (ex: "luxury", "casual")
+  category?: string | null; // Business category (ex: "restaurant", "cafe")
+  targetCustomers?: string | null; // Target customer (ex: "young professionals", "students")
+  vibe?: string | null; // Business branding or mood (ex: "luxury", "casual")
   hasSalesData?: boolean; // Whether sales data is provided
 }
-
-// Default empty business object
-export const EMPTY_BUSINESS: Business = {
-  name: "",
-  logo: "",
-  category: "",
-  targetCustomers: "",
-  vibe: "",
-  hasSalesData: false,
-};
 
 // Represents a linked social media account
 export interface Platform {

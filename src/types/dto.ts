@@ -1,7 +1,11 @@
-// Importing the SelectableCategory type from the post module
+// src/types/dto.ts
 import { SelectableCategory } from "./post";
+import { PromotionSuggestion } from "./promotion";
 
-// Interface representing raw post data received from the backend
+/**
+ * DTO for raw post data received from the backend.
+ * Contains the essential details of a post including its business, platform, and status.
+ */
 export interface PostDto {
   id: string; // Unique identifier for the post
   business: string; // Business associated with the post
@@ -21,7 +25,10 @@ export interface PostDto {
   type: string; // Type (e.g., post)
 }
 
-// Interface representing configuration data required for the post editor
+/**
+ * DTO for the configuration required in the post editor.
+ * Contains information about the business, selectable categories, and linked platforms.
+ */
 export interface PostEditorConfigDto {
   business: {
     targetCustomers: string; // Description of the target customers
@@ -37,7 +44,21 @@ export interface PostEditorConfigDto {
   }[]; // List of linked platforms
 }
 
+/**
+ * DTO for the status of the Square integration.
+ * Contains whether the Square account is linked and the business name.
+ */
 export interface SquareStatusDto {
   squareConnected: boolean; // Indicates if the Square account is linked
   businessName: string | null; // Name of the linked business
+}
+
+/**
+ * DTO for promotion suggestions response.
+ * Contains information about whether sales data is available
+ * and a list of promotion suggestions based on that data.
+ */
+export interface PromotionSuggestionsDto {
+  hasSalesData: boolean; // Indicates whether sales data is available for the business
+  suggestions: PromotionSuggestion[]; // List of promotion suggestions based on available sales data
 }

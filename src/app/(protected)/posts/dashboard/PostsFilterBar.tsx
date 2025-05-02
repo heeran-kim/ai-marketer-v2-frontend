@@ -21,7 +21,7 @@ export const PostsFilterBar = ({
   setSelectedStatus,
 }: Props) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2 p-4 sm:px-0">
+    <div className="flex flex-col sm:flex-row gap-2 sm:px-0">
       <SearchBar setSearchTerm={setSearchTerm} placeholder="Search posts..." />
       <Select
         value={
