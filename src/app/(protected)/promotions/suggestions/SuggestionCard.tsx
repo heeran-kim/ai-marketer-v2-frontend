@@ -6,7 +6,7 @@ import {
   ConfirmModal,
   ProductChipList,
 } from "@/components/common";
-import { FaThumbsDown, FaTag } from "react-icons/fa";
+import { FaThumbsDown } from "react-icons/fa";
 import { apiClient } from "@/hooks/dataHooks";
 import { PROMOTIONS_API } from "@/constants/api";
 import { useNotification } from "@/context/NotificationContext";

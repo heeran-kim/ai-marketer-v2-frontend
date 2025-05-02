@@ -5,7 +5,6 @@ import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
 import { CategoryChipList, ProductChipList } from "@/components/common";
 import { StatusIcon } from "@/components/common";
-import { FaTag } from "react-icons/fa";
 import { getPlatformIcon, actionIcons } from "@/utils/icon";
 import { useRouter } from "next/navigation";
 
