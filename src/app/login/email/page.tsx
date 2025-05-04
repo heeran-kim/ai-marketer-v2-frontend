@@ -87,6 +87,7 @@ export default function EmailLoginPage() {
                 await login(formData.email, formData.password,'2fa',formData.code);
             else    
                 await login(formData.email, formData.password,'traditional');
+                router.push("/dashboard");
             // Successful login will redirect via AuthProvider
         } catch (error: unknown) {
             // Handle authentication errors
@@ -97,8 +98,6 @@ export default function EmailLoginPage() {
 
             if(errorMessage==="Requires 2FA Code.")  //Push client to the 2FA Page
                 setRequires2FA(true);
-            else
-                router.push("/dashboard");
         } finally {
             setIsLoading(false);
         }

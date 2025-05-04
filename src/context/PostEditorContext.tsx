@@ -503,6 +503,10 @@ export const PostEditorProvider = ({
         formData.append("image", captionGenerationInfo.image);
       }
 
+      if(selectedAspectRatio){
+        formData.append("aspect_ratio", selectedAspectRatio);
+      }
+
       // Use the PATCH endpoint to update the post
       await apiClient.patch(
         POSTS_API.UPDATE(selectedPost.id),

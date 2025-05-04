@@ -11,6 +11,8 @@ import { toLocalTime } from "@/utils/date";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PLATFORM_SCHEDULE_OPTIONS, ScheduleType } from "@/constants/posts";
 import CommentModal from "@/components/post/CommentModal";
+import apiClient from "@/utils/apiClient";
+import { POSTS_API } from "@/constants/api";
 
 interface ListCardProps {
   item: Post | PostReview;
@@ -125,9 +127,25 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         "Thanks for sharing this information.",
       ]);
 
+      const getComments = async (itemId: string | undefined) => {
+        if (!itemId) return;
+        try {
+          const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
+          const data = JSON.stringify(response.message.message);
+          console.log(data);
+          
+          console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Error getting comments:", error);
+          }
+        }
+      };
+
     const [commentsOpen,setCommentsOpen] = useState(false);
 
     const handleCommentModal = () => {
+      getComments((item as Post).id);
       setCommentsOpen(!commentsOpen);
       //window.location.href = `/posts?mode=comments&postId=${(item as Post).postId}`;  // Replace with the desired URL
     };

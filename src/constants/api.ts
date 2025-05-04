@@ -51,6 +51,7 @@ export const SETTINGS_API = {
 export const POSTS_API = {
   LIST: `${BASE_URL}/posts/`, // GET
   DETAIL: (id: string) => `${BASE_URL}/posts/${id}/`, // GET
+  COMMENTS: (id: string) => `${BASE_URL}/posts/${id}/comments/`, // GET
   CREATE: `${BASE_URL}/posts/?create=true`, // GET, POST
   UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`, // PATCH or PUT
   DELETE: (id: string) => `${BASE_URL}/posts/${id}/`, // DELETE
