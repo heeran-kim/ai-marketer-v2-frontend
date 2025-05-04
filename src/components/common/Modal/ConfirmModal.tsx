@@ -19,6 +19,7 @@ interface ConfirmModalProps {
   itemId?: string;
   onConfirm?: (itemId?: string) => void;
   onClose: () => void;
+  children?: React.ReactNode;
 }
 
 export const ConfirmModal = ({
@@ -31,6 +32,7 @@ export const ConfirmModal = ({
   itemId = undefined,
   onConfirm,
   onClose,
+  children,
 }: ConfirmModalProps) => {
   // Store the message in local state to prevent it from changing during animations
   const [localTitle, setLocalTitle] = useState(title);
@@ -124,6 +126,7 @@ export const ConfirmModal = ({
             <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
               {localMessage}
             </p>
+            {children}
           </div>
 
           {/* Buttons with full width on mobile */}

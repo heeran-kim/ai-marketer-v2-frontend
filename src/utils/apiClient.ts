@@ -138,8 +138,9 @@ class ApiClient {
     url: string,
     options: FetchOptions = {}
   ): Promise<T> {
+    const { timeout = this.defaultTimeout, ...restOptions } = options;
     const fetchOptions: RequestInit = {
-      ...options,
+      ...restOptions,
       headers:
         options.body instanceof FormData
           ? undefined
@@ -180,7 +181,7 @@ class ApiClient {
         console.error(`API request failed for ${url}:`, error);
         throw error;
       }
-    });
+    }, timeout);
   }
 
   // Health check method to test backend connectivity

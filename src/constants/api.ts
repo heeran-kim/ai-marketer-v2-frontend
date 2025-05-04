@@ -59,17 +59,16 @@ export const POSTS_API = {
 
 // Promotions API Endpoints
 export const PROMOTIONS_API = {
-  LIST: (type: "management" | "suggestions") =>
-    `${BASE_URL}/promotions/?type=${type}`,
+  LIST: (type: "management" | "suggestions", showDismissed: boolean) =>
+    `${BASE_URL}/promotions/?type=${type}${
+      showDismissed ? "&show_dismissed=true" : ""
+    }`,
   DETAIL: (id: string) => `${BASE_URL}/promotions/${id}/`,
   CREATE: `${BASE_URL}/promotions/`,
   UPDATE: (id: string) => `${BASE_URL}/promotions/${id}/`,
   DELETE: (id: string) => `${BASE_URL}/promotions/${id}/`,
-};
-
-export const SUGGESTIONS_API = {
-  LIST: `${BASE_URL}/suggestions/`,
-  DETAIL: (id: string) => `${BASE_URL}/suggestions/${id}/`,
+  GENERATE: `${BASE_URL}/promotions/generate/`,
+  DISMISS: (id: string) => `${BASE_URL}/promotions/${id}/dismiss/`,
 };
 
 // AI API Endpoints

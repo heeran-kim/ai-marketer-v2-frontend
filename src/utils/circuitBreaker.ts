@@ -29,7 +29,7 @@ export class CircuitBreaker {
     };
   }
 
-  public async execute<T>(fn: () => Promise<T>): Promise<T> {
+  public async execute<T>(fn: () => Promise<T>, timeout?: number): Promise<T> {
     if (this.state === CircuitState.OPEN) {
       if (Date.now() > this.nextAttempt) {
         // Move to half-open state to test if service is back
@@ -48,7 +48,7 @@ export class CircuitBreaker {
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(
           () => reject(new Error("Request timeout")),
-          this.options.timeoutDuration
+          timeout ?? this.options.timeoutDuration
         );
       });
 

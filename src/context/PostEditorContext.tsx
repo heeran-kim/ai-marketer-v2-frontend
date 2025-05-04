@@ -201,9 +201,22 @@ export const PostEditorProvider = ({
       const dateRange = formatDateRange(promoData.startDate, promoData.endDate);
       setCaptionGenerationInfo((prev) => ({
         ...prev,
-        additionalPrompt:
-          "Promotion date: " + dateRange + "\n" + promoData.description,
+        additionalPrompt: `Promotion date: ${dateRange}\n${promoData.description}`,
       }));
+
+      if (promoData.productNames && promoData.productNames.length > 0) {
+        const menuItems = postCreateFormData.business.items;
+        const itemInfo = promoData.productNames.map((name) => {
+          return {
+            name: name,
+            description: menuItems ? menuItems[name.toLowerCase()] : "",
+          };
+        });
+        setCaptionGenerationInfo((prev) => ({
+          ...prev,
+          itemInfo: itemInfo,
+        }));
+      }
     }
   }, [mode, promoParam, postCreateFormData, promoData]);
 

@@ -165,7 +165,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           }
         }}
         className={`relative bg-white rounded-lg shadow-md border
-                ${isMobileLayout ? "flex flex-col m-4" : "flex flex-row h-72"}`}
+                ${isMobileLayout ? "flex flex-col" : "flex flex-row h-72"}`}
       >
         <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} />
         {actions && (
