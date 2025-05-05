@@ -1,9 +1,15 @@
-import React from 'react';
+
+
+type Comment = {
+  username: string;
+  text: string;
+  date:string;
+}
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  comments: string[];
+  comments: Comment[];
 }
 
 const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments }) => {
@@ -56,7 +62,9 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments }) => {
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <li key={index} style={commentStyle}>
-                {comment}
+                {comment.username}
+                {comment.text}
+                {comment.date}
               </li>
             ))
           ) : (

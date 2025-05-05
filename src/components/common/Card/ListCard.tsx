@@ -11,11 +11,19 @@ import { toLocalTime } from "@/utils/date";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PLATFORM_SCHEDULE_OPTIONS, ScheduleType } from "@/constants/posts";
 import CommentModal from "@/components/post/CommentModal";
+import apiClient from "@/utils/apiClient";
+import { POSTS_API } from "@/constants/api";
 
 interface ListCardProps {
   item: Post | PostReview;
   actions?: DropboxItem[];
 }
+
+type Comment = {
+  username: string;
+  text: string;
+  date: string;
+};
 
 const formatShortURL = (url: string, maxLength = 18) => {
   const cleanURL = url.replace(/^(https?:\/\/)?(www\.)?/, "");
@@ -118,26 +126,38 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         updatePlatformScheduleDate(review.platform, "");
       }
     };
+      const [comments, setComments] = useState<Comment[]>([]);
 
-      const [comments] = useState<string[]>([
-        "Great post!",
-        "I really enjoyed reading this.",
-        "Thanks for sharing this information.",
-      ]);
+      const handleAddComment = (username: string,text: string,date: string) => {
+        const newComment: Comment = {
+          username,
+          text,
+          date,
+        };
+        return newComment;
+      };
 
       const getComments = async (itemId: string | undefined) => {
         if (!itemId) return;
-        // try {
-        //   const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
-        //   const data = JSON.stringify(response.message.message);
-        //   console.log(data);
-          
-        //   console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
-        // } catch (error: unknown) {
-        //   if (error instanceof Error) {
-        //     console.error("Error getting comments:", error);
-        //   }
-        // }
+        try {
+          const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
+          //const data = JSON.stringify(response.message.message);
+          //console.log(data);
+          //console.log(response);
+
+          const comments=[]
+          for (let i =0;i<response.message.message.length;i++)
+          {
+            const comment = handleAddComment(response.message.message[i]['from']['name'],response.message.message[i]['message'],response.message.message[i]['createdTime']);
+            comments.push(comment);
+          }
+          setComments(comments);
+          //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Error getting comments:", error);
+          }
+        }
       };
 
     const [commentsOpen,setCommentsOpen] = useState(false);
