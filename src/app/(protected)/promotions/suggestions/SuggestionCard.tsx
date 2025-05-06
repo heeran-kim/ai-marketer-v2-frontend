@@ -1,5 +1,5 @@
 // src/app/(protected)/promotions/suggestions/SuggestionCard.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { PromotionSuggestion } from "@/types/promotion";
 import {
   CategoryChipList,
@@ -8,7 +8,7 @@ import {
   NewProductChipList,
   InfoTooltip,
 } from "@/components/common";
-import { FaThumbsDown } from "react-icons/fa";
+import { actionIcons } from "@/utils/icon";
 import { apiClient } from "@/hooks/dataHooks";
 import { PROMOTIONS_API } from "@/constants/api";
 import { useNotification } from "@/context/NotificationContext";
@@ -73,10 +73,8 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
   };
 
   const dateRangeText = dataPeriod
-    ? `Based on data from ${formatLocalDateRange(
-        dataPeriod.startDate,
-        dataPeriod.endDate
-      )}`
+    ? `Based on data from
+    ${formatLocalDateRange(dataPeriod.startDate, dataPeriod.endDate)}`
     : "";
 
   const hasProductCategoryInfo = products && products.length > 0;
@@ -117,7 +115,7 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
               className="text-gray-400 hover:text-gray-600 transition-colors"
               title="Dismiss suggestion"
             >
-              <FaThumbsDown size={16} />
+              {actionIcons.dismiss}
             </button>
           )}
         </div>
@@ -157,11 +155,13 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
         {/* Data period indicator and Create promotion button */}
         <div className="flex justify-between items-end">
           {dateRangeText && (
-            <div className="text-xs text-gray-500 italic">{dateRangeText}</div>
+            <div className="text-xs text-gray-500 italic whitespace-pre-line">
+              {dateRangeText}
+            </div>
           )}
           {!isDismissed && (
             <button
-              className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
+              className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800 whitespace-nowrap"
               onClick={onCreatePromotion}
             >
               Create Promotion

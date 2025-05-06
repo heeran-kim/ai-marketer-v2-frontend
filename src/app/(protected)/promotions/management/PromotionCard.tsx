@@ -1,5 +1,4 @@
 // src/app/(protected)/promotions/management/PromotionCard.tsx
-import React from "react";
 import { Promotion } from "@/types/promotion";
 import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
@@ -45,7 +44,6 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
   const dateRange = formatDateRange(startDate, endDate);
 
   const getSalesChangeStyle = () => {
-    console.log(salesChange);
     if (salesChange === undefined || salesChange === null) return "";
 
     if (salesChange > 0) {
@@ -73,7 +71,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
   const hasProductCategoryInfo = products && products.length > 0;
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+    <div className="border border-gray-200 rounded-lg bg-white">
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center space-x-2">
