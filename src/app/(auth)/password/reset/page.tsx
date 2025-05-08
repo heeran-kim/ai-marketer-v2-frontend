@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { apiClient } from "@/hooks/dataHooks";
+import { USERS_API } from "@/constants/api";
 import { FaArrowLeft } from "react-icons/fa";
 import { primaryNavItemClass } from "@/components/styles";
 
@@ -44,35 +46,16 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const response = await fetch(`${apiUrl}/api/users/password/reset/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          uid,
-          token,
-          new_password: password,
-        }),
-        credentials: "include",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.detail ||
-            data.non_field_errors ||
-            data.message ||
-            "Failed to reset password"
-        );
-      }
-
+      await apiClient.post(
+        USERS_API.RESET_PASSWORD,
+        { uid, token, newPassword: password },
+        {},
+        false
+      );
       setIsSuccess(true);
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
+        error instanceof Error ? error.message : "Failed to reset password";
       setErrors(errorMessage);
     } finally {
       setIsLoading(false);

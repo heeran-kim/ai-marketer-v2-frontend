@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { apiClient } from "@/hooks/dataHooks";
+import { USERS_API } from "@/constants/api";
 import { FaArrowLeft } from "react-icons/fa";
 import { primaryNavItemClass } from "@/components/styles";
-import { USERS_API } from "@/constants/api";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
       await apiClient.post(USERS_API.FORGOT_PASSWORD, { email }, {}, false);
       setIsSuccess(true);
     } catch (error: unknown) {
-      let errorMessage = "An error occurred";
+      let errorMessage = "Failed to send reset email";
 
       if (error instanceof Error) {
         try {

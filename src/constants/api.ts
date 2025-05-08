@@ -21,6 +21,7 @@ export const USERS_API = {
   REMOVE_2FA: `${BASE_URL}/users/2fa-remove/`,
 
   FORGOT_PASSWORD: `${BASE_URL}/users/password/forgot/`,
+  RESET_PASSWORD: `${BASE_URL}/users/password/reset/`,
 };
 
 // Dashboard API Endpoints
