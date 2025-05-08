@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { apiClient } from "@/hooks/dataHooks";
 import { FaArrowLeft } from "react-icons/fa";
 import { primaryNavItemClass } from "@/components/styles";
+import { USERS_API } from "@/constants/api";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -24,32 +26,23 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const response = await fetch(`${apiUrl}/api/users/password/forgot/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-        credentials: "include",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.email ||
-            data.detail ||
-            data.message ||
-            "Failed to send reset email"
-        );
-      }
-
+      await apiClient.post(USERS_API.FORGOT_PASSWORD, { email }, {}, false);
       setIsSuccess(true);
     } catch (error: unknown) {
-      console.log(error);
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
+      let errorMessage = "An error occurred";
+
+      if (error instanceof Error) {
+        try {
+          const parsedError = JSON.parse(error.message);
+          if (parsedError.data?.non_field_errors?.[0]) {
+            errorMessage = parsedError.data.non_field_errors[0];
+          } else {
+            errorMessage = parsedError.statusText || error.message;
+          }
+        } catch {
+          errorMessage = error.message;
+        }
+      }
       setErrors(errorMessage);
     } finally {
       setIsLoading(false);
