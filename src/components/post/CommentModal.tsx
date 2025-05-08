@@ -1,3 +1,4 @@
+import { useState } from "react";
 
 
 type Comment = {
@@ -62,9 +63,8 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments }) => {
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <li key={index} style={commentStyle}>
-                {comment.username}
-                {comment.text}
-                {comment.date}
+                  <strong>{comment.username}</strong> <span style={{ color: "#777", fontSize: "0.85em" }}>{comment.date}</span><br />
+                  <span style={{ fontSize: "0.9em", color: "#444" }}>{comment.text}</span>
               </li>
             ))
           ) : (

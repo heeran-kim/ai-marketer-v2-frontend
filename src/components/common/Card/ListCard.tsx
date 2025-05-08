@@ -148,7 +148,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           const comments=[]
           for (let i =0;i<response.message.message.length;i++)
           {
-            const comment = handleAddComment(response.message.message[i]['from']['name'],response.message.message[i]['message'],response.message.message[i]['createdTime']);
+            const formattedDate = new Date(response.message.message[i]['createdTime']).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
+            const comment = handleAddComment(response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate);
             comments.push(comment);
           }
           setComments(comments);
