@@ -1,8 +1,8 @@
 // src/app/(protected)/promotions/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { ErrorFallback, LoadingModal } from "@/components/common";
 import { useNotification } from "@/context/NotificationContext";
@@ -16,6 +16,7 @@ import { Promotion } from "@/types/promotion";
 import { PromotionSuggestionsDto } from "@/types/dto";
 
 const PromotionsDashboard = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const promotionId = searchParams.get("id");
   const [activeView, setActiveView] = useState<"management" | "suggestions">(
@@ -101,6 +102,13 @@ const PromotionsDashboard = () => {
     }
   };
 
+  const handleViewChange = (view: "management" | "suggestions") => {
+    setActiveView(view);
+    if (promotionId) {
+      router.push("/promotions", { scroll: false });
+    }
+  };
+
   return (
     <>
       <LoadingModal
@@ -129,7 +137,7 @@ const PromotionsDashboard = () => {
                 ? "bg-white shadow-sm text-gray-800"
                 : "text-gray-500 hover:text-gray-700"
             }`}
-            onClick={() => setActiveView("management")}
+            onClick={() => handleViewChange("management")}
           >
             My Promotions
           </button>
@@ -139,7 +147,7 @@ const PromotionsDashboard = () => {
                 ? "bg-white shadow-sm text-gray-800"
                 : "text-gray-500 hover:text-gray-700"
             }`}
-            onClick={() => setActiveView("suggestions")}
+            onClick={() => handleViewChange("suggestions")}
           >
             Suggestions
           </button>
