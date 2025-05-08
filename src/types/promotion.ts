@@ -22,7 +22,7 @@ export type Promotion = {
   startDate: string; // ex: "2024-04-01T00:00:00Z" (ISO timestamp)
   endDate: string; // ex: "2024-04-10T23:59:59Z" (ISO timestamp)
   status: string; // ex: "upcoming", "ongoing"
-  soldCount: number; // Number of units sold
+  soldCount?: number; // Number of units sold
   salesChange?: number;
   productNames: string[];
   products: ProductWithCategory[]; // Products with category information

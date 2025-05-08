@@ -169,7 +169,9 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
         {/* Statistics and Create post button */}
         <div className="flex justify-between items-center mt-2">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Sold: {soldCount}</span>
+            {!(soldCount === undefined || soldCount === null) && (
+              <span className="text-sm font-medium">Sold: {soldCount}</span>
+            )}
             {!(salesChange === undefined || salesChange === null) && (
               <div
                 className={`flex items-center text-xs px-2 py-1 rounded-full ${getSalesChangeStyle()}`}
