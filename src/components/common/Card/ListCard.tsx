@@ -25,6 +25,8 @@ type Comment = {
   text: string;
   date: string;
   replies: string[];
+  likes: number;
+  self_like: boolean;
 };
 
 const formatShortURL = (url: string, maxLength = 18) => {
@@ -133,15 +135,74 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const handleAddComment = (id:string, username: string,text: string,date: string, replies: string[]) => {
+    const handleAddComment = (id:string, username: string,text: string,date: string, replies: string[], likes: number, self_like: boolean) => {
       const newComment: Comment = {
         id,
         username,
         text,
         date,
         replies,
+        likes,
+        self_like,
       };
       return newComment;
+    };
+
+    const likeComment = async (itemId: string | undefined) => {
+      setIsLoaded(false);
+      if (!itemId) return;
+      try {
+        const response = await apiClient.get(POSTS_API.LIKE_COMMENTS(itemId)) as {message:any};
+        //const data = JSON.stringify(response.message.message);
+        //console.log(data);
+        //console.log(response);
+        setIsLoaded(true);
+        //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error liking comment:", error);
+        }
+      }
+      finally{
+        getComments((item as Post).id);
+      }
+    };
+
+    const sendReply = async (itemId: string | undefined, message: string) => {
+      setIsLoaded(false);
+      if (!itemId) return;
+      try {
+        const response = await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,message)) as {message:any};
+        //const data = JSON.stringify(response.message.message);
+        //console.log(data);
+        //console.log(response);
+        setIsLoaded(true);
+        //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error replying to comment:", error);
+        }
+      }
+      finally{
+        getComments((item as Post).id);
+      }
+    };
+
+    const deleteComment = async (itemId: string | undefined) => {
+      setIsLoaded(false);
+      if (!itemId) return;
+      try {
+        const response = await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,"delete000")) as {message:any};  //use same endpoint to not require a new one
+        //console.log(response);
+        setIsLoaded(true);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error deleting comment:", error);
+        }
+      }
+      finally{
+        getComments((item as Post).id);
+      }
     };
 
     const getComments = async (itemId: string | undefined) => {
@@ -157,7 +218,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         for (let i =0;i<response.message.message.length;i++)
         {
           const formattedDate = new Date(response.message.message[i]['createdTime']).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
-          const comment = handleAddComment(response.message.message[i]['id'],response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate,response.message.message[i]['replies']);
+          const comment = handleAddComment(response.message.message[i]['id'],response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate,response.message.message[i]['replies'],response.message.message[i]['likeCount'],response.message.message[i]['selfLike']);
           comments.push(comment);
         }
         setComments(comments);
@@ -197,7 +258,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         className={`relative bg-white rounded-lg shadow-md border
                 ${isMobileLayout ? "flex flex-col" : "flex flex-row h-72"}`}
       >
-        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} isLoaded={isLoaded} />
+        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} isLoaded={isLoaded} likeComment={likeComment} deleteComment={deleteComment} sendReply={sendReply} />
         {actions && (
           <div className="absolute top-2 right-2 z-10">
             <ActionDropdown actions={actions} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 
 
 type Comment = {
@@ -7,6 +7,8 @@ type Comment = {
   text: string;
   date:string;
   replies: string[];
+  likes: number;
+  self_like: boolean;
 }
 
 interface ModalProps {
@@ -14,9 +16,12 @@ interface ModalProps {
   onClose: () => void;
   comments: Comment[];
   isLoaded: boolean;
+  likeComment: (id:string) => void;
+  deleteComment: (id:string) => void;
+  sendReply: (id:string,message:string) => void;
 }
 
-const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoaded }) => {
+const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoaded, likeComment, deleteComment, sendReply }) => {
   if (!isOpen) return null;
   
   const overlayStyle: React.CSSProperties = {
@@ -55,6 +60,31 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoade
     borderBottom: '1px solid #ddd',
   };
 
+  const [formData, setFormData] = useState({text: ""});
+
+  const [visible, setVisible] = useState<boolean[]>();
+
+  // Handle form input changes
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (id:string, message:string) => {
+    sendReply(id,message);
+    setVisible([]);
+  };
+
+  const setReplyVisible = (index:number) => {
+    const localVisibility=[]
+    for (let i=0;i<comments.length;i++)
+    {
+      localVisibility.push(false);
+    }
+    localVisibility[index]=true;
+    setVisible(localVisibility);
+  }
+
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
@@ -67,8 +97,42 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoade
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <li key={index} style={commentStyle}>
-                  <strong>{comment.username}</strong> <span style={{ color: "#777", fontSize: "0.85em" }}>{comment.date}</span><br />
-                  <span style={{ fontSize: "0.9em", color: "#444" }}>{comment.text}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <strong>{comment.username}</strong>
+                      <span style={{ color: "#777", fontSize: "0.85em", marginLeft: "8px" }}>{comment.date}</span>
+                    </div>
+                    {comment.username!="User"&&
+                    <button
+                      style={{ color: "#aaa", background: "none", border: "none", cursor: "pointer" }}
+                      onClick={() => deleteComment(comment.id)}
+                    >
+                      🗑️
+                    </button>}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.9em", color: "#444" }}>
+                  <span>{comment.text}</span>
+                  <button style={{ marginLeft: "8px", color: comment.self_like ? "red" : "#aaa" }} onClick={()=>likeComment(comment.id)}>
+                    {comment.self_like ? "❤️" : comment.likes!=null ? "🤍" : ""} {comment.likes}
+                  </button>
+                  </div>
+                  {
+                    comment.username!="User"&&visible&&visible[index]?
+                    <form onSubmit={()=>handleSubmit(comment.id,formData.text)}>
+                        <input
+                            type="text"
+                            name="text"
+                            placeholder="Reply"
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors`}
+                            required={true}
+                            value={formData.text}
+                            onChange={handleChange}
+                        />
+                        <button style={{color:'blue'}} type="submit">Reply</button>
+                    </form>
+                    :comment.username!="User"&&
+                    <button style={{color:'blue'}} onClick={()=>setReplyVisible(index)}>Reply</button>
+                  }
                   {comment.replies.map((reply,index)=>(
                     <li key={index} style={{paddingLeft: '20px'}}>
                     <strong>{comment.username=='User'?'Someone Replied:':'You Replied:'}</strong> <span style={{ color: "#777", fontSize: "0.85em" }}></span><br />
