@@ -17,7 +17,7 @@ import { PostsFilterBar } from "./PostsFilterBar";
 import { PostList } from "./PostList";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
 import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
-import { ErrorFallback } from "@/components/common";
+import { Card, ErrorFallback } from "@/components/common";
 import { mutate } from "swr";
 import { POSTS_API } from "@/constants/api";
 import { apiClient } from "@/hooks/dataHooks";
@@ -163,7 +163,27 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
-      {isLoading&&'Loading...'}
+
+      {posts.length === 0 && (
+        <Card showButton={false}>
+          <div className="text-center py-8 text-sm">
+            <p className="text-gray-600 mb-6 whitespace-pre-line">
+              {`No posts yet.\nClick 'Create Post' to start sharing your first post\nwith AI-powered help!`}
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {posts.length > 0 && filteredPosts.length === 0 && (
+        <Card showButton={false}>
+          <div className="text-center py-8 text-sm">
+            <p className="text-gray-600 mb-6 whitespace-pre-line">
+              {`We couldn’t find any posts that match your search.\nTry changing the filters or keywords!`}
+            </p>
+          </div>
+        </Card>
+      )}
+
       <PostList
         posts={slicedPosts}
         actionsBuilder={(post) => {
