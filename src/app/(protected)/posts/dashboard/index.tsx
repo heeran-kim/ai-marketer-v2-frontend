@@ -163,8 +163,8 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
-
-      {posts.length === 0 && (
+      {isLoading?'Loading...':
+      posts.length === 0 && (
         <Card showButton={false}>
           <div className="text-center py-8 text-sm">
             <p className="text-gray-600 mb-6 whitespace-pre-line">
