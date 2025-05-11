@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent } from "react";
 
 
 type Comment = {
@@ -22,6 +22,10 @@ interface ModalProps {
 }
 
 const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoaded, likeComment, deleteComment, sendReply }) => {
+  const [formData, setFormData] = useState({text: ""});
+
+  const [visible, setVisible] = useState<boolean[]>();
+
   if (!isOpen) return null;
   
   const overlayStyle: React.CSSProperties = {
@@ -59,10 +63,6 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoade
     padding: '8px 0',
     borderBottom: '1px solid #ddd',
   };
-
-  const [formData, setFormData] = useState({text: ""});
-
-  const [visible, setVisible] = useState<boolean[]>();
 
   // Handle form input changes
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

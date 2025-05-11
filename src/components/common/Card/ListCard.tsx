@@ -19,7 +19,7 @@ interface ListCardProps {
   actions?: DropboxItem[];
 }
 
-type Comment = {
+type CommentOld = {
   id: string;
   username: string;
   text: string;
@@ -28,6 +28,22 @@ type Comment = {
   likes: number;
   self_like: boolean;
 };
+
+interface Comment {
+  id: string;
+  from: {
+    name: string;
+    createdTime:string;
+  };
+  message: string;
+  replies: string[];
+  likeCount: number;
+  selfLike: boolean;
+}
+
+interface CommentsResponse {
+  message: Comment[];
+}
 
 const formatShortURL = (url: string, maxLength = 18) => {
   const cleanURL = url.replace(/^(https?:\/\/)?(www\.)?/, "");
@@ -131,12 +147,12 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       }
     };
 
-    const [comments, setComments] = useState<Comment[]>([]);
+    const [comments, setComments] = useState<CommentOld[]>([]);
 
     const [isLoaded, setIsLoaded] = useState(false);
 
     const handleAddComment = (id:string, username: string,text: string,date: string, replies: string[], likes: number, self_like: boolean) => {
-      const newComment: Comment = {
+      const newComment: CommentOld = {
         id,
         username,
         text,
@@ -152,7 +168,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        const response = await apiClient.get(POSTS_API.LIKE_COMMENTS(itemId)) as {message:any};
+        await apiClient.get(POSTS_API.LIKE_COMMENTS(itemId));
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
         //console.log(response);
@@ -172,7 +188,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        const response = await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,message)) as {message:any};
+        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,message));
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
         //console.log(response);
@@ -192,7 +208,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        const response = await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,"delete000")) as {message:any};  //use same endpoint to not require a new one
+        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,"delete000"));  //use same endpoint to not require a new one
         //console.log(response);
         setIsLoaded(true);
       } catch (error: unknown) {
@@ -209,19 +225,20 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
+        const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:CommentsResponse};
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
         //console.log(response);
-
-        const comments=[]
-        for (let i =0;i<response.message.message.length;i++)
+        
+        const comments=response.message.message
+        const localComments=[]
+        for (let i =0;i<comments.length;i++)
         {
-          const formattedDate = new Date(response.message.message[i]['createdTime']).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
-          const comment = handleAddComment(response.message.message[i]['id'],response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate,response.message.message[i]['replies'],response.message.message[i]['likeCount'],response.message.message[i]['selfLike']);
-          comments.push(comment);
+          const formattedDate = new Date(comments[i].from.createdTime).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
+          const comment = handleAddComment(comments[i].id,comments[i].from.name,comments[i].message,formattedDate,comments[i].replies,comments[i].likeCount,comments[i].selfLike);
+          localComments.push(comment);
         }
-        setComments(comments);
+        setComments(localComments);
         setIsLoaded(true);
         //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
       } catch (error: unknown) {
