@@ -20,9 +20,11 @@ interface ListCardProps {
 }
 
 type Comment = {
+  id: string;
   username: string;
   text: string;
   date: string;
+  replies: string[];
 };
 
 const formatShortURL = (url: string, maxLength = 18) => {
@@ -126,40 +128,47 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         updatePlatformScheduleDate(review.platform, "");
       }
     };
-      const [comments, setComments] = useState<Comment[]>([]);
 
-      const handleAddComment = (username: string,text: string,date: string) => {
-        const newComment: Comment = {
-          username,
-          text,
-          date,
-        };
-        return newComment;
+    const [comments, setComments] = useState<Comment[]>([]);
+
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    const handleAddComment = (id:string, username: string,text: string,date: string, replies: string[]) => {
+      const newComment: Comment = {
+        id,
+        username,
+        text,
+        date,
+        replies,
       };
+      return newComment;
+    };
 
-      const getComments = async (itemId: string | undefined) => {
-        if (!itemId) return;
-        try {
-          const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
-          //const data = JSON.stringify(response.message.message);
-          //console.log(data);
-          //console.log(response);
+    const getComments = async (itemId: string | undefined) => {
+      setIsLoaded(false);
+      if (!itemId) return;
+      try {
+        const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:any};
+        //const data = JSON.stringify(response.message.message);
+        //console.log(data);
+        //console.log(response);
 
-          const comments=[]
-          for (let i =0;i<response.message.message.length;i++)
-          {
-            const formattedDate = new Date(response.message.message[i]['createdTime']).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
-            const comment = handleAddComment(response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate);
-            comments.push(comment);
-          }
-          setComments(comments);
-          //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            console.error("Error getting comments:", error);
-          }
+        const comments=[]
+        for (let i =0;i<response.message.message.length;i++)
+        {
+          const formattedDate = new Date(response.message.message[i]['createdTime']).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
+          const comment = handleAddComment(response.message.message[i]['id'],response.message.message[i]['from']['name'],response.message.message[i]['message'],formattedDate,response.message.message[i]['replies']);
+          comments.push(comment);
         }
-      };
+        setComments(comments);
+        setIsLoaded(true);
+        //console.log(JSON.stringify(response.message.message[0].comments.data[0].message));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Error getting comments:", error);
+        }
+      }
+    };
 
     const [commentsOpen,setCommentsOpen] = useState(false);
 
@@ -188,7 +197,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         className={`relative bg-white rounded-lg shadow-md border
                 ${isMobileLayout ? "flex flex-col" : "flex flex-row h-72"}`}
       >
-        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} />
+        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} isLoaded={isLoaded} />
         {actions && (
           <div className="absolute top-2 right-2 z-10">
             <ActionDropdown actions={actions} />

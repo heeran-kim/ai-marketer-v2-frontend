@@ -2,18 +2,21 @@ import { useState } from "react";
 
 
 type Comment = {
+  id: string;
   username: string;
   text: string;
   date:string;
+  replies: string[];
 }
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   comments: Comment[];
+  isLoaded: boolean;
 }
 
-const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments }) => {
+const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoaded }) => {
   if (!isOpen) return null;
   
   const overlayStyle: React.CSSProperties = {
@@ -59,18 +62,28 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments }) => {
           &times;
         </button>
         <h2>Comments</h2>
+        {isLoaded?
         <ul>
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <li key={index} style={commentStyle}>
                   <strong>{comment.username}</strong> <span style={{ color: "#777", fontSize: "0.85em" }}>{comment.date}</span><br />
                   <span style={{ fontSize: "0.9em", color: "#444" }}>{comment.text}</span>
+                  {comment.replies.map((reply,index)=>(
+                    <li key={index} style={{paddingLeft: '20px'}}>
+                    <strong>{comment.username=='User'?'Someone Replied:':'You Replied:'}</strong> <span style={{ color: "#777", fontSize: "0.85em" }}></span><br />
+                    <span style={{ fontSize: "0.9em", color: "#444" }}>{reply}</span>
+                    </li>
+                  ))}
               </li>
             ))
           ) : (
             <p>No comments yet.</p>
           )}
         </ul>
+      :
+      <p>Loading...</p>
+      }
       </div>
     </div>
   );
