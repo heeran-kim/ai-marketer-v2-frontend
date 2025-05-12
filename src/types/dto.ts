@@ -14,6 +14,7 @@ export interface PostDto {
   caption: string; // Caption text of the post
   image: string; // URL or path to the post's image
   link: string; // Link associated with the post
+  postId: string;
   createdAt: string; // Timestamp when the post was created
   postedAt: string; // Timestamp when the post was published
   scheduledAt: string; // Timestamp when the post is scheduled to be published

@@ -20,6 +20,7 @@ import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
 import { Card, ErrorFallback } from "@/components/common";
 import { mutate } from "swr";
 import { POSTS_API } from "@/constants/api";
+import { apiClient } from "@/hooks/dataHooks";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -128,9 +129,21 @@ export const PostsDashboardView = ({
     router.push(`/posts?mode=edit&id=${post.id}`);
   };
 
-  const handleRetry = (postId: string) => {
+  const handleRetry = async(postId: string) => {
     console.log(`Retrying post: ${postId}`);
-    // TODO: Implement retry logic
+    const formData = new FormData();
+    formData.append("retry", 't');
+
+    // Use the PATCH endpoint to retry the post
+    await apiClient.patch(
+      POSTS_API.UPDATE(postId),
+      formData,
+      {},
+      true // isFormData flag
+    );
+
+    // Show success notification
+    showNotification("success", "Post retry successfully!");
   };
 
   return (
@@ -150,8 +163,8 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
-
-      {posts.length === 0 && (
+      {isLoading?'Loading...':
+      posts.length === 0 && (
         <Card showButton={false}>
           <div className="text-center py-8 text-sm">
             <p className="text-gray-600 mb-6 whitespace-pre-line">
