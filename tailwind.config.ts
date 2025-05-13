@@ -3,6 +3,10 @@ import scrollbarhide from "tailwind-scrollbar-hide";
 
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  safelist: [
+    'aspect-[1/1]',
+    'aspect-[4/5]',
+  ],
   theme: {
     extend: {
       colors: {

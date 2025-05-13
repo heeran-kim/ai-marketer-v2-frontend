@@ -12,7 +12,9 @@ export interface Post {
   selectedCategoryLabels: string[]; // Labels for selected categories (e.g., "Brand Story")
   caption: string; // Text content of the post
   image: string; // URL of the attached image
+  aspectRatio: string; // Aspect ratio of the image (e.g., "4/5")
   link: string; // Link to the post on the platform
+  postId: string
   createdAt: string; // ISO timestamp of when the post was created
   postedAt: string; // ISO timestamp of when the post was published
   scheduledAt: string; // ISO timestamp of when the post is scheduled
@@ -30,6 +32,7 @@ export type PostReview = {
   platform: string; // Target platform for the post (e.g., "facebook", "twitter")
   selectedCategoryLabels: string[]; // Selected categories describing the post content
   caption: string; // User-selected caption for the post
+  aspectRatio: string; // Aspect ratio of the image (e.g., "4/5")
   type: string; // Type of the post
   onScheduleChange: (newDate: string) => void; // Callback to handle schedule changes
   scheduleDate: string; // Scheduled date for the post
@@ -157,6 +160,9 @@ export interface PostEditorContextType {
   setPlatformStates: (states: PlatformState[]) => void; // Function to update platform states
 
   platformSchedule: PlatformScheduleMap; // Schedule state for each platform
+
+  selectedAspectRatio: string | '4/5'; // Aspect ratio of the image (e.g., "4/5")
+  setAspectRatio: (aspectRatio: string) => void; // Function to update the aspectRatio
 
   setPlatformCaption: (key: string, caption: string) => void; // Function to update the caption for a specific platform
 

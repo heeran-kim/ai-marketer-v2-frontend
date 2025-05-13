@@ -107,6 +107,8 @@ export const PostEditorProvider = ({
 
   const [mode, setMode] = useState<PostEditorMode | null>(null);
 
+  const [selectedAspectRatio, setAspectRatio] = useState("4/5");
+
   const [captionGenerationInfo, setCaptionGenerationInfo] =
     useState<CaptionGenerationInfo>(RESET_CAPTION_GENERATION_INFO);
   const [menuItems, setMenuItems] = useState<Record<string, string>>({});
@@ -224,6 +226,7 @@ export const PostEditorProvider = ({
     if (!postCreateFormData) return;
 
     setUploadedImageUrl(selectedPost.image);
+    setAspectRatio(selectedPost.aspectRatio);
 
     setPlatformStates([
       {
@@ -447,8 +450,20 @@ export const PostEditorProvider = ({
           formData.append("promotion", promoData.id);
         }
 
+        if(selectedAspectRatio){
+          formData.append("aspect_ratio", selectedAspectRatio);
+        }
+
         // Send the request to create the post
-        await apiClient.post(POSTS_API.LIST, formData, {}, true);
+        try{
+        const response = await apiClient.post(POSTS_API.LIST, formData, {}, true);
+        console.log(response);
+        }
+        catch (error) {
+          console.error("Error creating post:", error);
+          showNotification("error", "Failed to create post. Please try again.");
+          return;
+        }
       }
 
       // Show success notification
@@ -499,6 +514,10 @@ export const PostEditorProvider = ({
       // Add image if a new one was uploaded
       if (captionGenerationInfo.image) {
         formData.append("image", captionGenerationInfo.image);
+      }
+
+      if(selectedAspectRatio){
+        formData.append("aspect_ratio", selectedAspectRatio);
       }
 
       // Use the PATCH endpoint to update the post
@@ -560,6 +579,8 @@ export const PostEditorProvider = ({
         fetchCaptionSuggestions,
         createPost,
         updatePost,
+        selectedAspectRatio,
+        setAspectRatio,
       }}
     >
       {children}

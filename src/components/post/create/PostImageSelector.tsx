@@ -14,6 +14,7 @@ export const PostImageSelector = () => {
     captionGenerationInfo,
     setCaptionGenerationInfo,
     captionGenerationSettings,
+    setAspectRatio,
   } = usePostEditorContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,12 @@ export const PostImageSelector = () => {
     });
   }, [captionGenerationSettings, setCaptionGenerationInfo]);
 
-  const handleImageChange = (file: File | null) => {
+  const handleImageChange = (file: File | null, previewUrl: string | null,aspectRatio: string | '4/5') => {
+    if (!file && previewUrl==='keep'){
+      setAspectRatio(aspectRatio);
+      //console.log(aspectRatio);
+      return;
+    }
     setCaptionGenerationInfo({
       ...captionGenerationInfo,
       image: file,

@@ -11,6 +11,7 @@ import { POSTS_API } from "@/constants/api";
 import { PostDto } from "@/types/dto";
 import { mapPostDtoToPost } from "@/utils/transformers";
 
+
 export default function PostsDashboard() {
   const router = useRouter();
   const { data, isLoading, error } = useFetchData<{ posts: PostDto[] }>(
