@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, DragAndDropUploader, ErrorFallback } from "@/components/common";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useNotification } from "@/context/NotificationContext";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
 import { Business } from "@/types/business";
@@ -10,6 +11,7 @@ import { INDUSTRY_OPTIONS } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
 
 export default function GeneralSettings() {
+  const { mutateUser } = useAuth();
   const {
     data: businessData,
     error,
@@ -83,7 +85,8 @@ export default function GeneralSettings() {
         const formData = new FormData();
         formData.append("logo_removed", "true");
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
-        if (businessData) mutate({ ...businessData, logo: null }, false);
+        if (businessData) await mutate({ ...businessData, logo: null }, false);
+        await mutateUser();
         showNotification("success", "Logo deleted successfully!");
       } catch (error) {
         console.error("Error deleting logo:", error);
@@ -114,8 +117,9 @@ export default function GeneralSettings() {
         formData.append("logo", file);
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
         if (businessData) mutate({ ...businessData, logo: previewUrl }, false);
-        showNotification("success", "Logo updated successfully!");
         await mutate();
+        await mutateUser();
+        showNotification("success", "Logo updated successfully!");
       } catch (error) {
         console.error("Error updating logo:", error);
         setEditedBusiness((prev) => ({
@@ -182,13 +186,14 @@ export default function GeneralSettings() {
 
     try {
       await apiClient.patch(SETTINGS_API.GENERAL, { [fieldName]: value });
+      await mutate();
+      await mutateUser();
       showNotification(
         "success",
         `${
           fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
         } updated successfully!`
       );
-      await mutate();
     } catch (error) {
       console.error(`Error updating ${fieldName}:`, error);
       showNotification(

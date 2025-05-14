@@ -16,7 +16,7 @@ export const BusinessProfileCard = ({ business }: Props) => {
       className="relative bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-md transition h-36 sm:h-40"
     >
       {/* Background logo */}
-      {!logo?.endsWith("default_logo.png") && (
+      {logo && (
         <div className="absolute inset-0 opacity-10">
           <Image
             src={`${logo}?t=${new Date().getTime()}`}
@@ -35,7 +35,6 @@ export const BusinessProfileCard = ({ business }: Props) => {
 
         {vibe && <p className="text-sm text-gray-800 mt-1">{vibe}</p>}
       </div>
-
       {/* Tags - Category and Vibe */}
       <div className="absolute bottom-3 right-3 flex gap-2 z-20">
         {category && (

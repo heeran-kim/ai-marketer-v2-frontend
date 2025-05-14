@@ -19,7 +19,13 @@ export default function RootLayout({
           <BackendHealthProvider>
             <NotificationProvider>
               <NavbarWrapper>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense
+                  fallback={
+                    <div className="flex flex-col justify-center items-center h-64">
+                      <p className="text-gray-500">Loading...</p>
+                    </div>
+                  }
+                >
                   <main className="flex-grow bg-gray-50">{children}</main>
                 </Suspense>
               </NavbarWrapper>

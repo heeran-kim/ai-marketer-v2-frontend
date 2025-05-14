@@ -129,10 +129,10 @@ export const PostsDashboardView = ({
     router.push(`/posts?mode=edit&id=${post.id}`);
   };
 
-  const handleRetry = async(postId: string) => {
+  const handleRetry = async (postId: string) => {
     console.log(`Retrying post: ${postId}`);
     const formData = new FormData();
-    formData.append("retry", 't');
+    formData.append("retry", "t");
 
     // Use the PATCH endpoint to retry the post
     await apiClient.patch(
@@ -163,15 +163,20 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
-      {isLoading?'Loading...':
-      posts.length === 0 && (
-        <Card showButton={false}>
-          <div className="text-center py-8 text-sm">
-            <p className="text-gray-600 mb-6 whitespace-pre-line">
-              {`No posts yet.\nClick 'Create Post' to start sharing your first post\nwith AI-powered help!`}
-            </p>
-          </div>
-        </Card>
+      {isLoading ? (
+        <div className="flex flex-col justify-center items-center h-64">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : (
+        posts.length === 0 && (
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`No posts yet.\nClick 'Create Post' to start sharing your first post\nwith AI-powered help!`}
+              </p>
+            </div>
+          </Card>
+        )
       )}
 
       {posts.length > 0 && filteredPosts.length === 0 && (
