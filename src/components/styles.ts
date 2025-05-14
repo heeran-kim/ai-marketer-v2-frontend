@@ -65,8 +65,6 @@ export const STATUS_COLORS_CHART: Record<string, string> = {
 export const PLATFORM_CHART_COLORS: Record<string, string> = {
   facebook: "rgba(66, 103, 178, 0.6)",
   instagram: "rgba(225, 48, 108, 0.6)",
-  twitter: "rgba(29, 161, 242, 0.6)",
-  threads: "rgba(0, 0, 0, 0.6)",
   default: "rgba(200, 200, 200, 0.6)",
 };
 

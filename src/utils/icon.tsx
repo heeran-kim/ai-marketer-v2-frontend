@@ -2,13 +2,7 @@
 "use client";
 
 import { JSX } from "react";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaTwitter,
-  FaThreads,
-  FaCircleQuestion,
-} from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaCircleQuestion } from "react-icons/fa6";
 
 export const platformConfig: Record<
   string,
@@ -16,8 +10,6 @@ export const platformConfig: Record<
 > = {
   instagram: { label: "Instagram", icon: FaInstagram, color: "text-pink-500" },
   facebook: { label: "Facebook", icon: FaFacebook, color: "text-blue-600" },
-  twitter: { label: "Twitter / X", icon: FaTwitter, color: "text-blue-400" },
-  threads: { label: "Threads", icon: FaThreads, color: "text-black" },
 };
 
 export type PlatformKey = (typeof PLATFORM_OPTIONS)[number];
