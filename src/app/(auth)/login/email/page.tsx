@@ -105,11 +105,11 @@ export default function EmailLoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8">
         {requires2FA === false ? (
           <>
-            <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
               Sign in with Email
             </h1>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -123,7 +123,7 @@ export default function EmailLoginPage() {
                                 ${
                                   errors.email
                                     ? "border-red-500 bg-red-50"
-                                    : "border-gray-300 dark:border-gray-600"
+                                    : "border-gray-300"
                                 }`}
                   value={formData.email}
                   onChange={handleChange}
@@ -143,7 +143,7 @@ export default function EmailLoginPage() {
                                 ${
                                   errors.password
                                     ? "border-red-500 bg-red-50"
-                                    : "border-gray-300 dark:border-gray-600"
+                                    : "border-gray-300"
                                 }`}
                   value={formData.password}
                   onChange={handleChange}
@@ -172,7 +172,7 @@ export default function EmailLoginPage() {
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
               Please enter the code on your Authenticator App
             </h1>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -186,7 +186,7 @@ export default function EmailLoginPage() {
                                 ${
                                   errors.code
                                     ? "border-red-500 bg-red-50"
-                                    : "border-gray-300 dark:border-gray-600"
+                                    : "border-gray-300"
                                 }`}
                   value={formData.code}
                   onChange={handleChange}
@@ -215,13 +215,13 @@ export default function EmailLoginPage() {
           </>
         )}
         {/* Help links */}
-        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400 space-y-2">
+        <div className="mt-6 text-center text-sm text-gray-600 space-y-2">
           <p>
             Don&apos;t have an account?
-            <span className="ml-1 text-indigo-600 dark:text-indigo-400">
+            <span className="ml-1 text-indigo-600">
               <Link
                 href="/register"
-                className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+                className="text-indigo-600 hover:text-indigo-800 transition"
               >
                 Sign Up
               </Link>
@@ -230,7 +230,7 @@ export default function EmailLoginPage() {
           <p>
             <Link
               href="/password/forget"
-              className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+              className="text-indigo-600 hover:text-indigo-800 transition"
             >
               Forgot your password?
             </Link>
@@ -241,7 +241,7 @@ export default function EmailLoginPage() {
         <div className="mt-6 text-center">
           <Link
             href="/login"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
           >
             <FaArrowLeft className="mr-2" size={14} />
             Other sign in options

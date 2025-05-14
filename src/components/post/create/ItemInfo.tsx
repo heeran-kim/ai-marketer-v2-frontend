@@ -155,12 +155,9 @@ export default function ItemInfo() {
     <CompactCard title="Menu Item Information">
       <div className="space-y-4 mb-4">
         {captionGenerationInfo.itemInfo.map((item, index) => (
-          <div
-            key={index}
-            className="p-3 border rounded-md bg-gray-50 dark:bg-gray-800"
-          >
+          <div key={index} className="p-3 border rounded-md bg-gray-50">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <h3 className="text-sm font-semibold text-gray-700">
                 Item #{index + 1}
               </h3>
               <button
@@ -206,12 +203,12 @@ export default function ItemInfo() {
                       ref={(el) => {
                         suggestionRefs.current[index] = el;
                       }}
-                      className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto"
+                      className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
                     >
                       {suggestions.items.map((suggestion, i) => (
                         <div
                           key={i}
-                          className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
                           onClick={() => selectSuggestion(suggestion, index)}
                         >
                           {suggestion}

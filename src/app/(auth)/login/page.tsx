@@ -57,9 +57,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">
+        <h1 className="text-2xl font-bold text-center text-gray-900 mb-8">
           Get Started with AI Marketer
         </h1>
 
@@ -85,25 +85,21 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+            <div className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
-              or
-            </span>
+            <span className="px-2 bg-gray-50 text-gray-500">or</span>
           </div>
         </div>
 
         {/* Alternative auth methods */}
-        <div className="space-y-3">
-          <Link
-            href="/login/email"
-            className="w-full py-3 flex items-center justify-center space-x-3 px-4 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
-          >
-            <FaEnvelope />
-            <span>Continue with Email</span>
-          </Link>
-        </div>
+        <Link
+          href="/login/email"
+          className="w-full flex items-center justify-center space-x-3 px-4 text-indigo-600 hover:text-indigo-800 transition-colors"
+        >
+          <FaEnvelope />
+          <span>Continue with Email</span>
+        </Link>
       </div>
     </div>
   );

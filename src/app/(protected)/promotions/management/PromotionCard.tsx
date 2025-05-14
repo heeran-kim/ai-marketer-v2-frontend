@@ -76,7 +76,7 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center space-x-2">
             <StatusIcon status={status} />
-            <span className="dark:text-white font-medium">{dateRange}</span>
+            <span className="font-medium">{dateRange}</span>
           </div>
           {/* Action buttons */}
           <div className="flex space-x-1">

@@ -2,8 +2,7 @@
 import clsx from "clsx";
 
 // ✅ Container styles
-export const baseContainerClass =
-  "bg-white dark:bg-black border dark:border-gray-600 transition";
+export const baseContainerClass = "bg-white border transition";
 
 // ✅ Layout styles
 export const flexRowClass = "flex items-center space-x-2";
@@ -11,15 +10,14 @@ export const flexRowClass = "flex items-center space-x-2";
 // ✅ Base Navigation Button Styles
 export const navItemClass =
   "flex items-center justify-center py-2 px-3 rounded-2xl transition text-sm";
-export const hoverNavItemClass = "hover:bg-gray-100 dark:hover:bg-gray-800";
-export const groupHoverNavItemClass =
-  "group-hover:bg-gray-100 group-hover:dark:bg-gray-800";
-export const activeNavItemClass = "bg-gray-100 dark:bg-gray-800"; // Keep hover effect when dropdown is open
+export const hoverNavItemClass = "hover:bg-gray-100";
+export const groupHoverNavItemClass = "group-hover:bg-gray-100";
+export const activeNavItemClass = "bg-gray-100"; // Keep hover effect when dropdown is open
 
 // ✅ Auth Button Styles (Login, Dashboard, Sign Up, Logout)
-export const authButtonClass = "border bg-white dark:bg-gray-900"; // For login/dashboard
+export const authButtonClass = "border bg-white"; // For login/dashboard
 export const primaryAuthButtonClass =
-  "border bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300"; // For Sign up & Logout
+  "border bg-black text-white hover:bg-gray-800"; // For Sign up & Logout
 
 // ✅ Predefined Combinations for Different Components
 export const dropdownNavItemClass = (isActive: boolean) =>
@@ -39,9 +37,8 @@ export const dropdownItemClass = clsx(
   hoverNavItemClass,
   "p-2 rounded-lg transition"
 );
-export const dropdownTextClass =
-  "font-semibold text-sm text-gray-900 dark:text-white";
-export const dropdownSubTextClass = "text-xs text-gray-500 dark:text-gray-400";
+export const dropdownTextClass = "font-semibold text-sm text-gray-900";
+export const dropdownSubTextClass = "text-xs text-gray-500";
 
 // Status Color Mapping
 const STATUS_COLORS: Record<string, string> = {

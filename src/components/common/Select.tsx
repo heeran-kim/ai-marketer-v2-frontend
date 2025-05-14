@@ -43,8 +43,6 @@ export default function Select({
         className="
                     w-full min-w-[160px] px-4 py-2 text-sm border rounded-md shadow-sm 
                     flex items-center justify-between transition focus:outline-none focus:ring-2
-                    dark:bg-black dark:text-white dark:border-gray-700 dark:focus:ring-gray-600 
-                    dark:focus:border-gray-600
                     bg-white text-gray-900 border-gray-300 focus:ring-gray-400 focus:border-gray-400
                 "
       >
@@ -58,9 +56,7 @@ export default function Select({
             value
           )
         ) : (
-          <span className="text-gray-500 dark:text-gray-400">
-            {placeholder}
-          </span>
+          <span className="text-gray-500">{placeholder}</span>
         )}
 
         <FaChevronDown
@@ -73,7 +69,6 @@ export default function Select({
         <ul
           className="
                     absolute left-0 mt-2 w-full border rounded-md shadow-lg z-50 overflow-hidden
-                    dark:bg-black dark:border-gray-700 dark:text-white dark:shadow-gray-900
                     bg-white border-gray-300 text-gray-900 shadow-gray-200
                     animate-fade-in"
         >
@@ -83,8 +78,7 @@ export default function Select({
                 onChange(null);
                 setIsOpen(false);
               }}
-              className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer
-                                       dark:hover:bg-gray-800 hover:bg-gray-100 transition"
+              className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer hover:bg-gray-100 transition"
             >
               All
               {value === null && <FaCheck />}
@@ -101,8 +95,7 @@ export default function Select({
                   onChange(key);
                   setIsOpen(false);
                 }}
-                className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer
-                                        dark:hover:bg-gray-800 hover:bg-gray-100 transition"
+                className="px-4 py-2 text-sm flex items-center justify-between cursor-pointer hover:bg-gray-100 transition"
               >
                 {label}
                 {value === key && <FaCheck />}

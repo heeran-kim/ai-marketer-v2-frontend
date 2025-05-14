@@ -3,20 +3,16 @@ import scrollbarhide from "tailwind-scrollbar-hide";
 
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
-  safelist: [
-    'aspect-[1/1]',
-    'aspect-[4/5]',
-  ],
+  safelist: ["aspect-[1/1]", "aspect-[4/5]"],
   theme: {
     extend: {
       colors: {
-        background: { DEFAULT: "#ffffff", dark: "#000000" },
-        foreground: { DEFAULT: "#171717", dark: "#ededed" },
-        border: { DEFAULT: "#e5e7eb", dark: "#333333" },
+        background: "#ffffff",
+        foreground: "#171717",
+        border: "#e5e7eb",
       },
     },
   },
-  darkMode: "class",
   plugins: [scrollbarhide],
 };
 

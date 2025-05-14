@@ -34,7 +34,7 @@ interface Comment {
   from: {
     name: string;
   };
-  createdTime:string;
+  createdTime: string;
   message: string;
   replies: string[];
   likeCount: number;
@@ -151,7 +151,15 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
 
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const handleAddComment = (id:string, username: string,text: string,date: string, replies: string[], likes: number, self_like: boolean) => {
+    const handleAddComment = (
+      id: string,
+      username: string,
+      text: string,
+      date: string,
+      replies: string[],
+      likes: number,
+      self_like: boolean
+    ) => {
       const newComment: CommentOld = {
         id,
         username,
@@ -178,8 +186,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         if (error instanceof Error) {
           console.error("Error liking comment:", error);
         }
-      }
-      finally{
+      } finally {
         getComments((item as Post).id);
       }
     };
@@ -188,7 +195,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,message));
+        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId, message));
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
         //console.log(response);
@@ -198,8 +205,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         if (error instanceof Error) {
           console.error("Error replying to comment:", error);
         }
-      }
-      finally{
+      } finally {
         getComments((item as Post).id);
       }
     };
@@ -208,15 +214,14 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId,"delete000"));  //use same endpoint to not require a new one
+        await apiClient.get(POSTS_API.REPLY_COMMENTS(itemId, "delete000")); //use same endpoint to not require a new one
         //console.log(response);
         setIsLoaded(true);
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error("Error deleting comment:", error);
         }
-      }
-      finally{
+      } finally {
         getComments((item as Post).id);
       }
     };
@@ -225,17 +230,31 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       setIsLoaded(false);
       if (!itemId) return;
       try {
-        const response = await apiClient.get(POSTS_API.COMMENTS(itemId)) as {message:CommentsResponse};
+        const response = (await apiClient.get(POSTS_API.COMMENTS(itemId))) as {
+          message: CommentsResponse;
+        };
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
         // console.log(response);
-        
-        const comments=response.message.message
-        const localComments=[]
-        for (let i =0;i<comments.length;i++)
-        {
-          const formattedDate = new Date(comments[i].createdTime).toLocaleString('en-US', {dateStyle: 'medium',timeStyle: 'short'});
-          const comment = handleAddComment(comments[i].id,comments[i].from.name,comments[i].message,formattedDate,comments[i].replies,comments[i].likeCount,comments[i].selfLike);
+
+        const comments = response.message.message;
+        const localComments = [];
+        for (let i = 0; i < comments.length; i++) {
+          const formattedDate = new Date(
+            comments[i].createdTime
+          ).toLocaleString("en-US", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          });
+          const comment = handleAddComment(
+            comments[i].id,
+            comments[i].from.name,
+            comments[i].message,
+            formattedDate,
+            comments[i].replies,
+            comments[i].likeCount,
+            comments[i].selfLike
+          );
           localComments.push(comment);
         }
         setComments(localComments);
@@ -248,7 +267,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
       }
     };
 
-    const [commentsOpen,setCommentsOpen] = useState(false);
+    const [commentsOpen, setCommentsOpen] = useState(false);
 
     const handleCommentModal = () => {
       getComments((item as Post).id);
@@ -275,7 +294,15 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         className={`relative bg-white rounded-lg shadow-md border
                 ${isMobileLayout ? "flex flex-col" : "flex flex-row h-72"}`}
       >
-        <CommentModal isOpen={commentsOpen} onClose={handleCommentModal} comments={comments} isLoaded={isLoaded} likeComment={likeComment} deleteComment={deleteComment} sendReply={sendReply} />
+        <CommentModal
+          isOpen={commentsOpen}
+          onClose={handleCommentModal}
+          comments={comments}
+          isLoaded={isLoaded}
+          likeComment={likeComment}
+          deleteComment={deleteComment}
+          sendReply={sendReply}
+        />
         {actions && (
           <div className="absolute top-2 right-2 z-10">
             <ActionDropdown actions={actions} />
@@ -298,7 +325,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                 : (item as Post).aspectRatio === "4/5"
                 ? "h-auto aspect-[4/5]"
                 : "h-auto aspect-[1/1]" // fallback
-            } mx-auto object-cover `}// Added aspect ratio for better image handling. But need to update it to get saved aspect ratio from db. Should we?
+            } mx-auto object-cover `} // Added aspect ratio for better image handling. But need to update it to get saved aspect ratio from db. Should we?
             priority // Added priority to optimize LCP
           />
         </div>
@@ -355,7 +382,7 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                     href={socialLink.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                    className="mt-1 inline-flex items-center gap-2 text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200 transition"
                   >
                     {getPlatformIcon(socialLink.platformKey, "text-xs")}
                     <span className="truncate max-w-[160px]">
@@ -364,8 +391,8 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
                   </a>
                 </div>
               </div>
-              <div className="h-32 mt-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-y-auto">
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+              <div className="h-32 mt-2 p-2 rounded-md bg-gray-50 border border-gray-200 overflow-y-auto">
+                <p className="text-sm text-gray-700 whitespace-pre-line">
                   {description}
                 </p>
               </div>
@@ -373,24 +400,26 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
           )}
 
           {item.type === "postReview" && socialLink && (
-            <div className="relative h-32 mt-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-y-auto">
+            <div className="relative h-32 mt-2 p-2 rounded-md bg-gray-50 border border-gray-200 overflow-y-auto">
               <span className="float-left mr-4">
                 {getPlatformIcon(socialLink.platformKey)}
               </span>
-              <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+              <p className="text-sm text-gray-700 whitespace-pre-line">
                 {description}
               </p>
             </div>
           )}
 
-          <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-1 flex items-center justify-between text-sm text-gray-500">
             {item.type === "post" && (
               <>
                 <div className="flex items-center space-x-1">
                   <span>👍❤️ </span>
                   <span>{(item as Post).reactions || 0}</span>
                 </div>
-                <button onClick={handleCommentModal}>💬 {(item as Post).comments || 0}</button>
+                <button onClick={handleCommentModal}>
+                  💬 {(item as Post).comments || 0}
+                </button>
               </>
             )}
           </div>

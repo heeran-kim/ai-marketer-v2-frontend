@@ -6,19 +6,14 @@ import {
   FaFacebookF,
   FaLinkedinIn,
   FaArrowUp,
-  FaSun,
-  FaMoon,
 } from "react-icons/fa";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Footer() {
   const { authState } = useAuth();
-  const [isDark, setIsDark] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-
     const handleScroll = () => {
       setShowScrollButton(window.scrollY > 300);
     };
@@ -29,18 +24,13 @@ export default function Footer() {
     };
   }, []);
 
-  const toggleDarkMode = () => {
-    document.documentElement.classList.toggle("dark");
-    setIsDark(!isDark);
-  };
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <footer
-      className={`py-12 relative transition-colors duration-300 dark:bg-neutral-900 text-black dark:text-gray-300
+      className={`py-12 relative transition-colors duration-300 text-black
                 ${
                   authState.status === "authenticated"
                     ? "bg-white"
@@ -50,7 +40,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
         <div>
           <h3 className="text-lg font-semibold">AKA Studio</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500">
             AI-powered marketing automation platform.
           </p>
         </div>
@@ -89,17 +79,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
-      <button
-        onClick={toggleDarkMode}
-        className="absolute bottom-6 left-6 p-3 bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded-full shadow-lg transition hover:scale-110"
-      >
-        {isDark ? (
-          <FaSun className="text-yellow-500" />
-        ) : (
-          <FaMoon className="text-blue-500" />
-        )}
-      </button>
 
       {showScrollButton && (
         <button

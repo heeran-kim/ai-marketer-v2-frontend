@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="pt-32 pb-20 bg-gradient-to-r from-indigo-500 to-indigo-700 dark:from-gray-900 dark:to-gray-800 text-white text-center relative">
+    <section className="pt-32 pb-20 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white text-center relative">
       <div className="max-w-4xl mx-auto px-6">
-        <p className="text-sm font-semibold uppercase tracking-wide text-indigo-200 dark:text-indigo-400">
+        <p className="text-sm font-semibold uppercase tracking-wide text-indigo-200">
           AI-Powered Marketing
         </p>
 
@@ -12,7 +12,7 @@ export default function Hero() {
           Boost Your Social Media with AI Captions
         </h1>
 
-        <p className="text-base md:text-lg text-indigo-100 dark:text-indigo-300 mt-4">
+        <p className="text-base md:text-lg text-indigo-100 mt-4">
           Let AI analyze your images and generate engaging captions instantly.
         </p>
 

@@ -7,11 +7,9 @@ import InfoTooltip from "./InfoTooltip";
 export default function Header({ title, actionButton }: HeaderProps) {
   return (
     <>
-      <div className="border-b border-gray-300 dark:border-gray-700">
+      <div className="border-b border-gray-300">
         <div className="flex justify-between max-w-6xl mx-auto px-6 py-8">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-            {title}
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-800">{title}</h1>
           {actionButton && (
             <button
               onClick={actionButton.onClick}

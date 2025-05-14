@@ -43,7 +43,7 @@ export default function SubNavbar() {
   if (menuItems.length === 0) return null;
 
   return (
-    <div className="w-full bg-white dark:bg-neutral-900 border-b border-gray-300 dark:border-gray-700 shadow-sm">
+    <div className="w-full bg-white border-b border-gray-300 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 flex items-center h-12 space-x-8">
         {menuItems.map((item) => (
           <Link
@@ -51,7 +51,7 @@ export default function SubNavbar() {
             href={item.href}
             className={`text-sm font-medium ${
               isActive(item)
-                ? "text-black dark:text-white border-b-2 border-black dark:border-white"
+                ? "text-black border-b-2 border-black"
                 : "text-gray-500 hover:text-black"
             }`}
           >

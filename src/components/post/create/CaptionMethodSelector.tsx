@@ -12,12 +12,12 @@ export const CaptionMethodSelector = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-600 rounded-lg shadow-md space-y-10 h-full p-3 flex flex-col">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-md space-y-10 h-full p-3 flex flex-col">
       <div>
-        <h2 className="text-md font-semibold text-gray-800 dark:text-gray-100">
+        <h2 className="text-md font-semibold text-gray-800">
           How would you like to generate the caption?
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+        <p className="text-sm text-gray-600 mt-3">
           Before you create your post, choose how you&apos;d like to create the
           caption. You can either let AI work its magic and generate a caption
           for you, or if you prefer, you can write it yourself. Pick what works
@@ -30,11 +30,11 @@ export const CaptionMethodSelector = () => {
           className={`${
             captionGenerationSettings.method === "ai"
               ? "bg-black text-white"
-              : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+              : "bg-white text-gray-800"
           } border ${
             captionGenerationSettings.method === "ai"
               ? "border-black"
-              : "border-gray-200 dark:border-gray-600"
+              : "border-gray-200"
           } rounded-lg p-3 cursor-pointer hover:shadow-md`}
           onClick={() => handleSelection("ai")}
         >
@@ -55,11 +55,11 @@ export const CaptionMethodSelector = () => {
           className={`${
             captionGenerationSettings.method === "manual"
               ? "bg-black text-white"
-              : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+              : "bg-white text-gray-800"
           } border ${
             captionGenerationSettings.method === "manual"
               ? "border-black"
-              : "border-gray-200 dark:border-gray-600"
+              : "border-gray-200"
           } rounded-lg p-4 cursor-pointer hover:shadow-md`}
           onClick={() => handleSelection("manual")}
         >

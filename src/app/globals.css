@@ -5,11 +5,3 @@
 body {
   @apply bg-background text-foreground transition-colors duration-300;
 }
-
-.dark body {
-  @apply bg-background-dark text-foreground-dark;
-}
-
-.navbar {
-  height: 64px; /* 16 rem in tailwind */
-}

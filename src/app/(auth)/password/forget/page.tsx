@@ -50,9 +50,9 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
           Reset Your Password
         </h1>
 
@@ -61,11 +61,11 @@ export default function ForgotPasswordPage() {
             <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg">
               Password reset email sent! Check your inbox for instructions.
             </div>
-            <p className="mb-6 text-gray-600 dark:text-gray-400">
+            <p className="mb-6 text-gray-600">
               If you don&apos;t see the email, check your spam folder or
               <button
                 onClick={() => setIsSuccess(false)}
-                className="ml-1 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                className="ml-1 text-indigo-600 hover:text-indigo-800"
               >
                 try again
               </button>
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           </div>
         ) : (
           <>
-            <p className="mb-6 text-gray-600 dark:text-gray-400 text-center">
+            <p className="mb-6 text-gray-600 text-center">
               Enter your email address and we&apos;ll send you a link to reset
               your password.
             </p>
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
                 <input
                   type="email"
                   placeholder="Email address"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300 dark:border-gray-600"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 text-center">
           <Link
             href="/login/email"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
           >
             <FaArrowLeft className="mr-2" size={14} />
             Back to Login

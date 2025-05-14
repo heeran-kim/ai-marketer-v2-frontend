@@ -72,9 +72,9 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">
           Reset Your Password
         </h1>
 
@@ -83,7 +83,7 @@ export default function ResetPasswordPage() {
             <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg">
               Password reset successful!
             </div>
-            <p className="mb-6 text-gray-600 dark:text-gray-400">
+            <p className="mb-6 text-gray-600">
               Your password has been updated. You can now log in with your new
               password.
             </p>
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <>
-            <p className="mb-6 text-gray-600 dark:text-gray-400 text-center">
+            <p className="mb-6 text-gray-600 text-center">
               Please enter your new password.
             </p>
 
@@ -105,7 +105,7 @@ export default function ResetPasswordPage() {
                 <input
                   type="password"
                   placeholder="New password"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300 dark:border-gray-600"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -115,7 +115,7 @@ export default function ResetPasswordPage() {
                 <input
                   type="password"
                   placeholder="Confirm new password"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300 dark:border-gray-600"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-colors border-gray-300"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
         <div className="mt-6 text-center">
           <Link
             href="/login"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition"
+            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
           >
             <FaArrowLeft className="mr-2" size={14} />
             Back to Login

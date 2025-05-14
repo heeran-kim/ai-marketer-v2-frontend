@@ -108,7 +108,7 @@ const SuggestionCard: React.FC<SuggestionCardProps> = ({
       <div className="bg-white border rounded-lg shadow-sm p-4">
         {/* Title with dismiss button */}
         <div className="flex justify-between items-start mb-3">
-          <div className="dark:text-white font-medium mb-2">{title}</div>
+          <div className="font-medium mb-2">{title}</div>
           {!isDismissed && (
             <button
               onClick={() => setIsConfirmOpen(true)}

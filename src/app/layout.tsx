@@ -20,9 +20,7 @@ export default function RootLayout({
             <NotificationProvider>
               <NavbarWrapper>
                 <Suspense fallback={<p>Loading...</p>}>
-                  <main className="flex-grow bg-gray-50 dark:bg-black">
-                    {children}
-                  </main>
+                  <main className="flex-grow bg-gray-50">{children}</main>
                 </Suspense>
               </NavbarWrapper>
               <Footer />

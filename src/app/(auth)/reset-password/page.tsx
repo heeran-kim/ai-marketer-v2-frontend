@@ -19,8 +19,8 @@ export default function ResetPasswordRedirect() {
   }, [router, searchParams]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-      <p className="text-gray-600 dark:text-gray-400">Redirecting...</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <p className="text-gray-600">Redirecting...</p>
     </div>
   );
 }
