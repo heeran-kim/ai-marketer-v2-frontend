@@ -2,10 +2,6 @@
 import { SelectableCategory } from "./post";
 import { PromotionSuggestion } from "./promotion";
 
-/**
- * DTO for raw post data received from the backend.
- * Contains the essential details of a post including its business, platform, and status.
- */
 export interface PostDto {
   id: string; // Unique identifier for the post
   business: string; // Business associated with the post
@@ -24,6 +20,11 @@ export interface PostDto {
   reposts: number; // Number of reposts or shares
   shares: number; // Number of shares of the post
   type: string; // Type (e.g., post)
+}
+
+export interface PostListDto {
+  linked: boolean; // Whether the business is linked to a platform or not
+  posts: PostDto[]; // Array of posts
 }
 
 /**
