@@ -42,15 +42,10 @@ const PostEditorContext = createContext<PostEditorContextType | undefined>(
 const stepReducer = (state: StepState, action: StepAction): StepState => {
   switch (action.type) {
     case "NEXT": {
-      let nextStepNumber = Math.min(state.stepNumber + 1, StepNames.length - 1);
-
-      // Skip CAPTION_OPTIONS_SELECTION if method is "manual"
-      if (
-        action.payload?.captionGenerationSettings?.method === "manual" &&
-        StepNames[nextStepNumber] === "CAPTION_OPTIONS_SELECTION"
-      ) {
-        nextStepNumber++;
-      }
+      const nextStepNumber = Math.min(
+        state.stepNumber + 1,
+        StepNames.length - 1
+      );
 
       return {
         stepNumber: nextStepNumber,
@@ -58,15 +53,7 @@ const stepReducer = (state: StepState, action: StepAction): StepState => {
       };
     }
     case "BACK": {
-      let prevStepNumber = Math.max(state.stepNumber - 1, 1);
-
-      // Skip CAPTION_OPTIONS_SELECTION if method is "manual"
-      if (
-        action.payload?.captionGenerationSettings?.method === "manual" &&
-        StepNames[prevStepNumber] === "CAPTION_OPTIONS_SELECTION"
-      ) {
-        prevStepNumber--;
-      }
+      const prevStepNumber = Math.max(state.stepNumber - 1, 1);
 
       return {
         stepNumber: prevStepNumber,
@@ -76,7 +63,7 @@ const stepReducer = (state: StepState, action: StepAction): StepState => {
     case "INIT_FOR_CREATE":
       return { stepNumber: 1, stepName: StepNames[1] }; // Start at CAPTION_METHOD_SELECTION
     case "INIT_FOR_EDIT":
-      return { stepNumber: 3, stepName: StepNames[3] }; // Start at IMAGE_SELECTION
+      return { stepNumber: 2, stepName: StepNames[2] }; // Start at IMAGE_SELECTION
     case "RESET":
       return { stepNumber: 0, stepName: StepNames[0] }; // Reset to RESET step
     default:
@@ -190,7 +177,6 @@ export const PostEditorProvider = ({
         includeItemDescription: postCreateFormData.business.items
           ? true
           : false,
-        includeSalesData: postCreateFormData.business.hasSalesData,
       });
       if (postCreateFormData.business.items) {
         setMenuItems(postCreateFormData.business.items);
@@ -349,27 +335,6 @@ export const PostEditorProvider = ({
     );
     formData.append("itemInfo", JSON.stringify(captionGenerationInfo.itemInfo));
     formData.append("additionalPrompt", captionGenerationInfo.additionalPrompt);
-    formData.append(
-      "includeSalesData",
-      JSON.stringify(captionGenerationSettings.includeSalesData)
-    );
-
-    // If image analysis is enabled, append detected items
-    if (captionGenerationSettings.enableImageAnalysis) {
-      formData.append(
-        "detectedItems",
-        JSON.stringify(captionGenerationInfo.detectedItems)
-      );
-    }
-
-    // Append image if it's included in the caption
-    if (captionGenerationSettings.includeImageInCaption) {
-      if (captionGenerationInfo.image) {
-        formData.append("image", captionGenerationInfo.image);
-      } else {
-        console.error("Image is not available for caption generation.");
-      }
-    }
 
     try {
       const res = await apiClient.post<{ captions: string[] }>(
@@ -450,16 +415,20 @@ export const PostEditorProvider = ({
           formData.append("promotion", promoData.id);
         }
 
-        if(selectedAspectRatio){
+        if (selectedAspectRatio) {
           formData.append("aspect_ratio", selectedAspectRatio);
         }
 
         // Send the request to create the post
-        try{
-        const response = await apiClient.post(POSTS_API.LIST, formData, {}, true);
-        console.log(response);
-        }
-        catch (error) {
+        try {
+          const response = await apiClient.post(
+            POSTS_API.LIST,
+            formData,
+            {},
+            true
+          );
+          console.log(response);
+        } catch (error) {
           console.error("Error creating post:", error);
           showNotification("error", "Failed to create post. Please try again.");
           return;
@@ -516,7 +485,7 @@ export const PostEditorProvider = ({
         formData.append("image", captionGenerationInfo.image);
       }
 
-      if(selectedAspectRatio){
+      if (selectedAspectRatio) {
         formData.append("aspect_ratio", selectedAspectRatio);
       }
 

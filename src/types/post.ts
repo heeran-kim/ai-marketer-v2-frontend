@@ -14,7 +14,7 @@ export interface Post {
   image: string; // URL of the attached image
   aspectRatio: string; // Aspect ratio of the image (e.g., "4/5")
   link: string; // Link to the post on the platform
-  postId: string
+  postId: string;
   createdAt: string; // ISO timestamp of when the post was created
   postedAt: string; // ISO timestamp of when the post was published
   scheduledAt: string; // ISO timestamp of when the post is scheduled
@@ -62,31 +62,19 @@ export interface PlatformSchedule {
 // Map of platform keys to their schedule states
 export type PlatformScheduleMap = Record<PlatformKey, PlatformSchedule>;
 
-// Represents the response from AI image analysis
-export interface ImageAnalysisResponse {
-  detectedItems: string[]; // List of detected objects in the image (e.g., ["Steak", "Lemon"])
-}
-
 // Represents AI settings for post generation
 export interface CaptionGenerationSettings {
   method: "ai" | "manual"; // Caption generation method ("ai" for AI-generated, "manual" for user-written)
-  enableImageAnalysis: boolean; // Indicates whether to enable image analysis AI (e.g., AWS Rekognition)
-  includeImageInCaption: boolean; // Indicates whether to include image data in caption generation (e.g., OpenAI Vision)
   includeItemDescription: boolean; // Indicates whether to include item descriptions from Square API in caption generation
-  includeSalesData: boolean; // Indicates whether to include sales data in caption generation
 }
 
 export const RESET_CAPTION_GENERATION_SETTINGS: CaptionGenerationSettings = {
   method: "ai",
-  enableImageAnalysis: false,
-  includeImageInCaption: false,
   includeItemDescription: false,
-  includeSalesData: false,
 };
 
 export type CaptionGenerationInfo = {
   image: File | null; // Uploaded image file
-  detectedItems: string[]; // List of AI-detected objects from the image
   businessInfo: {
     targetCustomers: string; // Target customers for the business (e.g., "Foodies")
     vibe: string; // Vibe of the business (e.g., "Casual Dining")
@@ -97,7 +85,6 @@ export type CaptionGenerationInfo = {
 
 export const RESET_CAPTION_GENERATION_INFO: CaptionGenerationInfo = {
   image: null,
-  detectedItems: [],
   businessInfo: { targetCustomers: "", vibe: "" },
   itemInfo: [],
   additionalPrompt: "",
@@ -106,7 +93,6 @@ export const RESET_CAPTION_GENERATION_INFO: CaptionGenerationInfo = {
 export const StepNames = [
   "RESET", // Explicit RESET step
   "CAPTION_METHOD_SELECTION",
-  "CAPTION_OPTIONS_SELECTION",
   "IMAGE_SELECTION",
   "POST_DETAILS",
   "CAPTION_EDITOR",
@@ -161,7 +147,7 @@ export interface PostEditorContextType {
 
   platformSchedule: PlatformScheduleMap; // Schedule state for each platform
 
-  selectedAspectRatio: string | '4/5'; // Aspect ratio of the image (e.g., "4/5")
+  selectedAspectRatio: string | "4/5"; // Aspect ratio of the image (e.g., "4/5")
   setAspectRatio: (aspectRatio: string) => void; // Function to update the aspectRatio
 
   setPlatformCaption: (key: string, caption: string) => void; // Function to update the caption for a specific platform

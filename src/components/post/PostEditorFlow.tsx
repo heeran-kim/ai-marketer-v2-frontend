@@ -10,7 +10,6 @@ import {
   ConfirmModalHandler,
 } from "@/components/common";
 import { CaptionMethodSelector } from "./create/CaptionMethodSelector";
-import { CaptionOptionsSelector } from "./create/CaptionOptionsSelector";
 import { PostImageSelector } from "./create/PostImageSelector";
 import PostDetails from "./create/PostDetails";
 import CaptionEditor from "./components/captionEditor/CaptionEditor";
@@ -42,19 +41,12 @@ export const PostEditorFlow = () => {
     captionGenerationInfo,
   } = usePostEditorContext();
 
-  const { image, detectedItems } = captionGenerationInfo;
+  const { image } = captionGenerationInfo;
   const isCreating = mode === PostEditorMode.CREATE;
   const isGeneratingCaption =
     isCreating && captionGenerationSettings.method === "ai";
   const isEditing = mode === PostEditorMode.EDIT;
   const [isLastStep, setIsLastStep] = useState<boolean>(false);
-
-  useEffect(() => {
-    contentRef.current?.scrollTo({
-      top: contentRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [detectedItems]);
 
   useEffect(() => {
     setIsLastStep(stepState.stepName === StepNames[StepNames.length - 1]);
@@ -63,17 +55,6 @@ export const PostEditorFlow = () => {
   const handleNext = async (skipConfirm = false) => {
     if (stepState.stepName === "IMAGE_SELECTION" && !image && isCreating) {
       setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_IMAGE);
-      return;
-    }
-
-    if (
-      stepState.stepName === "IMAGE_SELECTION" &&
-      captionGenerationSettings.enableImageAnalysis &&
-      !detectedItems?.length &&
-      !skipConfirm &&
-      isCreating
-    ) {
-      setConfirmModalMode(ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS);
       return;
     }
 
@@ -179,9 +160,6 @@ export const PostEditorFlow = () => {
         >
           {stepState.stepName === "CAPTION_METHOD_SELECTION" && (
             <CaptionMethodSelector />
-          )}
-          {stepState.stepName === "CAPTION_OPTIONS_SELECTION" && (
-            <CaptionOptionsSelector />
           )}
           {stepState.stepName === "IMAGE_SELECTION" && <PostImageSelector />}
           {stepState.stepName === "POST_DETAILS" && <PostDetails />}
