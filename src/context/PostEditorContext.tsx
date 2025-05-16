@@ -243,8 +243,8 @@ export const PostEditorProvider = ({
   }, [mode, selectedPost, postCreateFormData]);
 
   useEffect(() => {
-    if (modeParam == PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
-    else if (modeParam == PostEditorMode.EDIT) setMode(PostEditorMode.EDIT);
+    if (modeParam === PostEditorMode.CREATE) setMode(PostEditorMode.CREATE);
+    else if (modeParam === PostEditorMode.EDIT) setMode(PostEditorMode.EDIT);
     else setMode(null);
   }, [modeParam]);
 
