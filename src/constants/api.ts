@@ -15,10 +15,13 @@ export const USERS_API = {
   REGISTER: `${BASE_URL}/users/register/`,
   ME: `${BASE_URL}/users/me/`,
 
+  
+
   //Added 2FA Endpoints
   QR_2FA: `${BASE_URL}/users/2fa-qr/`,
   CHECK_2FA: `${BASE_URL}/users/2fa-check/`,
   REMOVE_2FA: `${BASE_URL}/users/2fa-remove/`,
+
 };
 
 // Dashboard API Endpoints
@@ -29,12 +32,9 @@ export const DASHBOARD_API = {
 // Settings API Endpoints
 export const SETTINGS_API = {
   GENERAL: `${BASE_URL}/businesses/me/`,
-  GET_SOCIAL: `${BASE_URL}/social/accounts/`,
-  CONNECT_SOCIAL: (provider: string) =>
-    `${BASE_URL}/social/connect/${provider}/`,
-  DISCONNECT_SOCIAL: (provider: string) =>
-    `${BASE_URL}/social/disconnect/${provider}/`,
   SALES: `${BASE_URL}/sales/`,
+  DELETE_ACCOUNT: `${BASE_URL}/users/delete-account/`
+  
 };
 
 // Posts API Endpoints
@@ -65,4 +65,8 @@ export const SUGGESTIONS_API = {
 export const AI_API = {
   IMG_ANALYSIS: `${BASE_URL}/ai/images/analyse/`,
   CAPTION_GENERATE: `${BASE_URL}/ai/captions/generate/`,
+
+
+
 };
+

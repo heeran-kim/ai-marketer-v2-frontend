@@ -1,5 +1,6 @@
 // src/app/(protected)/settings/general/page.tsx
 "use client";
+import { USERS_API } from "@/constants/api";
 
 import { useState, useEffect } from "react";
 import { Card, DragAndDropUploader, ErrorFallback } from "@/components/common";
@@ -284,73 +285,70 @@ export default function GeneralSettings() {
         buttonLoading={savingFields["category"]}
       >
         <div className="flex flex-wrap gap-2">
-          {INDUSTRY_OPTIONS.map((industry) => {
-            const isSelected =
-              isPredefinedCategory && editedBusiness?.category === industry;
-
-            return (
-              <button
-                key={industry}
-                id={industry}
-                onClick={handleCategoryClick}
-                className={`px-3 py-1.5 rounded-md border text-sm ${
-                  isSelected || (!isPredefinedCategory && industry === "Others")
-                    ? "bg-black text-white border-black"
-                    : "bg-white border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                {industry}
-              </button>
-            );
-          })}
+          {INDUSTRY_OPTIONS.map((category) => (
+            <button
+              key={category}
+              id="category"
+              type="button"
+              className={`py-1 px-3 rounded-full text-sm font-medium ${
+                editedBusiness?.category === category
+                  ? "bg-black text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+              onClick={handleCategoryClick}
+            >
+              {category}
+            </button>
+          ))}
         </div>
 
-        <div className="space-y-1 mt-2">
+        <div className="mt-3">
           <input
             id="category"
             type="text"
             className={`max-w-xs w-full text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
               fieldErrors.category ? "border-red-500 bg-red-50" : ""
             }`}
-            placeholder="Enter a more specific type"
-            value={isPredefinedCategory ? "" : editedBusiness?.category || ""}
+            placeholder="Or enter your category manually"
+            value={
+              isPredefinedCategory
+                ? ""
+                : editedBusiness?.category || ""
+            }
             onChange={handleInputChange}
           />
           {fieldErrors.category && (
-            <p className="text-red-500 text-xs">{fieldErrors.category}</p>
-          )}
-        </div>
-      </Card>
-
-      <Card
-        id="targetCustomers"
-        title="Target Customer"
-        description="Provide information about your typical customers (Age, Gender)."
-        restriction="Please use 32 characters at maximum."
-        onClick={handleSave}
-        buttonDisabled={savingFields["targetCustomers"]}
-        buttonLoading={savingFields["targetCustomers"]}
-      >
-        <div className="space-y-1">
-          <input
-            id="targetCustomers"
-            type="text"
-            className={`max-w-xs w-full text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
-              fieldErrors.targetCustomers ? "border-red-500 bg-red-50" : ""
-            }`}
-            placeholder="e.g. 18-35 years old, mostly female"
-            value={editedBusiness?.targetCustomers || ""}
-            onChange={handleInputChange}
-            maxLength={32}
-          />
-          {fieldErrors.targetCustomers && (
-            <p className="text-red-500 text-xs">
-              {fieldErrors.targetCustomers}
+            <p className="text-red-500 text-xs mt-1">
+              {fieldErrors.category}
             </p>
           )}
         </div>
       </Card>
 
+      {/* Target Customer */}
+      <Card
+        id="targetCustomer"
+        title="Target Customer"
+        description="Provide information about your typical customers (Age, Gender)."
+        restriction="Please use 32 characters at maximum."
+        onClick={handleSave}
+        buttonDisabled={savingFields["targetCustomer"]}
+        buttonLoading={savingFields["targetCustomer"]}
+      >
+        <div className="space-y-1">
+          <input
+            id="targetCustomer"
+            type="text"
+            className="max-w-xs w-full text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
+            placeholder="Example: '25-35 year old professionals'"
+            value={editedBusiness?.targetCustomer || ""}
+            onChange={handleInputChange}
+            maxLength={32}
+          />
+        </div>
+      </Card>
+
+      {/* Vibe */}
       <Card
         id="vibe"
         title="Vibe"
@@ -364,17 +362,12 @@ export default function GeneralSettings() {
           <input
             id="vibe"
             type="text"
-            className={`max-w-xs w-full text-sm p-2 border rounded-md focus:ring focus:ring-blue-300 ${
-              fieldErrors.vibe ? "border-red-500 bg-red-50" : ""
-            }`}
-            placeholder="e.g. Cozy and family-friendly"
+            className="max-w-xs w-full text-sm p-2 border rounded-md focus:ring focus:ring-blue-300"
+            placeholder="Example: 'Cozy and minimalist'"
             value={editedBusiness?.vibe || ""}
             onChange={handleInputChange}
             maxLength={32}
           />
-          {fieldErrors.vibe && (
-            <p className="text-red-500 text-xs">{fieldErrors.vibe}</p>
-          )}
         </div>
       </Card>
     </div>
