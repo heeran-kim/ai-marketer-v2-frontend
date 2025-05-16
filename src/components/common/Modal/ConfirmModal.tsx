@@ -19,6 +19,7 @@ interface ConfirmModalProps {
   itemId?: string;
   onConfirm?: (itemId?: string) => void;
   onClose: () => void;
+  children?: React.ReactNode;
 }
 
 export const ConfirmModal = ({
@@ -31,6 +32,7 @@ export const ConfirmModal = ({
   itemId = undefined,
   onConfirm,
   onClose,
+  children,
 }: ConfirmModalProps) => {
   // Store the message in local state to prevent it from changing during animations
   const [localTitle, setLocalTitle] = useState(title);
@@ -73,20 +75,20 @@ export const ConfirmModal = ({
   const typeStyles = {
     alert: {
       icon: <FaExclamationTriangle className="h-5 w-5 text-red-500" />,
-      headerBg: "bg-red-50 dark:bg-red-900/10",
-      headerText: "text-red-700 dark:text-red-400",
+      headerBg: "bg-red-50",
+      headerText: "text-red-700",
       confirmBg: "bg-red-600 hover:bg-red-700 active:bg-red-800",
     },
     warning: {
       icon: <FaQuestion className="h-5 w-5 text-orange-500" />,
-      headerBg: "bg-orange-50 dark:bg-orange-900/10",
-      headerText: "text-orange-700 dark:text-orange-400",
+      headerBg: "bg-orange-50",
+      headerText: "text-orange-700",
       confirmBg: "bg-orange-600 hover:bg-orange-700 active:bg-orange-800",
     },
     info: {
       icon: <FaInfoCircle className="h-5 w-5 text-blue-500" />,
-      headerBg: "bg-blue-50 dark:bg-blue-900/10",
-      headerText: "text-blue-700 dark:text-blue-400",
+      headerBg: "bg-blue-50",
+      headerText: "text-blue-700",
       confirmBg: "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
     },
   };
@@ -110,7 +112,7 @@ export const ConfirmModal = ({
 
       {/* Center container with responsive width */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-xs sm:max-w-sm bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden">
+        <Dialog.Panel className="w-full max-w-xs sm:max-w-sm bg-white shadow-xl rounded-2xl overflow-hidden">
           {/* Header with colored background based on type */}
           <div className={`px-4 py-3 ${headerBg} flex items-center`}>
             <div className="mr-2 flex-shrink-0">{icon}</div>
@@ -121,13 +123,14 @@ export const ConfirmModal = ({
 
           {/* Message body with proper padding */}
           <div className="px-4 py-3 text-center">
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+            <p className="text-sm text-gray-700 whitespace-pre-line">
               {localMessage}
             </p>
+            {children}
           </div>
 
           {/* Buttons with full width on mobile */}
-          <div className="px-4 py-3 bg-gray-100 dark:bg-gray-900/20 flex flex-col sm:flex-row-reverse gap-2">
+          <div className="px-4 py-3 bg-gray-100 flex flex-col sm:flex-row-reverse gap-2">
             {/* Confirm button */}
             {type !== "alert" && (
               <button
@@ -143,7 +146,7 @@ export const ConfirmModal = ({
             {/* Cancel button */}
             <button
               type="button"
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 "
               onClick={handleClose}
               disabled={isSubmitting}
             >

@@ -36,6 +36,22 @@ export const toSnakeCase = <T>(obj: T): T => {
   return obj;
 };
 
+// Converts camelCase to snake_case for FormData keys (for API requests)
+export const toSnakeCaseForFormData = (formData: FormData): FormData => {
+  const newFormData = new FormData();
+
+  // Loop through FormData entries and convert keys to snake_case
+  formData.forEach((value, key) => {
+    // Convert the key to snake_case
+    const snakeKey = key.replace(/([A-Z])/g, "_$1").toLowerCase();
+
+    // Append the value to newFormData with the converted snake_case key
+    newFormData.append(snakeKey, value);
+  });
+
+  return newFormData;
+};
+
 interface FetchOptions extends RequestInit {
   timeout?: number;
 }
@@ -73,7 +89,7 @@ class ApiClient {
       method: "POST",
       headers: isFormData ? {} : { "Content-Type": "application/json" },
       body: isFormData
-        ? (data as FormData)
+        ? toSnakeCaseForFormData(data as FormData)
         : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
       ...options,
     });
@@ -89,7 +105,7 @@ class ApiClient {
       method: "PUT",
       headers: isFormData ? {} : { "Content-Type": "application/json" },
       body: isFormData
-        ? (data as FormData)
+        ? toSnakeCaseForFormData(data as FormData)
         : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
       ...options,
     });
@@ -105,7 +121,7 @@ class ApiClient {
       method: "PATCH",
       headers: isFormData ? {} : { "Content-Type": "application/json" },
       body: isFormData
-        ? (data as FormData)
+        ? toSnakeCaseForFormData(data as FormData)
         : JSON.stringify(toSnakeCase(data as Record<string, unknown>)),
       ...options,
     });
@@ -122,8 +138,9 @@ class ApiClient {
     url: string,
     options: FetchOptions = {}
   ): Promise<T> {
+    const { timeout = this.defaultTimeout, ...restOptions } = options;
     const fetchOptions: RequestInit = {
-      ...options,
+      ...restOptions,
       headers:
         options.body instanceof FormData
           ? undefined
@@ -164,7 +181,7 @@ class ApiClient {
         console.error(`API request failed for ${url}:`, error);
         throw error;
       }
-    });
+    }, timeout);
   }
 
   // Health check method to test backend connectivity

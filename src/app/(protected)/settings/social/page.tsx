@@ -52,7 +52,14 @@ export default function SocialMediaSettings() {
     setProcessingPlatform(provider);
     // Make API call to start OAuth flow
     // TODO: Error handling, set redirect url
-    await apiClient.post(SETTINGS_API.CONNECT_SOCIAL(provider), {});
+    try{
+      const response = await apiClient.post<Record<string,string>>(SETTINGS_API.CONNECT_SOCIAL(provider), {});
+      window.location.href = response.link;
+    }
+    catch(error:unknown)
+    {
+      console.log(error);
+    }
   };
 
   // Disconnect from a social platform

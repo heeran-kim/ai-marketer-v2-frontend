@@ -4,21 +4,22 @@ import { USERS_API } from "@/constants/api";
 
 import { useState, useEffect } from "react";
 import { Card, DragAndDropUploader, ErrorFallback } from "@/components/common";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useNotification } from "@/context/NotificationContext";
 import { useFetchData, apiClient } from "@/hooks/dataHooks";
-import { Business, EMPTY_BUSINESS } from "@/types/business";
+import { Business } from "@/types/business";
 import { INDUSTRY_OPTIONS } from "@/constants/settings";
 import { SETTINGS_API } from "@/constants/api";
 
 export default function GeneralSettings() {
+  const { mutateUser } = useAuth();
   const {
     data: businessData,
     error,
     isLoading,
     mutate,
   } = useFetchData<Business>(SETTINGS_API.GENERAL);
-  const [editedBusiness, setEditedBusiness] =
-    useState<Business>(EMPTY_BUSINESS);
+  const [editedBusiness, setEditedBusiness] = useState<Business | null>(null);
   const [savingFields, setSavingFields] = useState<Record<string, boolean>>({});
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const isPredefinedCategory = INDUSTRY_OPTIONS.includes(
@@ -85,7 +86,8 @@ export default function GeneralSettings() {
         const formData = new FormData();
         formData.append("logo_removed", "true");
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
-        if (businessData) mutate({ ...businessData, logo: null }, false);
+        if (businessData) await mutate({ ...businessData, logo: null }, false);
+        await mutateUser();
         showNotification("success", "Logo deleted successfully!");
       } catch (error) {
         console.error("Error deleting logo:", error);
@@ -116,6 +118,8 @@ export default function GeneralSettings() {
         formData.append("logo", file);
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
         if (businessData) mutate({ ...businessData, logo: previewUrl }, false);
+        await mutate();
+        await mutateUser();
         showNotification("success", "Logo updated successfully!");
       } catch (error) {
         console.error("Error updating logo:", error);
@@ -183,6 +187,8 @@ export default function GeneralSettings() {
 
     try {
       await apiClient.patch(SETTINGS_API.GENERAL, { [fieldName]: value });
+      await mutate();
+      await mutateUser();
       showNotification(
         "success",
         `${
@@ -226,6 +232,18 @@ export default function GeneralSettings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {businessData &&
+        Object.values(businessData).every((value) => value === null) && (
+          <div className="p-3 bg-red-100 border border-red-300 text-red-700 text-sm rounded-lg">
+            <strong>Business information is not set!</strong>
+            <br />
+            You must complete the business setup before accessing other
+            features.
+            <br />
+            After setting up, you will be able to use all available features.
+          </div>
+        )}
+
       {/* Business Name */}
       <Card
         id="name"
@@ -264,7 +282,7 @@ export default function GeneralSettings() {
       >
         <div className="space-y-1">
           <DragAndDropUploader
-            value={editedBusiness?.logo || ""}
+            value={editedBusiness?.logo || undefined}
             onChange={handleLogoChange}
             fileType="logo"
           />

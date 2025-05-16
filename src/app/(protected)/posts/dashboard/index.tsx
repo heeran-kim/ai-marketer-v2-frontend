@@ -15,22 +15,21 @@ import { DropboxItem } from "@/types/index";
 import { usePostEditorContext } from "@/context/PostEditorContext";
 import { PostsFilterBar } from "./PostsFilterBar";
 import { PostList } from "./PostList";
-import type { KeyedMutator } from "swr";
-import type { PostDto } from "@/types/dto";
 import { POST_STATUS_OPTIONS } from "@/constants/posts";
 import { PLATFORM_OPTIONS_WITH_LABEL } from "@/utils/icon";
-import { ErrorFallback } from "@/components/common";
+import { Card, ErrorFallback } from "@/components/common";
+import { mutate } from "swr";
+import { POSTS_API } from "@/constants/api";
+import { apiClient } from "@/hooks/dataHooks";
 
 const ITEMS_PER_PAGE = 5;
 
 export const PostsDashboardView = ({
   posts,
-  mutate,
   error,
   isLoading,
 }: {
   posts: Post[];
-  mutate: KeyedMutator<{ posts: PostDto[] }>;
   error: unknown;
   isLoading: boolean;
 }) => {
@@ -107,7 +106,8 @@ export const PostsDashboardView = ({
   // Show error UI if there's an error
   if (error) {
     const handleRetry = async () => {
-      await mutate();
+      // Trigger global SWR revalidation
+      await mutate(POSTS_API.LIST);
     };
 
     return (
@@ -129,19 +129,30 @@ export const PostsDashboardView = ({
     router.push(`/posts?mode=edit&id=${post.id}`);
   };
 
-  const handleRetry = (postId: string) => {
+  const handleRetry = async (postId: string) => {
     console.log(`Retrying post: ${postId}`);
-    // TODO: Implement retry logic
+    const formData = new FormData();
+    formData.append("retry", "t");
+
+    // Use the PATCH endpoint to retry the post
+    await apiClient.patch(
+      POSTS_API.UPDATE(postId),
+      formData,
+      {},
+      true // isFormData flag
+    );
+
+    // Show success notification
+    showNotification("success", "Post retry successfully!");
   };
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto p-6">
       <DeletePostHandler
         selectedPostId={selectedPostId}
         onClose={() => setSelectedPostId(undefined)}
         onSuccess={(message) => showNotification("success", message)}
         onError={(message) => showNotification("error", message)}
-        onDeleteComplete={() => mutate()} // This will refresh the posts data
         posts={posts}
       />
 
@@ -152,6 +163,31 @@ export const PostsDashboardView = ({
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
       />
+      {isLoading ? (
+        <div className="flex flex-col justify-center items-center h-64">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      ) : (
+        posts.length === 0 && (
+          <Card showButton={false}>
+            <div className="text-center py-8 text-sm">
+              <p className="text-gray-600 mb-6 whitespace-pre-line">
+                {`No posts yet.\nClick 'Create Post' to start sharing your first post\nwith AI-powered help!`}
+              </p>
+            </div>
+          </Card>
+        )
+      )}
+
+      {posts.length > 0 && filteredPosts.length === 0 && (
+        <Card showButton={false}>
+          <div className="text-center py-8 text-sm">
+            <p className="text-gray-600 mb-6 whitespace-pre-line">
+              {`We couldn’t find any posts that match your search.\nTry changing the filters or keywords!`}
+            </p>
+          </div>
+        </Card>
+      )}
 
       <PostList
         posts={slicedPosts}

@@ -5,7 +5,6 @@ import { ConfirmModal } from "./ConfirmModal";
 export enum ConfirmModalMode {
   CLOSE,
   STEP1_CREATE_NO_IMAGE,
-  STEP1_CREATE_NO_ANALYSIS,
   STEP1_EDIT_NO_IMAGE,
   STEP4_ALL_POSTS_DONT_POST,
 }
@@ -40,17 +39,6 @@ export const ConfirmModalHandler: React.FC<ConfirmModalHandlerProps> = ({
           message="An image is required to proceed. Please upload one."
           cancelButtonText="OK"
           type="alert"
-          onClose={handleClose}
-        />
-      );
-    case ConfirmModalMode.STEP1_CREATE_NO_ANALYSIS:
-      return (
-        <ConfirmModal
-          isOpen={true}
-          message={`No objects were detected in the image.
-          Captions may not reflect the image.
-          Do you want to continue?`}
-          onConfirm={handleConfirm}
           onClose={handleClose}
         />
       );

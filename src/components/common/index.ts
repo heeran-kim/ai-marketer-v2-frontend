@@ -1,14 +1,18 @@
 // src/components/common/index.ts
-export { default as DarkModeToggle } from "./DarkModeToggle";
 export { default as Header } from "./Header";
 export { default as ScrollToTop } from "./ScrollToTop";
 export { default as SearchBar } from "./SearchBar";
 export { default as Select } from "./Select";
 export { default as StatusIcon } from "./StatusIcon";
+export { default as InfoTooltip } from "./InfoTooltip";
 export { ErrorFallback } from "./ErrorFallback";
+export { default as CategoryChipList } from "./CategoryChipList";
+export {
+  default as ProductChipList,
+  ProductChipList as NewProductChipList,
+} from "./ProductChipList";
 
 export { default as ActionDropdown } from "./Card/ActionDropdown";
-export { default as CategoryChipList } from "./Card/CategoryChipList";
 export { default as Card } from "./Card/Card";
 export { default as CompactCard } from "./Card/CompactCard";
 export { default as ListCard } from "./Card/ListCard";

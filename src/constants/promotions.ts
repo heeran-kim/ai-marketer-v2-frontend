@@ -8,6 +8,9 @@ export const PROMOTION_CATEGORIES_OPTIONS = [
   { key: "social", label: "Social Media Content" },
 ];
 
+export type PromotionCategoryKey =
+  (typeof PROMOTION_CATEGORIES_OPTIONS)[number]["key"];
+
 export const PROMOTION_STATUS_OPTIONS = [
   { key: "upcoming", label: "Upcoming" },
   { key: "ongoing", label: "Ongoing" },

@@ -4,13 +4,13 @@ import { Post } from "@/types/post";
 import { POSTS_API } from "@/constants/api";
 import { apiClient } from "@/hooks/dataHooks";
 import { ConfirmModal } from "@/components/common";
+import { mutate } from "swr";
 
 interface DeletePostHandlerProps {
   selectedPostId: string | undefined;
   onClose: () => void;
   onSuccess: (message: string) => void;
   onError?: (message: string) => void;
-  onDeleteComplete: () => void;
   posts: Post[];
 }
 
@@ -19,7 +19,6 @@ export const DeletePostHandler = ({
   onClose,
   onSuccess,
   onError,
-  onDeleteComplete,
   posts,
 }: DeletePostHandlerProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,11 +53,15 @@ export const DeletePostHandler = ({
     try {
       await apiClient.delete(POSTS_API.DELETE(itemId));
       onSuccess("Post deleted successfully!");
-      onDeleteComplete(); // This could trigger a data refresh through SWR mutate
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      if (onError) {
-        onError("Failed to delete post. Please try again.");
+      // Trigger global SWR revalidation
+      await mutate(POSTS_API.LIST);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const parsed = JSON.parse(error.message); // parse the string into an object
+        //console.error("Error deleting post:", parsed.data?.message);
+        if (onError) {
+          onError(`Failed to delete post. ${parsed.data?.message}.`);
+        }
       }
     } finally {
       setIsLoading(false);

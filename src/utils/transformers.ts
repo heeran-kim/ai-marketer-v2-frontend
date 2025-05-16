@@ -12,6 +12,7 @@ export const mapPostDtoToPost = (dto: PostDto): Post => {
   return {
     ...restDto,
     imageUrl: "",
+    aspectRatio: "4/5",
     platform: platformObject,
     selectedCategoryLabels: categories,
     type: "post",

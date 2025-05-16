@@ -90,9 +90,9 @@ export const PostActivityCalendar = ({
   }
 
   const statusColors = {
-    active: "text-green-600 dark:text-green-400",
-    moderate: "text-yellow-600 dark:text-yellow-400",
-    inactive: "text-red-600 dark:text-red-400",
+    active: "text-green-600",
+    moderate: "text-yellow-600",
+    inactive: "text-red-600",
   };
 
   // Get today's posts
@@ -100,7 +100,7 @@ export const PostActivityCalendar = ({
   const numPostsToday = postCountByDate[todayString] || 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+    <div className="bg-white rounded-lg shadow-md p-4">
       <h3 className="text-lg font-semibold mb-3">Posting Activity</h3>
 
       <div className="flex flex-col md:flex-row">
@@ -138,9 +138,7 @@ export const PostActivityCalendar = ({
                 <div
                   key={`day-${i}`}
                   className={`h-8 flex flex-col items-center justify-center rounded-md 
-                    text-xs relative ${
-                      isToday ? "bg-gray-100 dark:bg-gray-700 font-bold" : ""
-                    }`}
+                    text-xs relative ${isToday ? "bg-gray-100 font-bold" : ""}`}
                 >
                   {day}
 
@@ -167,7 +165,7 @@ export const PostActivityCalendar = ({
 
           <div className="mt-2 text-center text-sm">
             {numPostsToday > 0 ? (
-              <span className="text-green-600 dark:text-green-400">
+              <span className="text-green-600">
                 {numPostsToday} post{numPostsToday !== 1 ? "s" : ""} today
               </span>
             ) : (
@@ -177,7 +175,7 @@ export const PostActivityCalendar = ({
         </div>
 
         {/* Activity status section */}
-        <div className="w-full md:w-1/2 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-4 border-gray-200 dark:border-gray-700">
+        <div className="w-full md:w-1/2 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-4 border-gray-200">
           <div
             className={`text-2xl font-bold mb-2 ${statusColors[activityStatus]}`}
           >
@@ -192,15 +190,15 @@ export const PostActivityCalendar = ({
             {activityMessage}
           </div>
 
-          <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
+          <div className="mt-4 text-sm text-gray-600 text-center">
             Try to post at least once every 3 days to maintain engagement.
           </div>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-2">
-        <div className="text-xs text-gray-600 dark:text-gray-400 flex flex-wrap gap-x-4 gap-y-2 justify-center">
+      <div className="mt-4 border-t border-gray-200 pt-2">
+        <div className="text-xs text-gray-600 flex flex-wrap gap-x-4 gap-y-2 justify-center">
           {Object.entries(PLATFORM_CHART_COLORS)
             .filter(([key]) => key !== "default")
             .map(([platform, color]) => (

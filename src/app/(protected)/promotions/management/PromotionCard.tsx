@@ -1,11 +1,14 @@
-// src/components/PromotionCard.tsx
-import React from "react";
+// src/app/(protected)/promotions/management/PromotionCard.tsx
 import { Promotion } from "@/types/promotion";
 import { formatDateRange } from "@/utils/date";
 import Image from "next/image";
-import { CategoryChipList } from "@/components/common";
+import {
+  CategoryChipList,
+  ProductChipList,
+  NewProductChipList,
+} from "@/components/common";
 import { StatusIcon } from "@/components/common";
-import { getPlatformIcon, actionIcons } from "@/utils/icon";
+import { getPlatformIcon, actionIcons, changeIcons } from "@/utils/icon";
 import { useRouter } from "next/navigation";
 
 interface PromotionCardProps {
@@ -30,20 +33,50 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
     endDate,
     status,
     soldCount,
+    salesChange,
     posts,
     categories,
+    products,
+    productNames,
   } = promotion;
 
   // Format dates
   const dateRange = formatDateRange(startDate, endDate);
 
+  const getSalesChangeStyle = () => {
+    if (salesChange === undefined || salesChange === null) return "";
+
+    if (salesChange > 0) {
+      return "text-green-600 bg-green-50";
+    } else if (salesChange < 0) {
+      return "text-red-600 bg-red-50";
+    }
+    console.log("neutral");
+    return "text-gray-600 bg-gray-50";
+  };
+
+  const getSalesChangeIcon = () => {
+    if (salesChange === undefined || salesChange === null) return null;
+
+    if (salesChange > 0) {
+      return changeIcons.increase;
+    } else if (salesChange < 0) {
+      return changeIcons.decrease;
+    }
+    console.log("icon neutral");
+    return changeIcons.neutral;
+  };
+
+  // Check if we have the new products array with category info
+  const hasProductCategoryInfo = products && products.length > 0;
+
   return (
-    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
+    <div className="border border-gray-200 rounded-lg bg-white">
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center space-x-2">
             <StatusIcon status={status} />
-            <span className="dark:text-white font-medium">{dateRange}</span>
+            <span className="font-medium">{dateRange}</span>
           </div>
           {/* Action buttons */}
           <div className="flex space-x-1">
@@ -74,6 +107,17 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
             <CategoryChipList labels={categories.map((cat) => cat.label)} />
           </div>
         )}
+
+        {/* Product names with category indication */}
+        {hasProductCategoryInfo ? (
+          <div className="mb-3">
+            <NewProductChipList products={products} />
+          </div>
+        ) : productNames && productNames.length > 0 ? (
+          <div className="mb-3">
+            <ProductChipList productNames={productNames} />
+          </div>
+        ) : null}
 
         {/* Description */}
         <div className="text-sm text-gray-700 mb-3 whitespace-pre-line">
@@ -124,7 +168,20 @@ const PromotionCard: React.FC<PromotionCardProps> = ({
 
         {/* Statistics and Create post button */}
         <div className="flex justify-between items-center mt-2">
-          <span className="text-sm font-medium">Sold: {soldCount}</span>
+          <div className="flex items-center space-x-2">
+            {!(soldCount === undefined || soldCount === null) && (
+              <span className="text-sm font-medium">Sold: {soldCount}</span>
+            )}
+            {!(salesChange === undefined || salesChange === null) && (
+              <div
+                className={`flex items-center text-xs px-2 py-1 rounded-full ${getSalesChangeStyle()}`}
+                title="Average sales change compared to previous period"
+              >
+                {getSalesChangeIcon()}
+                <span className="ml-1">{Math.abs(salesChange)}</span>
+              </div>
+            )}
+          </div>
           <button
             className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-gray-800"
             onClick={onCreatePost}

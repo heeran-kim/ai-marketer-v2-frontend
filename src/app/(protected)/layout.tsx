@@ -1,21 +1,13 @@
 // src/app/(protected)/layout.tsx
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Header from "@/components/common/Header";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { NAV_ITEMS } from "@/constants/navItems";
 
-/**
- * Layout component for protected routes
- *
- * This component:
- * 1. Checks authentication state
- * 2. Redirects unauthenticated users to login
- * 3. Shows appropriate navigation based on current path
- */
+const BUSINESS_REQUIRED_ROUTES =
+  /^\/(posts|promotions|settings(\/(?!general).+))/;
+
 export default function ProtectedLayout({
   children,
 }: {
@@ -25,33 +17,39 @@ export default function ProtectedLayout({
   const pathname = usePathname();
   const { authState } = useAuth();
 
-  // Redirect to login page if user is not authenticated
+  const [isChecking, setIsChecking] = useState(true);
+
   useEffect(() => {
-    if (authState.status === "unauthenticated") router.push("/login");
-  }, [authState, router]);
+    if (authState.status === "initializing") return;
 
-  // During authentication check, preserve current UI to prevent flickering
-  if (authState.status === "initializing") return children;
+    if (authState.status === "unauthenticated") {
+      router.replace("/login");
+      return;
+    }
 
-  // If not authenticated, show nothing while redirecting
-  if (authState.status === "unauthenticated") return null;
+    if (
+      BUSINESS_REQUIRED_ROUTES.test(pathname) &&
+      !authState.user?.businessId
+    ) {
+      router.replace("/settings/general");
+      return;
+    }
 
-  // Find the current navigation item based on the URL path
-  const currentNav = NAV_ITEMS.find((item) => pathname.startsWith(item.href));
+    setIsChecking(false);
+  }, [authState, pathname, router]);
 
-  if (!currentNav) {
-    console.error("Cannot find matched navigation item for path:", pathname);
-  } else if (currentNav.subPages?.length) {
-    // Check if current path matches a subpage and update header accordingly
-    const subPage = currentNav.subPages.find((sub) => pathname === sub.href);
-    if (subPage?.header) currentNav.header = subPage.header;
+  if (
+    isChecking ||
+    authState.status === "initializing" ||
+    authState.status === "unauthenticated" ||
+    (BUSINESS_REQUIRED_ROUTES.test(pathname) && !authState.user?.businessId)
+  ) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
   }
 
-  // Render the protected content with appropriate header
-  return (
-    <div className="max-w-6xl mx-auto md:p-6">
-      {currentNav?.header && <Header {...currentNav.header} />}
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }
