@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
               password.
             </p>
             <Link
-              href="/login/email"
+              href="/login"
               className={`${primaryNavItemClass} inline-flex justify-center py-3 px-4`}
             >
               Go to Login

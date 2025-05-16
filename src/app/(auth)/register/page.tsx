@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { primaryNavItemClass } from "@/components/styles";
-import { FaArrowLeft } from "react-icons/fa";
 
 export default function EmailRegisterPage() {
   const { register, authState } = useAuth();
@@ -227,23 +226,12 @@ export default function EmailRegisterPage() {
           <p>
             Already have an account?{" "}
             <Link
-              href="/login/email"
+              href="/login"
               className="text-indigo-600 hover:text-indigo-800 transition"
             >
               Sign in
             </Link>
           </p>
-        </div>
-
-        {/* Back button */}
-        <div className="mt-6 text-center">
-          <Link
-            href="/login"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
-          >
-            <FaArrowLeft className="mr-2" size={14} />
-            Other sign up options
-          </Link>
         </div>
       </div>
     </div>
