@@ -14,6 +14,7 @@ export const USERS_API = {
   LOGOUT: `${BASE_URL}/users/logout/`,
   REGISTER: `${BASE_URL}/users/register/`,
   ME: `${BASE_URL}/users/me/`,
+  DELETE_ACCOUNT: `${BASE_URL}/users/delete/`,
 
   //Added 2FA Endpoints
   QR_2FA: `${BASE_URL}/users/2fa-qr/`,
@@ -56,7 +57,8 @@ export const POSTS_API = {
   DETAIL: (id: string) => `${BASE_URL}/posts/${id}/`, // GET
   COMMENTS: (id: string) => `${BASE_URL}/posts/${id}/comments/`, // GET
   LIKE_COMMENTS: (id: string) => `${BASE_URL}/posts/${id}/likecomments/`, // GET
-  REPLY_COMMENTS: (id: string, message: string) => `${BASE_URL}/posts/${id}/replycomments/${message}`, // GET
+  REPLY_COMMENTS: (id: string, message: string) =>
+    `${BASE_URL}/posts/${id}/replycomments/${message}`, // GET
   CREATE: `${BASE_URL}/posts/?create=true`, // GET, POST
   UPDATE: (id: string) => `${BASE_URL}/posts/${id}/`, // PATCH or PUT
   DELETE: (id: string) => `${BASE_URL}/posts/${id}/`, // DELETE

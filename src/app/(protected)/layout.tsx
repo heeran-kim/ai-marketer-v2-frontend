@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 const BUSINESS_REQUIRED_ROUTES =
-  /^\/(posts|promotions|settings(\/(?!general).+))/;
+  /^\/(posts|promotions|settings(\/(?!general|account).+))/;
 
 export default function ProtectedLayout({
   children,

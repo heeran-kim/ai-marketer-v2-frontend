@@ -86,7 +86,7 @@ export default function GeneralSettings() {
         formData.append("logo_removed", "true");
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
         if (businessData) await mutate({ ...businessData, logo: null }, false);
-        await mutateUser();
+        await mutateUser(undefined, true);
         showNotification("success", "Logo deleted successfully!");
       } catch (error) {
         console.error("Error deleting logo:", error);
@@ -118,7 +118,7 @@ export default function GeneralSettings() {
         await apiClient.patch(SETTINGS_API.GENERAL, formData, {}, true);
         if (businessData) mutate({ ...businessData, logo: previewUrl }, false);
         await mutate();
-        await mutateUser();
+        await mutateUser(undefined, true);
         showNotification("success", "Logo updated successfully!");
       } catch (error) {
         console.error("Error updating logo:", error);
@@ -187,7 +187,7 @@ export default function GeneralSettings() {
     try {
       await apiClient.patch(SETTINGS_API.GENERAL, { [fieldName]: value });
       await mutate();
-      await mutateUser();
+      await mutateUser(undefined, true);
       showNotification(
         "success",
         `${

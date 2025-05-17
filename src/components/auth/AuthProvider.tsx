@@ -139,8 +139,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       method,
       credentials: { email, password, code },
     });
-    const userData = await mutateUser(); // Refetch user data after login
-    if (userData) router.push("/dashboard");
+    const res = await fetch(USERS_API.ME, { credentials: "include" });
+    const newUser = await res.json();
+    mutateUser(newUser, false);
+    if (newUser) router.push("/dashboard");
   };
 
   /**
