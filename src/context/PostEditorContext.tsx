@@ -424,7 +424,7 @@ export const PostEditorProvider = ({
           const response = await apiClient.post(
             POSTS_API.LIST,
             formData,
-            {},
+            {timeout: 60000 },
             true
           );
           console.log(response);
