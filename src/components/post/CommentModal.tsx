@@ -92,6 +92,7 @@ const CommentModal: React.FC<ModalProps> = ({ isOpen, onClose, comments, isLoade
           &times;
         </button>
         <h2>Comments</h2>
+        <p style={{ color: "#777", fontSize: "0.85em", marginLeft: "8px" }}>Inappropriate or Spam Comments won't be shown.</p>
         {isLoaded?
         <ul>
           {comments.length > 0 ? (

@@ -235,27 +235,29 @@ const ListCard = forwardRef<HTMLDivElement, ListCardProps>(
         };
         //const data = JSON.stringify(response.message.message);
         //console.log(data);
-        // console.log(response);
+        console.log(response);
 
         const comments = response.message.message;
         const localComments = [];
-        for (let i = 0; i < comments.length; i++) {
-          const formattedDate = new Date(
-            comments[i].createdTime
-          ).toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          });
-          const comment = handleAddComment(
-            comments[i].id,
-            comments[i].from.name,
-            comments[i].message,
-            formattedDate,
-            comments[i].replies,
-            comments[i].likeCount,
-            comments[i].selfLike
-          );
-          localComments.push(comment);
+        if (comments) {
+          for (let i = 0; i < comments.length; i++) {
+            const formattedDate = new Date(
+              comments[i].createdTime
+            ).toLocaleString("en-US", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            });
+            const comment = handleAddComment(
+              comments[i].id,
+              comments[i].from.name,
+              comments[i].message,
+              formattedDate,
+              comments[i].replies,
+              comments[i].likeCount,
+              comments[i].selfLike
+            );
+            localComments.push(comment);
+          }
         }
         setComments(localComments);
         setIsLoaded(true);
